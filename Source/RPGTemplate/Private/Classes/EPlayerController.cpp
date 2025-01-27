@@ -1,6 +1,7 @@
 #include "Classes/EPlayerController.h"
 
-UEnhancedInputLocalPlayerSubsystem* AEPlayerController::GetInputSubsystem()
+
+UEnhancedInputLocalPlayerSubsystem* AEPlayerController::GetInputSubsystem() const
 {
 
 	if (!IsLocalPlayerController()) {
@@ -22,22 +23,22 @@ UEnhancedInputLocalPlayerSubsystem* AEPlayerController::GetInputSubsystem()
 
 }
 
-void AEPlayerController::RegisterInput_Implementation(UInputMappingContext* Context)
+void AEPlayerController::RegisterInput_Implementation(UInputMappingContext* context)
 {
 
 	if (UEnhancedInputLocalPlayerSubsystem* InputSystem = GetInputSubsystem())
 	{
-		InputSystem->AddMappingContext(Context, 0);
-	}
+		InputSystem->AddMappingContext(context, 0);
+	}	
 
 }
 
-void AEPlayerController::UnregisterInput_Implementation(UInputMappingContext* Context)
+void AEPlayerController::UnregisterInput_Implementation(UInputMappingContext* context)
 {
 
 	if (UEnhancedInputLocalPlayerSubsystem* InputSystem = GetInputSubsystem())
 	{
-		InputSystem->RemoveMappingContext(Context);
+		InputSystem->RemoveMappingContext(context);
 	}
 
 }

@@ -4,7 +4,10 @@
 AEEntity::AEEntity()
 {
 
-	PrimaryActorTick.bCanEverTick = false;
+	if (UCapsuleComponent* capsule = GetCapsuleComponent()) {
+		capsule->SetCapsuleHalfHeight(90.0f);
+		capsule->SetCapsuleRadius(35.0f);
+	}
 
 }
 

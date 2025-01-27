@@ -23,15 +23,15 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable, Category = "Extended Player Controller|Input", Meta = (BlueprintProtected, BlueprintPure))
-	UEnhancedInputLocalPlayerSubsystem* GetInputSubsystem();
+	UEnhancedInputLocalPlayerSubsystem* GetInputSubsystem() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Extended Player Controller|Input", Meta = (ForceAsFunction, BlueprintProtected))
-	void RegisterInput(UInputMappingContext* Context);
-	virtual void RegisterInput_Implementation(UInputMappingContext* Context);
+	void RegisterInput(UInputMappingContext* context);
+	virtual void RegisterInput_Implementation(UInputMappingContext* context);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Extended Player Controller|Input", Meta = (ForceAsFunction, BlueprintProtected))
-	void UnregisterInput(UInputMappingContext* Context);
-	virtual void UnregisterInput_Implementation(UInputMappingContext* Context);
+	void UnregisterInput(UInputMappingContext* context);
+	virtual void UnregisterInput_Implementation(UInputMappingContext* context);
 
 
 };

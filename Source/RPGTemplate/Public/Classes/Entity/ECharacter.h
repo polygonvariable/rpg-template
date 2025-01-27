@@ -4,6 +4,7 @@
 #include "Classes/EEntity.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ECharacter.generated.h"
 
@@ -21,9 +22,8 @@ public:
 
 	AECharacter();
 
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	TObjectPtr< USpringArmComponent> SpringArm;
+	TObjectPtr<USpringArmComponent> SpringArm;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<UCameraComponent> Camera;
@@ -33,13 +33,13 @@ protected:
 
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Extended Character|Input")
-	float CameraZoomMin = 100.0f;
+	float cameraZoomMin = 100.0f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Extended Character|Input")
-	float CameraZoomMax = 2000.0f;
+	float cameraZoomMax = 2000.0f;
 
 	UFUNCTION(BlueprintCallable, Category = "Extended Character|Input", Meta = (BlueprintProtected))
-	void CameraPan(float pitch, float yaw);
+	void CameraPan(FVector2D axis);
 
 	UFUNCTION(BlueprintCallable, Category = "Extended Character|Input", Meta = (BlueprintProtected))
 	void CameraZoom(float delta);
