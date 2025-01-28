@@ -17,9 +17,6 @@ struct FInteractItem
 	FText Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* Target;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FInstancedStruct CustomData;
 
 	friend inline bool operator == (const FInteractItem& A, const FInteractItem& B)

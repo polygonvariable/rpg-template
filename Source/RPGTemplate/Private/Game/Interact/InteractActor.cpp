@@ -1,12 +1,31 @@
 #include "Game/Interact/InteractActor.h"
 
-AInteractActor::AInteractActor() : AEActor()
+FInteractItem& AInteractActor::GetInteractItem()
 {
+	return InteractItem;
+}
 
-	InteractItem.UUID = UUID;
+void AInteractActor::Interact_Implementation()
+{
+	OnInteracted();
+}
+
+void AInteractActor::BeginPlay()
+{
+	Super::BeginPlay();
+	BuildItem();
+}
+
+void AInteractActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	EndInteract();
+	Super::EndPlay(EndPlayReason);
+}
+
+void AInteractActor::BuildItem_Implementation()
+{
+	InteractItem.UUID = GUID;
 	InteractItem.Name = Name;
-	InteractItem.Target = this;
-
 }
 
 UInteractComponent* AInteractActor::GetInteractComponent_Implementation() const
@@ -21,16 +40,26 @@ UInteractComponent* AInteractActor::GetInteractComponent_Implementation() const
 
 void AInteractActor::StartInteract_Implementation()
 {
-	if(UInteractComponent* interactComponent = GetInteractComponent())
+	if(UInteractComponent* InteractComponent = GetInteractComponent())
 	{
-		interactComponent->AddItem(InteractItem);
+		InteractComponent->AddItem(this);
 	}
 }
 
 void AInteractActor::EndInteract_Implementation()
 {
-	if (UInteractComponent* interactComponent = GetInteractComponent())
+	if (UInteractComponent* InteractComponent = GetInteractComponent())
 	{
-		interactComponent->RemoveItem(InteractItem);
+		InteractComponent->RemoveItem(this);
 	}
+}
+
+void AInteractActor::UpdateItem_Implementation()
+{
+	BuildItem();
+	OnItemUpdated.Broadcast(InteractItem);
+}
+
+void AInteractActor::OnInteracted_Implementation()
+{
 }

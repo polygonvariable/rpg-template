@@ -1,52 +1,84 @@
 #include "Game/Interact/InteractWidget.h"
 
-void UInteractWidget::BindToInteractComponent_Implementation()
+void UInteractWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	InitializeStage();
+}
+
+void UInteractWidget::NativeDestruct()
+{
+	EndStage();
+	Super::NativeDestruct();
+}
+
+void UInteractWidget::InitializeStage_Implementation()
+{
+	BindToInteractComponent(false);
+}
+
+void UInteractWidget::EndStage_Implementation()
+{
+	BindToInteractComponent(true);
+}
+
+void UInteractWidget::BindToInteractComponent_Implementation(bool bIsUnbind)
 {
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()) {
 		if (AHUD* HUD = PlayerController->GetHUD()) {
 
 			UInteractComponent* InteractComponent = Cast<UInteractComponent>(HUD->GetComponentByClass(UInteractComponent::StaticClass()));
 			
-			InteractComponent->OnItemAdded.AddDynamic(this, &UInteractWidget::OnItemAdded);
-			InteractComponent->OnItemRemoved.AddDynamic(this, &UInteractWidget::OnItemRemoved);
+			if(!bIsUnbind) {
+				if (!InteractComponent->OnInteractStarted.IsBound() && !InteractComponent->OnInteractEnded.IsBound()) {
+					InteractComponent->OnInteractStarted.AddDynamic(this, &UInteractWidget::OnInteractStarted);
+					InteractComponent->OnInteractEnded.AddDynamic(this, &UInteractWidget::OnInteractEnded);
+				}
+			}
+			else {
+				InteractComponent->OnInteractStarted.RemoveDynamic(this, &UInteractWidget::OnInteractStarted);
+				InteractComponent->OnInteractEnded.RemoveDynamic(this, &UInteractWidget::OnInteractEnded);
+			}
 
 		}
 	}
 }
 
-UObject* UInteractWidget::AddItem_Implementation(FInteractItem Item)
+void UInteractWidget::AddItem_Implementation(AActor* Item)
 {
-	if (!InteractItems.Contains(Item.UUID)) {
-
-		UObject* ItemObject = NewObject<UObject>(this);
-		if (ItemObject) {
-
-			InteractItems.Add(Item.UUID, ItemObject);
-			return ItemObject;
-
-		}
-
-	}
-	return nullptr;
-}
-
-void UInteractWidget::RemoveItem_Implementation(FInteractItem Item)
-{
-	if (UObject* ItemFound = *InteractItems.Find(Item.UUID)) {
-
-		ItemFound->MarkAsGarbage();
-		InteractItems.Remove(Item.UUID);
-
+	if(!InteractActorsSet.Contains(Item)) {
+		InteractActorsSet.Add(Item);
+		OnItemAdded(Item);
 	}
 }
 
-
-void UInteractWidget::OnItemAdded_Implementation(FInteractItem Item)
+void UInteractWidget::RemoveItem_Implementation(AActor* Item)
 {
-	AddItem(Item);
+	if(InteractActorsSet.Contains(Item)) {
+		InteractActorsSet.Remove(Item);
+		OnItemRemoved(Item);
+	}
 }
 
-void UInteractWidget::OnItemRemoved_Implementation(FInteractItem Item)
+void UInteractWidget::OnItemAdded_Implementation(AActor* Item)
 {
-	RemoveItem(Item);
+}
+
+void UInteractWidget::OnItemRemoved_Implementation(AActor* Item)
+{
+}
+
+
+void UInteractWidget::OnInteractStarted_Implementation(AActor* Item)
+{
+	if (Item) {
+		AddItem(Item);
+	}
+}
+
+void UInteractWidget::OnInteractEnded_Implementation(AActor* Item)
+{
+	if (Item) {
+		RemoveItem(Item);
+	}
 }

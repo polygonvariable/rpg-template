@@ -17,24 +17,16 @@ void UInteractComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 }
 
 
-void UInteractComponent::AddItem_Implementation(FInteractItem Item)
+void UInteractComponent::AddItem_Implementation(AActor* Item)
 {
-	if (!Items.Contains(Item)) {
-		Items.Add(Item);
-		OnItemAdded.Broadcast(Item);
+	if (Item) {
+		OnInteractStarted.Broadcast(Item);
 	}
 }
 
-void UInteractComponent::RemoveItem_Implementation(FInteractItem Item)
+void UInteractComponent::RemoveItem_Implementation(AActor* Item)
 {
-	if(Items.Contains(Item)) {
-		Items.Remove(Item);
-		OnItemRemoved.Broadcast(Item);
+	if(Item) {
+		OnInteractEnded.Broadcast(Item);
 	}
 }
-
-bool UInteractComponent::ItemExists_Implementation(FInteractItem Item)
-{
-	return Items.Contains(Item);
-}
-
