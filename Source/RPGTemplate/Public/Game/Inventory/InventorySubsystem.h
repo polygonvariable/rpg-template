@@ -27,9 +27,10 @@ public:
 	virtual void PostInitialize_Implementation() override;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Storage")
-	TMap<FName, FInventoryItem> GetInventoryItems(bool& bSuccess);
-	virtual TMap<FName, FInventoryItem> GetInventoryItems_Implementation(bool& bSuccess);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Inventory Subsystem|Storage")
+	TMap<FName, FInventoryItem> GetStoredItems(bool& bSuccess);
+	virtual TMap<FName, FInventoryItem> GetStoredItems_Implementation(bool& bSuccess);
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Storage|Dirty")
 	void OverwriteItems(const TMap<FName, FInventoryItem>& Items);

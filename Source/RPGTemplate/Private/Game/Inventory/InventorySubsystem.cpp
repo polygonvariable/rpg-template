@@ -31,7 +31,7 @@ void UInventorySubsystem::PostInitialize_Implementation()
 	}
 }
 
-TMap<FName, FInventoryItem> UInventorySubsystem::GetInventoryItems_Implementation(bool& bSuccess)
+TMap<FName, FInventoryItem> UInventorySubsystem::GetStoredItems_Implementation(bool& bSuccess)
 {
 	if (Storage) {
 		bSuccess = true;
