@@ -21,15 +21,15 @@ public:
 	UPROPERTY(Interp, EditAnywhere, Category = "Extended Game Instance Subsystem")
 	bool bAllowBlueprint = false;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Extended Game Instance Subsystem")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Extended Game Instance Subsystem")
 	void PostInitialize();
 	virtual void PostInitialize_Implementation();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Extended Game Instance Subsystem")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Extended Game Instance Subsystem")
 	void OnInitialized();
 	virtual void OnInitialized_Implementation();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Extended Game Instance Subsystem")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Extended Game Instance Subsystem")
 	void OnDeinitialized();
 	virtual void OnDeinitialized_Implementation();
 

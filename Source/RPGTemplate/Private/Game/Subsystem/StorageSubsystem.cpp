@@ -1,6 +1,5 @@
 #include "Game/Subsystem/StorageSubsystem.h"
 
-
 UStorageSubsystem::UStorageSubsystem()
 {
 	bAllowCreation = true;

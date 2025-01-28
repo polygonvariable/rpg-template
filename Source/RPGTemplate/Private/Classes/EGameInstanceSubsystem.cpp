@@ -8,7 +8,7 @@ bool UEGameInstanceSubsystem::ShouldCreateSubsystem(UObject* object) const
 
 void UEGameInstanceSubsystem::PostInitialize_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[%s]: PostInitialized"), *this->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("[%s]: PostInitialize"), *this->GetName());
 }
 
 void UEGameInstanceSubsystem::OnInitialized_Implementation()

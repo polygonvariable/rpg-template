@@ -15,7 +15,7 @@ enum EStampChangeCooldownStatus
 };
 
 
-UCLASS()
+UCLASS(DisplayName = "StampChangeCooldown Component")
 class RPGTEMPLATE_API UStampChangeCooldownComponent : public UStampChangeComponent
 {
 

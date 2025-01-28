@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "InstancedStruct.h"
+#include "Game/Inventory/InventoryUtils.h"
 #include "ESaveGame.generated.h"
 
 
@@ -30,7 +31,10 @@ public:
 	FInstancedStruct GetSlot(FName Name, bool & bSuccess);
 
 
-	UPROPERTY(EditAnywhere, Category = "Extended SaveGame|Environment")
+	UPROPERTY(Interp, EditAnywhere, Category = "Extended SaveGame|Environment")
 	TMap<FGuid, FDateTime> StampChanges;
+
+	UPROPERTY(Interp, EditAnywhere, Category = "Extended SaveGame|Inventory")
+	TMap<FName, FInventoryItem> InventoryItems;
 
 };
