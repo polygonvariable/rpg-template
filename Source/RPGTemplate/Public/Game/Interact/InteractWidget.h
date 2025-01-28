@@ -12,15 +12,19 @@ UCLASS(DisplayName = "Interact Widget")
 class RPGTEMPLATE_API UInteractWidget : public UUserWidget
 {
 
+
 	GENERATED_BODY()
 	
+
 public:
+
 
 	UPROPERTY(Interp, EditAnywhere, Category = "Interact Widget|Item")
 	TSet<TObjectPtr<AActor>> InteractActorsSet;
 
 
 protected:
+
 
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
@@ -63,5 +67,6 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Handler")
 	void OnInteractEnded(AActor* Item);
 	virtual void OnInteractEnded_Implementation(AActor* Item);
+
 
 };

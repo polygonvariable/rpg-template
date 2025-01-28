@@ -12,9 +12,12 @@ UCLASS(Abstract, DisplayName = "Interact Actor")
 class RPGTEMPLATE_API AInteractActor : public AEActor
 {
 
+
 	GENERATED_BODY()
 	
+
 public:
+
 
 	UPROPERTY(Interp, EditAnywhere, Category = "Interact Actor|Item")
 	FGuid GUID = FGuid::NewGuid();
@@ -24,16 +27,16 @@ public:
 
 	FInteractItem& GetInteractItem();
 
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Actor|Action")
 	void Interact();
 	virtual void Interact_Implementation();
 
+
 protected:
 
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UPROPERTY(Interp, AdvancedDisplay, Category = "Interact Actor|Item")
+	UPROPERTY(Interp, EditAnywhere, AdvancedDisplay, Category = "Interact Actor|Runtime")
 	FInteractItem InteractItem;
 
 
@@ -62,10 +65,20 @@ protected:
 	void OnInteracted();
 	virtual void OnInteracted_Implementation();
 
+
+	virtual void BeginStage_Implementation(FInstancedStruct Parameters);
+	virtual void EndStage_Implementation(const EEndPlayReason::Type EndPlayReason);
+
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+
 public:
+
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemUpdated, FInteractItem, Item);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Interact Actor|Event Dispatcher")
 	FOnItemUpdated OnItemUpdated;
+
 
 };

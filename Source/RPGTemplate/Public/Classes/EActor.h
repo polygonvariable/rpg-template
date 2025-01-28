@@ -2,11 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Game/Lifecycle/LifeCycleUtils.h"
 #include "EActor.generated.h"
 
 
 UCLASS(DisplayName = "Extended Actor")
-class RPGTEMPLATE_API AEActor : public AActor
+class RPGTEMPLATE_API AEActor : public AActor, public ILifeCycleInterface
 {
 
 	GENERATED_BODY()
@@ -15,12 +16,8 @@ public:
 
 	AEActor();
 
-protected:
+	UPROPERTY(Interp, EditAnywhere, BlueprintReadOnly, Category = "Extended Actor", Meta = (ExposeOnSpawn = true))
+	bool bAutoBegin = false;
 
-	virtual void BeginPlay() override;
-
-public:
-
-	virtual void Tick(float DeltaTime) override;
 
 };

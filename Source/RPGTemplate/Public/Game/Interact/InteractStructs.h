@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "InstancedStruct.h"
+#include "UObject/Interface.h"
 #include "InteractStructs.generated.h"
 
 USTRUCT(BlueprintType, DisplayName = "Interact Item")

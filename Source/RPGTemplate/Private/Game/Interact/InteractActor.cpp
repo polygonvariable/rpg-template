@@ -10,17 +10,6 @@ void AInteractActor::Interact_Implementation()
 	OnInteracted();
 }
 
-void AInteractActor::BeginPlay()
-{
-	Super::BeginPlay();
-	BuildItem();
-}
-
-void AInteractActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	EndInteract();
-	Super::EndPlay(EndPlayReason);
-}
 
 void AInteractActor::BuildItem_Implementation()
 {
@@ -62,4 +51,21 @@ void AInteractActor::UpdateItem_Implementation()
 
 void AInteractActor::OnInteracted_Implementation()
 {
+}
+
+
+void AInteractActor::BeginStage_Implementation(FInstancedStruct Parameters)
+{
+	BuildItem();
+}
+
+void AInteractActor::EndStage_Implementation(const EEndPlayReason::Type EndPlayReason)
+{
+	EndInteract();
+}
+
+void AInteractActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Execute_EndStage(this, EndPlayReason);
+	Super::EndPlay(EndPlayReason);
 }

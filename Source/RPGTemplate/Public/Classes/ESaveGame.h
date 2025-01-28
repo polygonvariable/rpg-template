@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Sett#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
@@ -6,9 +6,6 @@
 #include "ESaveGame.generated.h"
 
 
-/**
- * 
- */
 UCLASS(DisplayName = "Extended SaveGame")
 class RPGTEMPLATE_API UESaveGame : public USaveGame
 {
@@ -31,5 +28,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Extended SaveGame|Slots")
 	FInstancedStruct GetSlot(FName Name, bool & bSuccess);
-	
+
+
+	UPROPERTY(EditAnywhere, Category = "Extended SaveGame|Environment")
+	TMap<FGuid, FDateTime> StampChanges;
+
 };
