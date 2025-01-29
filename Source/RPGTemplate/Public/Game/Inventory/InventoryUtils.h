@@ -4,6 +4,7 @@
 #include "InstancedStruct.h"
 #include "InventoryUtils.generated.h"
 
+class UInventoryAsset;
 
 UENUM(BlueprintType, DisplayName = "Inventory Type")
 enum EInventoryType
@@ -64,7 +65,6 @@ struct FInventoryItem
 
 };
 
-class UInventoryAsset;
 USTRUCT(BlueprintType, DisplayName = "Interact Item Mapping")
 struct FInventoryItemTable : public FTableRowBase
 {
@@ -75,7 +75,7 @@ struct FInventoryItemTable : public FTableRowBase
 	FName Id;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UInventoryAsset* InventoryAsset;
+	UInventoryAsset* InventoryAsset = nullptr;
 
 	friend inline bool operator == (const FInventoryItemTable& A, const FInventoryItemTable& B)
 	{

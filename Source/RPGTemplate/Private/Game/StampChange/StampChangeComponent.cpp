@@ -1,19 +1,20 @@
 #include "Game/StampChange/StampChangeComponent.h"
 
+#include "Internal/InternalMacro.h"
+#include "Game/Subsystem/StorageSubsystem.h"
+
+
 void UStampChangeComponent::BeginStage_Implementation(FInstancedStruct Parameters)
 {
-	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-	if (!GameInstance) {
-		return;
+	UStorageSubsystem* StorageSubsystem = nullptr;
+	GET_SUBSYSTEM_FROM_WORLD(UStorageSubsystem, StorageSubsystem);
+
+	if (!StorageSubsystem) {
+		LOG_ERROR(LogTemp, this, "Failed to get StorageSubsystem");
 	}
 
-	UStorageSubsystem* StorageSubsystem = CastChecked<UStorageSubsystem>(GameInstance->GetSubsystem<UStorageSubsystem>());
-	if (StorageSubsystem) {
-
-		bool bIsValid = false;
-		Storage = StorageSubsystem->GetLocalStorage(bIsValid);
-
-	}
+	bool bIsValid = false;
+	Storage = StorageSubsystem->GetLocalStorage(bIsValid);
 }
 
 bool UStampChangeComponent::ValidateStage_Implementation()
@@ -33,6 +34,7 @@ void UStampChangeComponent::AddChange_Implementation(bool bForce)
 			return;
 		}
 		Storage->StampChanges.Add(UUID, FDateTime::Now());
+		LOG_INFO(LogTemp, this, "Added changes");
 	}
 }
 
@@ -40,6 +42,7 @@ void UStampChangeComponent::RemoveChange_Implementation()
 {
 	if (Storage) {
 		Storage->StampChanges.Remove(UUID);
+		LOG_INFO(LogTemp, this, "Removed changes");
 	}
 }
 

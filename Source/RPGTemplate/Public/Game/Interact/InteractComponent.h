@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "InteractStructs.h"
 #include "InteractComponent.generated.h"
 
 
@@ -10,12 +9,9 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), DisplayName = "I
 class RPGTEMPLATE_API UInteractComponent : public UActorComponent
 {
 
-
 	GENERATED_BODY()
 
-
 public:	
-
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Component|Item")
 	void AddItem(AActor* Item);
@@ -32,6 +28,5 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractEnded, AActor*, Item);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Interact Component|Event Dispatcher")
 	FOnInteractEnded OnInteractEnded;
-
 
 };

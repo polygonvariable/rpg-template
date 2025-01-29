@@ -1,5 +1,6 @@
 #include "Game/StampChange/StampChangeCooldownComponent.h"
 
+
 void UStampChangeCooldownComponent::ActivateStage_Implementation()
 {
 	Super::ActivateStage_Implementation();

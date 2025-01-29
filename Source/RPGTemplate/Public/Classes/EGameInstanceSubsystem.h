@@ -2,24 +2,18 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "Developer/SubsystemSettings.h"
+#include "Internal/InternalMacro.h"
 #include "EGameInstanceSubsystem.generated.h"
 
 
-UCLASS(Blueprintable, DisplayName = "Extended Game Instance Subsystem")
+UCLASS(Abstract, Blueprintable, DisplayName = "Extended Game Instance Subsystem")
 class RPGTEMPLATE_API UEGameInstanceSubsystem : public UGameInstanceSubsystem
 {
 
-
 	GENERATED_BODY()
 
-
 public:
-
-	UPROPERTY(Interp, EditAnywhere, Category = "Extended Game Instance Subsystem")
-	bool bAllowCreation = false;
-
-	UPROPERTY(Interp, EditAnywhere, Category = "Extended Game Instance Subsystem")
-	bool bAllowBlueprint = false;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Extended Game Instance Subsystem")
 	void PostInitialize();
@@ -41,7 +35,7 @@ protected:
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
-	virtual bool ShouldCreateSubsystem(UObject* object) const override;
+	virtual bool ShouldCreateSubsystem(UObject* Object) const override;
 	virtual UWorld* GetWorld() const override;
 
 

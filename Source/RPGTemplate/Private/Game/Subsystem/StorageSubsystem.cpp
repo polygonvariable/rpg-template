@@ -1,9 +1,9 @@
 #include "Game/Subsystem/StorageSubsystem.h"
 
-UStorageSubsystem::UStorageSubsystem()
-{
-	bAllowCreation = true;
-}
+#include "Kismet/GameplayStatics.h"
+
+#include "Internal/InternalMacro.h"
+
 
 void UStorageSubsystem::ReadStorage_Implementation(TSubclassOf<UESaveGame> StorageClass, FName Slot)
 {
@@ -11,25 +11,24 @@ void UStorageSubsystem::ReadStorage_Implementation(TSubclassOf<UESaveGame> Stora
 		if (DoesStorageExist(Slot)) {
 
 			Storage = Cast<UESaveGame>(UGameplayStatics::LoadGameFromSlot(Slot.ToString(), 0));
-			UE_LOG(LogTemp, Warning, TEXT("[%s]: Storage loaded from slot"), *this->GetName());
+			LOG_INFO(LogTemp, this, "Storage loaded from slot");
 
 		}
 		else {
 
 			USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(StorageClass);
-
 			if (!NewSaveGame) {
-				UE_LOG(LogTemp, Warning, TEXT("[%s]: Failed to create save game object"), *this->GetName());
+				LOG_ERROR(LogTemp, this, "Failed to create save game object");
 				return;
 			}
-			UGameplayStatics::SaveGameToSlot(NewSaveGame, Slot.ToString(), 0);
 
+			UGameplayStatics::SaveGameToSlot(NewSaveGame, Slot.ToString(), 0);
 			Storage = Cast<UESaveGame>(NewSaveGame);
 
 		}
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("[%s]: Storage already exists or invalid class"), *this->GetName());
+		LOG_INFO(LogTemp, this, "Storage already exists or invalid class");
 	}
 }
 

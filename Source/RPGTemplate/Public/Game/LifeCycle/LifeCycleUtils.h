@@ -9,20 +9,15 @@
 UINTERFACE(MinimalAPI, Blueprintable, DisplayName = "LifeCycle Interface")
 class ULifeCycleInterface : public UInterface
 {
-
 	GENERATED_BODY()
-
 };
 
 class ILifeCycleInterface
 {
 
-
 	GENERATED_BODY()
 
-
 public:
-
 
 	bool bStarted = false;
 
@@ -65,7 +60,6 @@ public:
 		}
 	}
 
-
 protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected), Category = "LifeCycle Interface")
@@ -82,7 +76,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected), Category = "LifeCycle Interface")
 	void EndStage(const EEndPlayReason::Type EndPlayReason);
-
 
 };
 

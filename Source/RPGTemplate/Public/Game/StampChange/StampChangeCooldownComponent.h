@@ -19,12 +19,9 @@ UCLASS(DisplayName = "StampChangeCooldown Component")
 class RPGTEMPLATE_API UStampChangeCooldownComponent : public UStampChangeComponent
 {
 
-
 	GENERATED_BODY()
 	
-
 public:
-
 
 	UPROPERTY(Interp, EditAnywhere, Category = "StampChangeCooldown Component|Item")
 	FTimespan CooldownTime;
@@ -32,16 +29,12 @@ public:
 	UPROPERTY(Interp, EditAnywhere, Category = "StampChangeCooldown Component|Item")
 	bool bOnlyOnce = false;
 
-
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStampChangeCooldownStatus, EStampChangeCooldownStatus, Status);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "StampChangeCooldown Component|Event Dispatcher")
 	FOnStampChangeCooldownStatus OnStampChangeCooldownStatus;
 
-
 protected:
-
 
 	virtual void ActivateStage_Implementation() override;
 	
-
 };

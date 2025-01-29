@@ -3,21 +3,19 @@
 #include "CoreMinimal.h"
 #include "Classes/EActor.h"
 #include "InteractStructs.h"
-#include "InteractComponent.h"
-#include "GameFramework/HUD.h"
+
 #include "InteractActor.generated.h"
+
+class UInteractComponent;
 
 
 UCLASS(Abstract, DisplayName = "Interact Actor")
 class RPGTEMPLATE_API AInteractActor : public AEActor
 {
 
-
 	GENERATED_BODY()
 	
-
 public:
-
 
 	UPROPERTY(Interp, EditAnywhere, Category = "Interact Actor|Item")
 	FGuid GUID = FGuid::NewGuid();
@@ -32,9 +30,7 @@ public:
 	void Interact();
 	virtual void Interact_Implementation();
 
-
 protected:
-
 
 	UPROPERTY(Interp, EditAnywhere, AdvancedDisplay, Category = "Interact Actor|Runtime")
 	FInteractItem InteractItem;
@@ -72,13 +68,10 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-
 public:
-
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemUpdated, FInteractItem, Item);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Interact Actor|Event Dispatcher")
 	FOnItemUpdated OnItemUpdated;
-
 
 };

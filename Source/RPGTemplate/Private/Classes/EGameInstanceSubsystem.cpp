@@ -1,24 +1,40 @@
 #include "Classes/EGameInstanceSubsystem.h"
 
 
-bool UEGameInstanceSubsystem::ShouldCreateSubsystem(UObject* object) const
+bool UEGameInstanceSubsystem::ShouldCreateSubsystem(UObject* Object) const
 {
-	return bAllowCreation;
+	if (!Object) {
+		LOG_ERROR(LogTemp, this, "Object not found");
+		return false;
+	}
+
+	const USubsystemSettings* Settings = GetDefault<USubsystemSettings>();
+	if (!Settings) {
+		LOG_ERROR(LogTemp, this, "SubsystemSettings not found");
+		return false;
+	}
+
+	for (const TSubclassOf<USubsystem>& SubsystemClass : Settings->SubsystemClasses) {
+		if (this->GetClass() == SubsystemClass) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void UEGameInstanceSubsystem::PostInitialize_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[%s]: PostInitialize"), *this->GetName());
+	LOG_INFO(LogTemp, this, "PostInitialize");
 }
 
 void UEGameInstanceSubsystem::OnInitialized_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[%s]: OnInitialized"), *this->GetName());
+	LOG_INFO(LogTemp, this, "OnInitialized");
 }
 
 void UEGameInstanceSubsystem::OnDeinitialized_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[%s]: OnDeinitialized"), *this->GetName());
+	LOG_INFO(LogTemp, this, "OnDeinitialized");
 }
 
 UEGameInstanceSubsystem* UEGameInstanceSubsystem::GetSubsystem(TSubclassOf<UEGameInstanceSubsystem> SubsystemClass) const

@@ -1,5 +1,8 @@
 #include "Game/Interact/InteractActor.h"
 
+#include "GameFramework/HUD.h"
+#include "Game/Interact/InteractComponent.h"
+
 FInteractItem& AInteractActor::GetInteractItem()
 {
 	return InteractItem;

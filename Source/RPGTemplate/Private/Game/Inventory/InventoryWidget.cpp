@@ -1,16 +1,18 @@
 #include "Game/Inventory/InventoryWidget.h"
 
+#include "Components/ListView.h"
+
+#include "Internal/InternalMacro.h"
+#include "Game/Inventory/InventorySubsystem.h"
+
 
 void UInventoryWidget::DisplayStoredItems_Implementation()
 {
+	UInventorySubsystem* InventorySubsystem = nullptr;
+	GET_SUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
 
-	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-	if (!GameInstance) {
-		return;
-	}
-
-	UInventorySubsystem* InventorySubsystem = CastChecked<UInventorySubsystem>(GameInstance->GetSubsystem<UInventorySubsystem>());
-	if (!InventorySubsystem) {
+	if (!EntryObjectClass || !EntryObjectClass->IsChildOf(UInventoryEntryObject::StaticClass())) {
+		LOG_ERROR(LogTemp, this, "EntryObjectClass is null or not a child of UInventoryEntryObject");
 		return;
 	}
 
@@ -18,6 +20,7 @@ void UInventoryWidget::DisplayStoredItems_Implementation()
 	TMap<FName, FInventoryItem> Items = InventorySubsystem->GetStoredItems(bSuccess);
 
 	if (!bSuccess) {
+		LOG_ERROR(LogTemp, this, "Failed to get stored items");
 		return;
 	}
 
@@ -30,33 +33,32 @@ void UInventoryWidget::DisplayStoredItems_Implementation()
 			continue;
 		}
 
-		UInventoryEntryObject* EntryObject = NewObject<UInventoryEntryObject>(this);
+		UInventoryEntryObject* EntryObject = NewObject<UInventoryEntryObject>(this, EntryObjectClass, TEXT("EntryObject"));
 		if (!EntryObject) {
 			continue;
 		}
 		EntryObject->Item = Item.Value;
+		EntryObject->ItemSid = Item.Key;
 		EntryObject->ItemAsset = ItemAsset;
 		
 		HandleDisplayItem(EntryObject);
 
 	}
-
 }
 
 void UInventoryWidget::HandleDisplayItem_Implementation(UInventoryEntryObject* EntryObject) {}
-void UInventoryWidget::HandleSelectedItem_Implementation(UObject* Object) {}
+void UInventoryWidget::HandleSelectedItem_Implementation(UObject* Object, bool bIsSelected) {}
 
 void UInventoryEntryWidget::InitializeEntry_Implementation(UObject* Object)
 {
-	if (!Object) {
-		return;
-	}
-	UInventoryEntryObject* EntryObject = CastChecked<UInventoryEntryObject>(Object);
-	if (!EntryObject) {
+	if (!Object || !Object->IsA(UInventoryEntryObject::StaticClass())) {
+		LOG_ERROR(LogTemp, this, "EntryObject is null or not a child of UInventoryEntryObject");
 		return;
 	}
 
+	UInventoryEntryObject* EntryObject = Cast<UInventoryEntryObject>(Object);
 	Item = EntryObject->Item;
+	ItemSid = EntryObject->ItemSid;
 	ItemAsset = EntryObject->ItemAsset;
 
 	HandleEntry(EntryObject);
@@ -67,7 +69,8 @@ void UInventoryEntryWidget::SelectEntry_Implementation()
 	UListViewBase* ListViewBase = GetOwningListView();
 	UObject* ListItem = GetListItem();
 
-	if (!ListItem) {
+	if (!ListItem || !ListViewBase) {
+		LOG_ERROR(LogTemp, this, "ListItem or ListViewBase is null");
 		return;
 	}
 
@@ -76,3 +79,22 @@ void UInventoryEntryWidget::SelectEntry_Implementation()
 }
 
 void UInventoryEntryWidget::HandleEntry_Implementation(UInventoryEntryObject* EntryObject) {}
+
+void UInventoryDetailWidget::InitializeDetail_Implementation(UObject* Object)
+{
+	if (!Object || !Object->IsA(UInventoryEntryObject::StaticClass())) {
+		LOG_ERROR(LogTemp, this, "EntryObject is null or not a child of UInventoryEntryObject");
+		return;
+	}
+
+	UInventoryEntryObject* EntryObject = Cast<UInventoryEntryObject>(Object);
+	Item = EntryObject->Item;
+	ItemSid = EntryObject->ItemSid;
+	ItemAsset = EntryObject->ItemAsset;
+
+	HandleDetail(EntryObject);
+}
+
+void UInventoryDetailWidget::HandleDetail_Implementation(UInventoryEntryObject* EntryObject)
+{
+}

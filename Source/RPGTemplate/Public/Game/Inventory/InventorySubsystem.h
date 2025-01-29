@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Classes/EGameInstanceSubsystem.h"
-#include "Classes/ESaveGame.h"
-#include "Game/Subsystem/StorageSubsystem.h"
-#include "InventoryAsset.h"
 #include "InventorySubsystem.generated.h"
+
+class UESaveGame;
+class UInventoryAsset;
 
 
 UCLASS(DisplayName = "Inventory Subsystem")
@@ -15,8 +15,6 @@ class RPGTEMPLATE_API UInventorySubsystem : public UEGameInstanceSubsystem
 	GENERATED_BODY()
 	
 public:
-
-	UInventorySubsystem();
 
 	UPROPERTY(Interp, EditAnywhere, Category = "Inventory Subsystem|Runtime")
 	UESaveGame* Storage;

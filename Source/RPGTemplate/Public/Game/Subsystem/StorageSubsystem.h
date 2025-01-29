@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Classes/EGameInstanceSubsystem.h"
-#include "Kismet/GameplayStatics.h"
 #include "Classes/ESaveGame.h"
 #include "StorageSubsystem.generated.h"
 
+class UESaveGame;
 
 UCLASS(DisplayName = "Storage Subsystem")
 class RPGTEMPLATE_API UStorageSubsystem : public UEGameInstanceSubsystem
@@ -14,8 +14,6 @@ class RPGTEMPLATE_API UStorageSubsystem : public UEGameInstanceSubsystem
 	GENERATED_BODY()
 	
 public:
-
-	UStorageSubsystem();
 
 	TObjectPtr<UESaveGame> Storage;
 	

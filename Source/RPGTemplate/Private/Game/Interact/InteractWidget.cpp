@@ -1,46 +1,63 @@
 #include "Game/Interact/InteractWidget.h"
 
+#include "GameFramework/HUD.h"
+#include "Internal/InternalMacro.h"
+#include "Game/Interact/InteractActor.h"
+#include "Game/Interact/InteractComponent.h"
+
+
 void UInteractWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	InitializeStage();
+	RegisterInteract();
 }
 
 void UInteractWidget::NativeDestruct()
 {
-	EndStage();
+	UnregisterInteract();
 	Super::NativeDestruct();
 }
 
-void UInteractWidget::InitializeStage_Implementation()
+void UInteractWidget::RegisterInteract_Implementation()
 {
-	BindToInteractComponent(false);
+	HandleComponentBinding(false);
 }
 
-void UInteractWidget::EndStage_Implementation()
+void UInteractWidget::UnregisterInteract_Implementation()
 {
-	BindToInteractComponent(true);
+	HandleComponentBinding(true);
 }
 
-void UInteractWidget::BindToInteractComponent_Implementation(bool bIsUnbind)
+void UInteractWidget::HandleComponentBinding_Implementation(bool bIsUnbind)
 {
-	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()) {
-		if (AHUD* HUD = PlayerController->GetHUD()) {
 
-			UInteractComponent* InteractComponent = Cast<UInteractComponent>(HUD->GetComponentByClass(UInteractComponent::StaticClass()));
-			
-			if(!bIsUnbind) {
-				if (!InteractComponent->OnInteractStarted.IsBound() && !InteractComponent->OnInteractEnded.IsBound()) {
-					InteractComponent->OnInteractStarted.AddDynamic(this, &UInteractWidget::OnInteractStarted);
-					InteractComponent->OnInteractEnded.AddDynamic(this, &UInteractWidget::OnInteractEnded);
-				}
-			}
-			else {
-				InteractComponent->OnInteractStarted.RemoveDynamic(this, &UInteractWidget::OnInteractStarted);
-				InteractComponent->OnInteractEnded.RemoveDynamic(this, &UInteractWidget::OnInteractEnded);
-			}
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController) {
+		LOG_ERROR(LogTemp, this, "PlayerController not found");
+		return;
+	}
 
+	AHUD* HUD = PlayerController->GetHUD();
+	if (!HUD) {
+		LOG_ERROR(LogTemp, this, "HUD not found");
+		return;
+	}
+
+	UInteractComponent* InteractComponent = Cast<UInteractComponent>(HUD->GetComponentByClass(UInteractComponent::StaticClass()));
+	if (!InteractComponent) {
+		LOG_ERROR(LogTemp, this, "InteractComponent not found");
+		return;
+	}
+
+	if (!bIsUnbind) {
+		if (!InteractComponent->OnInteractStarted.IsBound() && !InteractComponent->OnInteractEnded.IsBound()) {
+			InteractComponent->OnInteractStarted.AddDynamic(this, &UInteractWidget::OnInteractStarted);
+			InteractComponent->OnInteractEnded.AddDynamic(this, &UInteractWidget::OnInteractEnded);
 		}
+	}
+	else {
+		InteractComponent->OnInteractStarted.RemoveDynamic(this, &UInteractWidget::OnInteractStarted);
+		InteractComponent->OnInteractEnded.RemoveDynamic(this, &UInteractWidget::OnInteractEnded);
 	}
 }
 
@@ -60,13 +77,8 @@ void UInteractWidget::RemoveItem_Implementation(AActor* Item)
 	}
 }
 
-void UInteractWidget::OnItemAdded_Implementation(AActor* Item)
-{
-}
-
-void UInteractWidget::OnItemRemoved_Implementation(AActor* Item)
-{
-}
+void UInteractWidget::OnItemAdded_Implementation(AActor* Item) {}
+void UInteractWidget::OnItemRemoved_Implementation(AActor* Item) {}
 
 
 void UInteractWidget::OnInteractStarted_Implementation(AActor* Item)
@@ -80,5 +92,45 @@ void UInteractWidget::OnInteractEnded_Implementation(AActor* Item)
 {
 	if (Item) {
 		RemoveItem(Item);
+	}
+}
+
+
+bool UInteractEntryWidget::InitializeItem_Implementation(UObject* Object)
+{
+	if (!Object) {
+		return false;
+	}
+
+	InteractActor = Cast<AInteractActor>(Object);
+	if (!InteractActor) {
+		return false;
+	}
+
+	InteractActor->OnItemUpdated.RemoveDynamic(this, &UInteractEntryWidget::OnItemUpdated);
+	InteractActor->OnItemUpdated.AddDynamic(this, &UInteractEntryWidget::OnItemUpdated);
+
+	InteractItem = InteractActor->GetInteractItem();
+
+	return true;
+}
+
+void UInteractEntryWidget::Interact_Implementation()
+{
+	if (InteractActor) {
+		InteractActor->Interact();
+	}
+}
+
+void UInteractEntryWidget::OnItemUpdated_Implementation(FInteractItem Item)
+{
+	InteractItem = Item;
+}
+
+void UInteractEntryWidget::NativeDestruct()
+{
+	if (InteractActor) {
+		InteractActor->OnItemUpdated.RemoveDynamic(this, &UInteractEntryWidget::OnItemUpdated);
+		InteractActor = nullptr;
 	}
 }

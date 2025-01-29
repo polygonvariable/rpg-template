@@ -2,46 +2,41 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "GameFramework/HUD.h"
-#include "InteractComponent.h"
+#include "Blueprint/IUserObjectListEntry.h"
 #include "InteractStructs.h"
+
 #include "InteractWidget.generated.h"
+
+class AInteractActor;
 
 
 UCLASS(DisplayName = "Interact Widget")
 class RPGTEMPLATE_API UInteractWidget : public UUserWidget
 {
 
-
 	GENERATED_BODY()
 	
-
 public:
-
 
 	UPROPERTY(Interp, EditAnywhere, Category = "Interact Widget|Item")
 	TSet<TObjectPtr<AActor>> InteractActorsSet;
 
-
 protected:
-
 
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Lifecycle")
+	void RegisterInteract();
+	virtual void RegisterInteract_Implementation();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Lifecycle")
-	void InitializeStage();
-	virtual void InitializeStage_Implementation();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Lifecycle")
-	void EndStage();
-	virtual void EndStage_Implementation();
-
+	void UnregisterInteract();
+	virtual void UnregisterInteract_Implementation();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Binding")
-	void BindToInteractComponent(bool bIsUnbind);
-	virtual void BindToInteractComponent_Implementation(bool bIsUnbind);
+	void HandleComponentBinding(bool bIsUnbind);
+	virtual void HandleComponentBinding_Implementation(bool bIsUnbind);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Item")
 	void AddItem(AActor* Item);
@@ -68,5 +63,35 @@ protected:
 	void OnInteractEnded(AActor* Item);
 	virtual void OnInteractEnded_Implementation(AActor* Item);
 
+};
+
+
+UCLASS(Abstract, DisplayName = "Interact Entry Widget")
+class RPGTEMPLATE_API UInteractEntryWidget : public UUserWidget, public IUserObjectListEntry
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(Interp, EditAnywhere, Category = "Interact Entry Widget|Item")
+	FInteractItem InteractItem;
+
+	UPROPERTY(Interp, EditAnywhere, Category = "Interact Entry Widget|Item")
+	AInteractActor* InteractActor;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Action")
+	bool InitializeItem(UObject* Object);
+	virtual bool InitializeItem_Implementation(UObject* Object);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Action")
+	void Interact();
+	virtual void Interact_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Handler")
+	void OnItemUpdated(FInteractItem Item);
+	virtual void OnItemUpdated_Implementation(FInteractItem Item);
+
+	virtual void NativeDestruct() override;
 
 };

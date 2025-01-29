@@ -1,11 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Kismet/GameplayStatics.h"
 #include "Classes/EActorComponent.h"
-#include "Classes/ESaveGame.h"
-#include "Game/Subsystem/StorageSubsystem.h"
 #include "StampChangeComponent.generated.h"
+
+class UESaveGame;
 
 
 UENUM(BlueprintType, DisplayName = "StampChange Status")
@@ -20,12 +19,9 @@ UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), D
 class RPGTEMPLATE_API UStampChangeComponent : public UEActorComponent
 {
 
-
 	GENERATED_BODY()
 
-
 public:
-
 
 	UPROPERTY(Interp, EditAnywhere, Category = "StampChange Component|Item")
 	FGuid UUID;
@@ -33,19 +29,15 @@ public:
 	UPROPERTY(Interp, EditAnywhere, AdvancedDisplay, Category = "StampChange Component|Runtime")
 	TObjectPtr<UESaveGame> Storage;
 
-
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStampChangeStatus, EStampChangeStatus, Status);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "StampChange Component|Event Dispatcher")
 	FOnStampChangeStatus OnStampChangeStatus;
 
-
 protected:
-
 
 	virtual void BeginStage_Implementation(FInstancedStruct Parameters) override;
 	virtual bool ValidateStage_Implementation();
 	virtual void ActivateStage_Implementation();
-
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "StampChange Component|Action")
 	void AddChange(bool Force = false);
@@ -63,5 +55,4 @@ protected:
 	bool GetChangedDate(FDateTime& ChangedDate);
 	virtual bool GetChangedDate_Implementation(FDateTime& ChangedDate);
 	
-		
 };

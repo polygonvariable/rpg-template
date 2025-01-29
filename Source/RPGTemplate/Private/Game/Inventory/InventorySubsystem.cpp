@@ -1,33 +1,28 @@
 #include "Game/Inventory/InventorySubsystem.h"
 
+#include "Internal/InternalMacro.h"
+#include "Game/Subsystem/StorageSubsystem.h"
+#include "Game/Inventory/InventoryAsset.h"
 
-UInventorySubsystem::UInventorySubsystem()
-{
-	bAllowCreation = true;
-}
 
 void UInventorySubsystem::PostInitialize_Implementation()
 {
+	UStorageSubsystem* StorageSubsystem = nullptr;
+	GET_SUBSYSTEM_FROM_GAMEINSTANCE(UStorageSubsystem, StorageSubsystem);
 
-	TSubclassOf<UEGameInstanceSubsystem> SubsystemClass = UStorageSubsystem::StaticClass();
-	UEGameInstanceSubsystem* Subsystem = GetSubsystem(SubsystemClass);
-	if (!Subsystem) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Storage Subsystem not found"));
+	if (!StorageSubsystem) {
+		LOG_ERROR(LogTemp, this, "StorageSubsystem is null");
 		return;
 	}
 
-	UStorageSubsystem* StorageSubsystem = CastChecked<UStorageSubsystem>(Subsystem);
-	if (StorageSubsystem) {
-		bool bIsValid = false;
-		Storage = StorageSubsystem->GetLocalStorage(bIsValid);
+	bool bIsValid = false;
+	Storage = StorageSubsystem->GetLocalStorage(bIsValid);
 
-		if (!bIsValid) {
-			UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Storage not found"));
-		}
-		else {
-			UE_LOG(LogTemp, Log, TEXT("InventorySubsystem: Storage loaded"));
-		}
-
+	if (!bIsValid) {
+		LOG_ERROR(LogTemp, this, "Storage not found");
+	}
+	else {
+		LOG_INFO(LogTemp, this, "Storage loaded");
 	}
 }
 
@@ -44,22 +39,22 @@ TMap<FName, FInventoryItem> UInventorySubsystem::GetStoredItems_Implementation(b
 void UInventorySubsystem::OverwriteItems_Implementation(const TMap<FName, FInventoryItem>& Items)
 {
 	if (!Storage) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Storage is null"));
+		LOG_ERROR(LogTemp, this, "Storage is null");
 		return;
 	}
 	Storage->InventoryItems = Items;
-	UE_LOG(LogTemp, Warning, TEXT("InventorySubsystem: Items overwritten"));
+	LOG_INFO(LogTemp, this, "Items overwritten");
 }
 
 bool UInventorySubsystem::AddItem_Implementation(UInventoryAsset* ItemAsset, int ItemQuantity)
 {
 	if (!Storage || !ItemAsset) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Storage or Asset is null"));
+		LOG_ERROR(LogTemp, this, "Storage or Asset is null");
 		return false;
 	}
 
 	if(ItemQuantity <= 0) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Quantity must be greater than 0"));
+		LOG_ERROR(LogTemp, this, "Quantity must be greater than 0");
 		return false;
 	}
 
@@ -71,7 +66,7 @@ bool UInventorySubsystem::AddItem_Implementation(UInventoryAsset* ItemAsset, int
 		FInventoryItem* Item = Items.Find(ItemId);
 		if (Item) {
 			Item->Quantity += ItemQuantity;
-			UE_LOG(LogTemp, Warning, TEXT("InventorySubsystem: Stackable item updated: %s"), *ItemAsset->Name.ToString());
+			LOG_INFO(LogTemp, this, "Stackable item updated: %s", *ItemAsset->Name.ToString());
 		}
 		else {
 
@@ -81,7 +76,7 @@ bool UInventorySubsystem::AddItem_Implementation(UInventoryAsset* ItemAsset, int
 			NewItem.Quantity = ItemQuantity;
 
 			Items.Add(ItemId, NewItem);
-			UE_LOG(LogTemp, Warning, TEXT("InventorySubsystem: Stackable item added: %s"), *ItemAsset->Name.ToString());
+			LOG_INFO(LogTemp, this, "Stackable item added: %s", *ItemAsset->Name.ToString());
 
 		}
 
@@ -94,8 +89,7 @@ bool UInventorySubsystem::AddItem_Implementation(UInventoryAsset* ItemAsset, int
 		Item.Quantity = ItemQuantity;
 
 		Items.Add(FName(FGuid::NewGuid().ToString()), Item);
-
-		UE_LOG(LogTemp, Warning, TEXT("InventorySubsystem: Non stackable item added: %s"), *ItemAsset->Name.ToString());
+		LOG_INFO(LogTemp, this, "Non stackable item added: %s", *ItemAsset->Name.ToString());
 
 	}
 
@@ -105,7 +99,7 @@ bool UInventorySubsystem::AddItem_Implementation(UInventoryAsset* ItemAsset, int
 bool UInventorySubsystem::AddItems_Implementation(const TMap<UInventoryAsset*, int32>& Items)
 {
 	if (!Storage) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Storage is null"));
+		LOG_ERROR(LogTemp, this, "Storage is null");
 		return false;
 	}
 	for (auto Item : Items) {
@@ -117,12 +111,12 @@ bool UInventorySubsystem::AddItems_Implementation(const TMap<UInventoryAsset*, i
 bool UInventorySubsystem::RemoveItem_Implementation(FName ItemId, int ItemQuantity)
 {
 	if (!Storage) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Storage is null"));
+		LOG_ERROR(LogTemp, this, "Storage is null");
 		return false;
 	}
 
 	if (ItemQuantity <= 0) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Quantity must be greater than 0"));
+		LOG_ERROR(LogTemp, this, "Quantity must be greater than 0");
 		return false;
 	}
 
@@ -130,17 +124,17 @@ bool UInventorySubsystem::RemoveItem_Implementation(FName ItemId, int ItemQuanti
 	FInventoryItem* Item = Items.Find(ItemId);
 
 	if(!Item) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Item not found: %s"), *ItemId.ToString());
+		LOG_ERROR(LogTemp, this, "Item not found: %s", *ItemId.ToString());
 		return false;
 	}
 
 	if (Item->Quantity > ItemQuantity) {
 		Item->Quantity -= ItemQuantity;
-		UE_LOG(LogTemp, Warning, TEXT("InventorySubsystem: Item quantity reduced: %s"), *ItemId.ToString());
+		LOG_INFO(LogTemp, this, "Item quantity reduced: %s", *ItemId.ToString());
 	}
 	else {
 		Items.Remove(ItemId);
-		UE_LOG(LogTemp, Warning, TEXT("InventorySubsystem: Item removed: %s"), *ItemId.ToString());
+		LOG_INFO(LogTemp, this, "Item removed: %s", *ItemId.ToString());
 	}
 
 	return true;
@@ -149,7 +143,7 @@ bool UInventorySubsystem::RemoveItem_Implementation(FName ItemId, int ItemQuanti
 bool UInventorySubsystem::RemoveItems_Implementation(const TMap<FName, int32>& Items)
 {
 	if (!Storage) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Storage is null"));
+		LOG_ERROR(LogTemp, this, "Storage is null");
 		return false;
 	}
 	for (auto Item : Items) {
@@ -161,7 +155,7 @@ bool UInventorySubsystem::RemoveItems_Implementation(const TMap<FName, int32>& I
 bool UInventorySubsystem::UpdateItem_Implementation(FInventoryItem Item)
 {
 	if (!Storage) {
-		UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Storage is null"));
+		LOG_ERROR(LogTemp, this, "Storage is null");
 		return false;
 	}
 
@@ -169,11 +163,11 @@ bool UInventorySubsystem::UpdateItem_Implementation(FInventoryItem Item)
 
 	if(Items.Contains(Item.Id)) {
 		Items.Add(Item.Id, Item);
-		UE_LOG(LogTemp, Warning, TEXT("InventorySubsystem: Item updated: %s"), *Item.Id.ToString());
+		LOG_INFO(LogTemp, this, "Item updated: %s", *Item.Id.ToString());
 		return true;
 	}
 
-	UE_LOG(LogTemp, Error, TEXT("InventorySubsystem: Item not found: %s"), *Item.Id.ToString());
+	LOG_ERROR(LogTemp, this, "Item not found: %s", *Item.Id.ToString());
 	return false;
 }
 
