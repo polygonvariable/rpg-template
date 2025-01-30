@@ -3,19 +3,23 @@
 
 bool UEGameInstanceSubsystem::ShouldCreateSubsystem(UObject* Object) const
 {
-	if (!Object) {
+	if (!Object)
+	{
 		LOG_ERROR(LogTemp, this, "Object not found");
 		return false;
 	}
 
-	const USubsystemSettings* Settings = GetDefault<USubsystemSettings>();
-	if (!Settings) {
-		LOG_ERROR(LogTemp, this, "SubsystemSettings not found");
+	const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>();
+	if (!GameMetadata)
+	{
+		LOG_ERROR(LogTemp, this, "GameMetadataSettings not found");
 		return false;
 	}
 
-	for (const TSubclassOf<USubsystem>& SubsystemClass : Settings->SubsystemClasses) {
-		if (this->GetClass() == SubsystemClass) {
+	for (const TSubclassOf<USubsystem>& SubsystemClass : GameMetadata->SubsystemClasses)
+	{
+		if (this->GetClass() == SubsystemClass)
+		{
 			return true;
 		}
 	}
@@ -39,18 +43,19 @@ void UEGameInstanceSubsystem::OnDeinitialized_Implementation()
 
 UEGameInstanceSubsystem* UEGameInstanceSubsystem::GetSubsystem(TSubclassOf<UEGameInstanceSubsystem> SubsystemClass) const
 {
-	if (const UGameInstance* GameInstance = GetGameInstance())
+	const UGameInstance* GameInstance = GetGameInstance();
+	if (!GameInstance)
 	{
-
-		UGameInstanceSubsystem* subsystem = GameInstance->GetSubsystemBase(SubsystemClass);
-		if (!subsystem) {
-			return nullptr;
-		}
-
-		return CastChecked<UEGameInstanceSubsystem>(subsystem);
-
+		return nullptr;
 	}
-	return nullptr;
+
+	UGameInstanceSubsystem* Subsystem = GameInstance->GetSubsystemBase(SubsystemClass);
+	if (!Subsystem)
+	{
+		return nullptr;
+	}
+
+	return CastChecked<UEGameInstanceSubsystem>(Subsystem);
 }
 
 /*

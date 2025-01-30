@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "InstancedStruct.h"
-#include "Game/Inventory/InventoryUtils.h"
+#include "Features/Inventory/InventoryUtils.h"
 #include "ESaveGame.generated.h"
 
 
@@ -29,7 +29,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Extended SaveGame|Slots")
 	FInstancedStruct GetSlot(FName Name, bool & bSuccess);
-
 
 	UPROPERTY(Interp, EditAnywhere, Category = "Extended SaveGame|Environment")
 	TMap<FGuid, FDateTime> StampChanges;

@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "Developer/SubsystemSettings.h"
+#include "Developer/GameMetadataSettings.h"
 #include "Internal/InternalMacro.h"
 #include "EGameInstanceSubsystem.generated.h"
 
@@ -37,6 +37,5 @@ protected:
 	virtual void Deinitialize() override;
 	virtual bool ShouldCreateSubsystem(UObject* Object) const override;
 	virtual UWorld* GetWorld() const override;
-
 
 };

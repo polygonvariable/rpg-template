@@ -3,8 +3,8 @@
 
 UEnhancedInputLocalPlayerSubsystem* AEPlayerController::GetInputSubsystem() const
 {
-
-	if (!IsLocalPlayerController()) {
+	if (!IsLocalPlayerController())
+	{
 		return nullptr;
 	}
 
@@ -20,25 +20,20 @@ UEnhancedInputLocalPlayerSubsystem* AEPlayerController::GetInputSubsystem() cons
 	}
 
 	return nullptr;
-
 }
 
 void AEPlayerController::RegisterInput_Implementation(UInputMappingContext* context)
 {
-
 	if (UEnhancedInputLocalPlayerSubsystem* InputSystem = GetInputSubsystem())
 	{
 		InputSystem->AddMappingContext(context, 0);
-	}	
-
+	}
 }
 
 void AEPlayerController::UnregisterInput_Implementation(UInputMappingContext* context)
 {
-
 	if (UEnhancedInputLocalPlayerSubsystem* InputSystem = GetInputSubsystem())
 	{
 		InputSystem->RemoveMappingContext(context);
 	}
-
 }

@@ -23,7 +23,8 @@ bool UESaveGame::RemoveSlot(FName Name, FInstancedStruct Slot)
 
 bool UESaveGame::UpdateSlot(FName Name, FInstancedStruct Slot)
 {
-	if (NamedSlots.Contains(Name)) {
+	if (NamedSlots.Contains(Name))
+	{
 		NamedSlots.Add(Name, Slot);
 		return true;
 	}
@@ -32,7 +33,8 @@ bool UESaveGame::UpdateSlot(FName Name, FInstancedStruct Slot)
 
 FInstancedStruct UESaveGame::GetSlot(FName Name, bool& bSuccess)
 {
-	if (NamedSlots.Contains(Name)) {
+	if (NamedSlots.Contains(Name))
+	{
 		bSuccess = true;
 		return NamedSlots[Name];
 	}
