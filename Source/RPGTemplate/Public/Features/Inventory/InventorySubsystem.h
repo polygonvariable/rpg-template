@@ -20,12 +20,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Inventory Subsystem|Runtime")
 	UESaveGame* Storage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory Subsystem|Static")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory Subsystem|Properties")
 	UDataTable* InventoryTable;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Inventory Subsystem|Storage")
-	TMap<FName, FInventoryItem> GetStoredItems(bool& bIsValid);
-	virtual TMap<FName, FInventoryItem> GetStoredItems_Implementation(bool& bIsValid);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Inventory Subsystem|Items")
+	TMap<FName, FInventoryItem> GetItems(bool& bIsValid);
+	virtual TMap<FName, FInventoryItem> GetItems_Implementation(bool& bIsValid);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
+	FInventoryItem GetItem(FName ItemId, bool& bFound);
+	virtual FInventoryItem GetItem_Implementation(FName ItemId, bool& bFound);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Storage|Dirty")
 	void OverwriteItems(const TMap<FName, FInventoryItem>& Items);
@@ -35,7 +39,7 @@ public:
 	bool AddItem(UInventoryAsset* ItemAsset, int ItemQuantity = 1);
 	virtual bool AddItem_Implementation(UInventoryAsset* ItemAsset, int ItemQuantity = 1);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Items")
 	bool AddItems(const TMap<UInventoryAsset*, int32>& Items);
 	virtual bool AddItems_Implementation(const TMap<UInventoryAsset*, int32>& Items);
 
@@ -43,7 +47,7 @@ public:
 	bool RemoveItem(FName ItemId, int ItemQuantity = 1);
 	virtual bool RemoveItem_Implementation(FName ItemId, int ItemQuantity = 1);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Items")
 	bool RemoveItems(const TMap<FName, int32>& Items);
 	virtual bool RemoveItems_Implementation(const TMap<FName, int32>& Items);
 
@@ -54,10 +58,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintPure), Category = "Inventory Subsystem|Item")
 	bool HasItem(FName ItemId);
 	virtual bool HasItem_Implementation(FName ItemId);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
-	FInventoryItem GetItem(FName ItemId, bool& bFound);
-	virtual FInventoryItem GetItem_Implementation(FName ItemId, bool& bFound);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
 	UInventoryAsset* GetItemAsset(FName ItemId, bool& bFound);

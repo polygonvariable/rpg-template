@@ -37,7 +37,7 @@ void UInventorySubsystem::PostInitialize_Implementation()
 	}
 }
 
-TMap<FName, FInventoryItem> UInventorySubsystem::GetStoredItems_Implementation(bool& bIsValid)
+TMap<FName, FInventoryItem> UInventorySubsystem::GetItems_Implementation(bool& bIsValid)
 {
 	if (Storage)
 	{
@@ -46,6 +46,19 @@ TMap<FName, FInventoryItem> UInventorySubsystem::GetStoredItems_Implementation(b
 	}
 	bIsValid = false;
 	return TMap<FName, FInventoryItem>();
+}
+
+FInventoryItem UInventorySubsystem::GetItem_Implementation(FName ItemId, bool& bFound)
+{
+	if (!Storage)
+	{
+		bFound = false;
+		return FInventoryItem();
+	}
+	FInventoryItem* Item = Storage->InventoryItems.Find(ItemId);
+	bFound = (Item != nullptr);
+
+	return Item ? *Item : FInventoryItem();
 }
 
 void UInventorySubsystem::OverwriteItems_Implementation(const TMap<FName, FInventoryItem>& Items)
@@ -202,18 +215,6 @@ bool UInventorySubsystem::HasItem_Implementation(FName ItemId)
 	return Storage->InventoryItems.Contains(ItemId);
 }
 
-FInventoryItem UInventorySubsystem::GetItem_Implementation(FName ItemId, bool& bFound)
-{
-	if (!Storage)
-	{
-		bFound = false;
-		return FInventoryItem();
-	}
-	FInventoryItem* Item = Storage->InventoryItems.Find(ItemId);
-	bFound = (Item != nullptr);
-
-	return Item ? *Item : FInventoryItem();
-}
 
 UInventoryAsset* UInventorySubsystem::GetItemAsset_Implementation(FName ItemId, bool& bFound)
 {

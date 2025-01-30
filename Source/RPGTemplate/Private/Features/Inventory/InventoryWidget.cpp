@@ -25,7 +25,7 @@ void UInventoryWidget::DisplayStoredItems_Implementation(bool bForceRefresh)
 	if (InventoryItems.Num() == 0 || bForceRefresh)
 	{
 		bool bSuccess = false;
-		InventoryItems = InventorySubsystem->GetStoredItems(bSuccess);
+		InventoryItems = InventorySubsystem->GetItems(bSuccess);
 
 		if (!bSuccess)
 		{
@@ -50,7 +50,15 @@ void UInventoryWidget::DisplayStoredItems_Implementation(bool bForceRefresh)
 			continue;
 		}
 
-		if (!InventoryFilterRule.Matches(FName(*ItemAsset->Id.ToString()), *ItemAsset->ItemType))
+		if (!InventoryFilterRule.Matches(
+			Item.Value.Id,
+			*ItemAsset->ItemType,
+			*ItemAsset->ItemRarity,
+			Item.Value.Rank,
+			Item.Value.Level,
+			Item.Value.Xp,
+			Item.Value.Quantity
+		))
 		{
 			continue;
 		}

@@ -13,7 +13,7 @@ class RPGTEMPLATE_API UGameMetadataSettings : public UDeveloperSettings
 	GENERATED_BODY()
 
 public:
-
+	
 	UGameMetadataSettings();
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Subsystems")
@@ -26,9 +26,9 @@ public:
 	TSoftObjectPtr<UDataTable> InventoryTable;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	TSet<FString> InventoryTypes = { "Food", "Weapon", "Skill"};
+	TSet<FString> InventoryTypes = { "FOOD", "WEAPON", "SKILL" };
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	TSet<FString> InventoryRarities = { "Common", "Rare", "UltraRare" };
+	TSet<FString> InventoryRarities = { "COMMON", "RARE", "ULTRA_RARE" };
 
 };

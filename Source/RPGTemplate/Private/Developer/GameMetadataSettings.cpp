@@ -1,3 +1,6 @@
 #include "Developer/GameMetadataSettings.h"
 
-UGameMetadataSettings::UGameMetadataSettings() {}
+
+UGameMetadataSettings::UGameMetadataSettings()
+{
+}

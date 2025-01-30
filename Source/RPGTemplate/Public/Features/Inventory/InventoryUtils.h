@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "InstancedStruct.h"
 
-#include "Features/PrimaryDataAsset/BaseUtil.h"
+#include "Shared/FilterUtils.h"
 
 #include "InventoryUtils.generated.h"
 
@@ -41,6 +41,7 @@ struct FInventoryItem
 	{
 		return A.Id == B.Id && A.Type == B.Type;
 	}
+
 	friend inline uint32 GetTypeHash(const FInventoryItem& Item)
 	{
 		return HashCombine(GetTypeHash(Item.Id.ToString()), GetTypeHash(Item.Type));
@@ -48,7 +49,8 @@ struct FInventoryItem
 
 };
 
-USTRUCT(BlueprintType, DisplayName = "Interact Item Mapping")
+
+USTRUCT(BlueprintType, DisplayName = "Inventory Collection")
 struct FInventoryItemTable : public FTableRowBase
 {
 
@@ -64,6 +66,7 @@ struct FInventoryItemTable : public FTableRowBase
 	{
 		return A.Id == B.Id;
 	}
+
 	friend inline uint32 GetTypeHash(const FInventoryItemTable& Item)
 	{
 		return GetTypeHash(Item.Id.ToString());
@@ -71,41 +74,72 @@ struct FInventoryItemTable : public FTableRowBase
 
 };
 
-
-USTRUCT(BlueprintType, DisplayName = "Interact Item Filter Rule")
+USTRUCT(BlueprintType, DisplayName = "Inventory Filter Rule")
 struct FInventoryFilterRule
 {
 
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FBaseAssetFilterRule BaseAssetFilterRule = FBaseAssetFilterRule();
+	FFilterNameRule FilterId = FFilterNameRule();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bEnableTypeFilter = false;
+	FFilterNameRule FilterType = FFilterNameRule();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bEnableStrictType = true;
+	FFilterNameRule FilterRarity = FFilterNameRule();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (GetOptions = "InventoryLibrary.GetInventoryTypes"))
-	TArray<FName> IncludedTypes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FFilterIntegerRule FilterRank = FFilterIntegerRule();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (GetOptions = "InventoryLibrary.GetInventoryTypes"))
-	TArray<FName> ExcludedTypes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FFilterIntegerRule FilterLevel = FFilterIntegerRule();
 
-	bool MatchType(FName Type) const
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FFilterIntegerRule FilterXp = FFilterIntegerRule();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FFilterIntegerRule FilterQuantity = FFilterIntegerRule();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EFilterCombination FilterCombination = EFilterCombination::And;
+
+	bool Matches(FName Id, FName Type, FName Rarity, int32 Rank, int32 Level, int32 Xp, int32 Quantity) const
 	{
-		if (!bEnableTypeFilter) return true;
-		if (ExcludedTypes.Contains(Type)) return false;
-		if (bEnableStrictType && IncludedTypes.Num() == 0) return false;
-		if (IncludedTypes.Num() > 0) return IncludedTypes.Contains(Type);
-		return true;
-	}
+		bool bPasses = (FilterCombination == EFilterCombination::And);
 
-	bool Matches(FName Id, FName Type) const
-	{
-		return BaseAssetFilterRule.Matches(Id) && MatchType(Type);
+		if (FilterCombination == EFilterCombination::And)
+		{
+			if (!FilterId.Matches(Id) ||
+				!FilterType.Matches(Type) ||
+				!FilterRarity.Matches(Rarity) ||
+				!FilterRank.Matches(Rank) ||
+				!FilterLevel.Matches(Level) ||
+				!FilterXp.Matches(Xp) ||
+				!FilterQuantity.Matches(Quantity))
+			{
+				bPasses = false;
+			}
+		}
+		else if (FilterCombination == EFilterCombination::Or)
+		{
+			if (FilterId.Matches(Id) ||
+				FilterType.Matches(Type) ||
+				FilterRarity.Matches(Rarity) ||
+				FilterRank.Matches(Rank) ||
+				FilterLevel.Matches(Level) ||
+				FilterXp.Matches(Xp) ||
+				FilterQuantity.Matches(Quantity))
+			{
+				bPasses = true;
+			}
+			else
+			{
+				bPasses = false;
+			}
+		}
+
+		return bPasses;
 	}
 
 };
-

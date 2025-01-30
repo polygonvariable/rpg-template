@@ -9,6 +9,9 @@ FString GetClassName(const T* Object)
     return Object ? Object->GetClass()->GetName() : TEXT("UnknownClass");
 }
 
+#define TEXT_INVALID \
+    TEXT("INVALID")
+
 #define GET_SUBSYSTEM_FROM_WORLD(SubsystemClass, SubsystemReference) \
     UWorld* World = GetWorld(); \
     if (!World) { \
