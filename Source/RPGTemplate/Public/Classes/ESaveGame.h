@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "InstancedStruct.h"
-#include "Features/Inventory/InventoryUtils.h"
+#include "Inventory/InventoryUtils.h"
 #include "ESaveGame.generated.h"
 
 

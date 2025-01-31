@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Features/Lifecycle/LifeCycleUtils.h"
+#include "Lifecycle/LifeCycleUtils.h"
 #include "EActor.generated.h"
 
 
