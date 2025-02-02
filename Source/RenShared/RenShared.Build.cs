@@ -2,22 +2,29 @@
 
 using UnrealBuildTool;
 
-public class RPGTemplate : ModuleRules
+public class RenShared : ModuleRules
 {
-	public RPGTemplate(ReadOnlyTargetRules Target) : base(Target)
+	public RenShared(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] {
-			"Core",
-			"CoreUObject",
-			"Engine",
-			"InputCore",
-			"StructUtils",
-			"EnhancedInput"
-		});
+		/*
+		 * This is the top level module for the project.
+		 * And should not be included in any other custom modules.
+		 * Only engine modules should be used here.
+		*/
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+        PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"Core",
+				"CoreUObject",
+				"Engine",
+				"StructUtils"
+			}
+		);
+
+		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

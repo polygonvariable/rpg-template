@@ -1,0 +1,52 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+// Engine Headers
+#include "CoreMinimal.h"
+
+// Project Headers
+#include "RenCore/Public/Subsystem/RenGameInstanceSubsystem.h"
+
+// Generated Headers
+#include "StorageSubsystem.generated.h"
+
+// Forward Declarations
+class UStorage;
+
+
+/**
+ * 
+ */
+UCLASS(DisplayName = "Storage Subsystem")
+class RENSTORAGE_API UStorageSubsystem : public URenGameInstanceSubsystem
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintReadOnly, Category = "Runtime")
+	TObjectPtr<UStorage> Storage;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
+	void ReadStorage(const FName Slot = "Default");
+	virtual void ReadStorage_Implementation(const FName Slot = "Default");
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
+	void UpdateStorage(const FName Slot = "Default");
+	virtual void UpdateStorage_Implementation(const FName Slot = "Default");
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintPure))
+	bool DoesStorageExist(const FName Slot = "Default");
+	virtual bool DoesStorageExist_Implementation(const FName Slot = "Default");
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
+	UStorage* GetLocalStorage(bool& bIsValid);
+	virtual UStorage* GetLocalStorage_Implementation(bool& bIsValid);
+
+public:
+
+	virtual void OnInitialized_Implementation() override;
+
+};

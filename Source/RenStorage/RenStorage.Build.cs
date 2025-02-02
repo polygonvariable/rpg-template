@@ -2,20 +2,23 @@
 
 using UnrealBuildTool;
 
-public class RPGTemplate : ModuleRules
+public class RenStorage : ModuleRules
 {
-	public RPGTemplate(ReadOnlyTargetRules Target) : base(Target)
+	public RenStorage(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] {
-			"Core",
-			"CoreUObject",
-			"Engine",
-			"InputCore",
-			"StructUtils",
-			"EnhancedInput"
-		});
+        PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"Core",
+				"CoreUObject",
+				"Engine",
+				"StructUtils",
+                "RenShared",
+                "RenCore",
+			}
+		);
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
