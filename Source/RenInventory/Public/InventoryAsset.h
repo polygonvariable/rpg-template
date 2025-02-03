@@ -2,14 +2,20 @@
 
 #pragma once
 
+// Engine Headers
 #include "CoreMinimal.h"
 
+// Project Headers
 #include "RenShared/Public/Macro/ValueMacro.h"
 #include "RenCore/Public/Asset/RenBaseAsset.h"
 
+// Generated Headers
 #include "InventoryAsset.generated.h"
 
 
+/**
+ *
+ */
 UCLASS(DisplayName = "Inventory Asset")
 class RENINVENTORY_API UInventoryAsset : public URenBaseAsset
 {

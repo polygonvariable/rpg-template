@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "CraftableAsset.h"
+#include "Struct/InventoryAssetQuantity.h"
 #include "EnhanceableAsset.generated.h"
 
 class UEnhanceAsset;
@@ -24,16 +25,24 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
 	int32 EnhanceXpInterval = 5000;
 
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
 	int32 EnhanceLevelInterval = 10;
+
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
 	int32 EnhanceLevelMax = 100;
 
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
 	TSet<UEnhanceAsset*> EnhanceCosts;
 
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Meta = (GetKeyOptions = "InventoryLibrary.GetInventoryTypes"), Category = "Item Enhanceable")
 	TMap<FName, int> EnhanceExternalCosts;
+
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	TMap<int, FInventoryAssetQuantity> EnhanceRankings;
 
 };

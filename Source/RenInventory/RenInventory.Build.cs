@@ -15,12 +15,19 @@ public class RenInventory : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"StructUtils",
-				"RenShared",
-				"RenCore",
-			}
+                "UMG",
+            }
 		);
+        PublicDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "RenShared",
+                "RenCore",
+				"RenStorage",
+            }
+        );
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+        PrivateDependencyModuleNames.AddRange(new string[] {  });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

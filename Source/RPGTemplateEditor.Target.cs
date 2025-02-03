@@ -10,10 +10,17 @@ public class RPGTemplateEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 
-		ExtraModuleNames.AddRange( new string[] { "RPGTemplate" } );
-		ExtraModuleNames.AddRange( new string[] { "RenCore" } );
-		ExtraModuleNames.AddRange( new string[] { "RenShared" } );
-		ExtraModuleNames.AddRange( new string[] { "RenStorage" } );
-		ExtraModuleNames.AddRange( new string[] { "RenInventory" } );
-	}
+        ExtraModuleNames.AddRange(new string[] { "RPGTemplate" });
+        ExtraModuleNames.AddRange(
+            new string[]
+            {
+                "RenCore",
+                "RenShared",
+                "RenStorage",
+                "RenInventory",
+                "RenEnhanceItem",
+            }
+        );
+
+    }
 }

@@ -10,4 +10,3 @@ void ILifeCycleInterface::StartLifecycle(UObject* Target, const FInstancedStruct
 void ILifeCycleInterface::OnLoaded(UObject* Target)
 {
 }
-

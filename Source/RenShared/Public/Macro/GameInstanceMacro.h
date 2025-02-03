@@ -2,45 +2,33 @@
 
 #pragma once
 
+// Engine Headers
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 
+
 #define GET_SUBSYSTEM_FROM_WORLD(SubsystemClass, SubsystemReference) \
     UWorld* World = GetWorld(); \
-    if (!World) { \
+    if (!IsValid(World)) { \
         UE_LOG(LogTemp, Error, TEXT("[%s] Invalid world"), *FString(__FUNCTION__)); \
         return; \
     } \
     UGameInstance* GameInstance = World->GetGameInstance(); \
-    if (!GameInstance) { \
-        UE_LOG(LogTemp, Error, TEXT("[%s] Invalid game instance"), *FString(__FUNCTION__)); \
-        return; \
-    } \
-    SubsystemReference = GameInstance->GetSubsystem<SubsystemClass>(); \
-    if (!SubsystemReference) { \
-        UE_LOG(LogTemp, Error, TEXT("[%s] Invalid subsystem"), *FString(__FUNCTION__)); \
-        return; \
-    }
+    GET_SUBSYSTEM(GameInstance, SubsystemClass, SubsystemReference)
+
 
 #define GET_SUBSYSTEM_FROM_GAMEINSTANCE(SubsystemClass, SubsystemReference) \
     UGameInstance* GameInstance = GetGameInstance(); \
-    if (!GameInstance) { \
-        UE_LOG(LogTemp, Error, TEXT("[%s] Invalid game instance"), *FString(__FUNCTION__)); \
-        return; \
-    } \
-    SubsystemReference = GameInstance->GetSubsystem<SubsystemClass>(); \
-    if (!SubsystemReference) { \
-        UE_LOG(LogTemp, Error, TEXT("[%s] Invalid subsystem"), *FString(__FUNCTION__)); \
-        return; \
-    }
+    GET_SUBSYSTEM(GameInstance, SubsystemClass, SubsystemReference)
+
 
 #define GET_SUBSYSTEM(GameInstance, SubsystemClass, SubsystemReference) \
-    if (!GameInstance) { \
+    if (!IsValid(GameInstance)) { \
         UE_LOG(LogTemp, Error, TEXT("[%s] Invalid game instance"), *FString(__FUNCTION__)); \
         return; \
     } \
     SubsystemReference = GameInstance->GetSubsystem<SubsystemClass>(); \
-    if (!SubsystemReference) { \
+    if (!IsValid(SubsystemReference)) { \
         UE_LOG(LogTemp, Error, TEXT("[%s] Invalid subsystem"), *FString(__FUNCTION__)); \
         return; \
     }

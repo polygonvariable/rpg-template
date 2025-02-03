@@ -16,7 +16,12 @@ public class RenCore : ModuleRules
                 "Engine",
                 "StructUtils",
                 "DeveloperSettings",
-                "RenShared"
+            }
+        );
+        PublicDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "RenShared",
             }
         );
 

@@ -15,11 +15,17 @@ public class RPGTemplateTarget : TargetRules
 		 * and regenerate the project
 		*/
 
-        ExtraModuleNames.AddRange( new string[] { "RPGTemplate" } );
-		ExtraModuleNames.AddRange( new string[] { "RenCore" } );
-		ExtraModuleNames.AddRange( new string[] { "RenShared" } );
-		ExtraModuleNames.AddRange( new string[] { "RenStorage" } );
-		ExtraModuleNames.AddRange( new string[] { "RenInventory" } );
+        ExtraModuleNames.AddRange(new string[] { "RPGTemplate" });
+        ExtraModuleNames.AddRange(
+			new string[]
+			{
+				"RenCore",
+                "RenShared",
+                "RenStorage",
+                "RenInventory",
+                "RenEnhanceItem",
+			}
+		);
 
-	}
+    }
 }
