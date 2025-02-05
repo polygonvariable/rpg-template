@@ -23,7 +23,7 @@ class RENSTORAGE_API UStorage : public URenSaveGame
 	GENERATED_BODY()
 
 public:
-
+	
 	/**
 	* A map of inventory items
 	* <FName = UUID, Struct = FInventoryItem>
@@ -36,7 +36,7 @@ public:
 	* <FName = UUID, Struct = FDateTime>
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage|Environment")
-	TMap<FName, FDateTime> StampedEvents; // <FName = UUID, Struct = FDateTime>
+	TMap<FGuid, FDateTime> StampedEvents; // <FGuid = FGuid, Struct = FDateTime>
 
 };
 

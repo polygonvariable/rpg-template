@@ -23,6 +23,7 @@ public class RenInteract : ModuleRules
             {
                 "RenShared",
                 "RenCore",
+                "RenStorage",
             }
         );
 

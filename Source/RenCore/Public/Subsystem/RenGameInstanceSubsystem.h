@@ -19,7 +19,7 @@ class RENCORE_API URenGameInstanceSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
-
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Handler")
 	void PostInitialize();
 	virtual void PostInitialize_Implementation();
