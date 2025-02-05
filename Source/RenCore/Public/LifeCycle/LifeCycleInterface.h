@@ -31,22 +31,26 @@ public:
 
 	bool bStarted = false;
 
-	void StartLifecycle(UObject* Target, const FInstancedStruct Parameters, const bool bSkipLoad = true, const bool bSkipValidate = true);
+	void StartLifecycle(UObject* Target, FInstancedStruct Parameters, const bool bSkipLoad = true, const bool bSkipValidate = true);
 	void OnLoaded(UObject* Target);
 
 protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected))
-	void BeginStage(const FInstancedStruct Parameters);
+	void BeginStage(FInstancedStruct Parameters);
+
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected))
 	void LoadStage();
 
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected))
 	bool ValidateStage();
 
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected))
 	void ActivateStage();
+
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected))
 	void EndStage();

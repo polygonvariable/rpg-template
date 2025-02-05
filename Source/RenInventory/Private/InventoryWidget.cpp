@@ -11,7 +11,7 @@
 #include "RenShared/Public/Macro/GameInstanceMacro.h"
 
 // Module Headers
-#include "InventoryAsset.h"
+#include "RenAsset/Public/Inventory/InventoryAsset.h"
 #include "InventorySubsystem.h"
 
 

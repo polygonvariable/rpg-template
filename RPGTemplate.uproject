@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RenAsset",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RenShared",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -32,11 +37,6 @@
 		},
 		{
 			"Name": "RenInventory",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "RenEnhanceItem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

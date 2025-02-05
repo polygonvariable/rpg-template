@@ -11,7 +11,7 @@ FString GetClassName(const T* Object)
 }
 
 #define LOG_INFO(Object, Category, Format, ...) \
-    UE_LOG(Category, Display, TEXT("[%s::%s] " Format), *GetClassName(Object), *FString(__FUNCTION__), ##__VA_ARGS__) \
+    UE_LOG(Category, Log, TEXT("[%s::%s] " Format), *GetClassName(Object), *FString(__FUNCTION__), ##__VA_ARGS__) \
 
 #define LOG_WARNING(Object, Category, Format, ...) \
     UE_LOG(Category, Warning, TEXT("[%s::%s] " Format), *GetClassName(Object), *FString(__FUNCTION__), ##__VA_ARGS__)
@@ -19,3 +19,5 @@ FString GetClassName(const T* Object)
 #define LOG_ERROR(Object, Category, Format, ...) \
     UE_LOG(Category, Error, TEXT("[%s::%s] " Format), *GetClassName(Object), *FString(__FUNCTION__), ##__VA_ARGS__)
 
+#define PRINT(Text, Color) \
+    if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, Color, Text)

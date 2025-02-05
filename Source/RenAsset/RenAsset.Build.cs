@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RenInventory : ModuleRules
+public class RenAsset : ModuleRules
 {
-	public RenInventory(ReadOnlyTargetRules Target) : base(Target)
+	public RenAsset(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -15,16 +15,13 @@ public class RenInventory : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"StructUtils",
-                "UMG",
-            }
+			}
 		);
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
                 "RenShared",
                 "RenCore",
-				"RenAsset",
-				"RenStorage",
             }
         );
 

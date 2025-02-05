@@ -16,9 +16,9 @@ public class RPGTemplateEditorTarget : TargetRules
             {
                 "RenCore",
                 "RenShared",
+                "RenAsset",
                 "RenStorage",
                 "RenInventory",
-                "RenEnhanceItem",
                 "RenInteract"
             }
         );

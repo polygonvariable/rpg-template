@@ -21,9 +21,9 @@ public class RPGTemplateTarget : TargetRules
 			{
 				"RenCore",
                 "RenShared",
+                "RenAsset",
                 "RenStorage",
                 "RenInventory",
-                "RenEnhanceItem",
 				"RenInteract"
 			}
 		);

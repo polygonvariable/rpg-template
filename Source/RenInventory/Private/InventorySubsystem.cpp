@@ -14,7 +14,7 @@
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
 
-#include "InventoryAsset.h"
+#include "RenAsset/Public/Inventory/InventoryAsset.h"
 
 
 

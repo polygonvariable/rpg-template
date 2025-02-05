@@ -29,10 +29,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact Actor|Item")
 	FGuid GUID = FGuid::NewGuid();
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact Actor|Item")
 	FText Name = FText::FromString("Item");
 
+
 	FInteractItem& GetInteractItem();
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Actor|Action")
 	void Interact();
@@ -43,25 +46,31 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Interact Actor|Runtime")
 	FInteractItem InteractItem;
 
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Actor|Item")
 	void BuildItem();
 	virtual void BuildItem_Implementation();
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected, BlueprintPure), Category = "Interact Actor|Action")
 	UInteractComponent* GetInteractComponent() const;
 	virtual UInteractComponent* GetInteractComponent_Implementation() const;
 
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Actor|Action")
 	void StartInteract();
 	virtual void StartInteract_Implementation();
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Actor|Action")
 	void EndInteract();
 	virtual void EndInteract_Implementation();
 
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Actor|Action")
 	void UpdateItem();
 	virtual void UpdateItem_Implementation();
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Actor|Handler")
 	void OnInteracted();

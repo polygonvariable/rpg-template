@@ -64,7 +64,7 @@ public:
 
 protected:
     
-	virtual void BeginStage_Implementation(const FInstancedStruct Parameters) override;
+	virtual void BeginStage_Implementation(FInstancedStruct Parameters) override;
 	virtual bool ValidateStage_Implementation() override;
 	virtual void ActivateStage_Implementation() override;
 		

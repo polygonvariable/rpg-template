@@ -10,7 +10,7 @@
 #include "RenStorage/Public/StorageSubsystem.h"
 
 
-void UStampedEventComponent::BeginStage_Implementation(const FInstancedStruct Parameters)
+void UStampedEventComponent::BeginStage_Implementation(FInstancedStruct Parameters)
 {
 	UStorageSubsystem* StorageSubsystem;
     GET_SUBSYSTEM_FROM_WORLD(UStorageSubsystem, StorageSubsystem);

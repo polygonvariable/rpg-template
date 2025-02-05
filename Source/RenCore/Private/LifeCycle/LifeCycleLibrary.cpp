@@ -14,7 +14,7 @@
     }
 
 
-void ULifeCycleLibrary::StartLifecycle(UObject* Target, const FInstancedStruct& Parameters, const bool bSkipLoad, const bool bSkipValidate)
+void ULifeCycleLibrary::StartLifecycle(UObject* Target, FInstancedStruct Parameters, const bool bSkipLoad, const bool bSkipValidate)
 {
     if (ILifeCycleInterface* Interface = Cast<ILifeCycleInterface>(Target))
     {
@@ -26,12 +26,12 @@ void ULifeCycleLibrary::StartLifecycle(UObject* Target, const FInstancedStruct& 
     }
 }
 
-void ULifeCycleLibrary::StartLifecycleWithLoader(UObject* Target, const FInstancedStruct& Parameters, const bool bSkipValidate)
+void ULifeCycleLibrary::StartLifecycleWithLoader(UObject* Target, FInstancedStruct Parameters, const bool bSkipValidate)
 {
     StartLifecycle(Target, Parameters, false, bSkipValidate);
 }
 
-void ULifeCycleLibrary::StartLifecycleWithValidation(UObject* Target, const FInstancedStruct& Parameters, const bool bSkipLoad)
+void ULifeCycleLibrary::StartLifecycleWithValidation(UObject* Target, FInstancedStruct Parameters, const bool bSkipLoad)
 {
     StartLifecycle(Target, Parameters, bSkipLoad, true);
 }
