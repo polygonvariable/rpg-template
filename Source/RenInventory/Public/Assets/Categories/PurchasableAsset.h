@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(DisplayName = "Purchasable Asset")
+UCLASS(Abstract, DisplayName = "Purchasable Asset")
 class RENINVENTORY_API UPurchasableAsset : public UInventoryAsset
 {
 

@@ -2,11 +2,14 @@
 
 #pragma once
 
+// Engine Headers
 #include "CoreMinimal.h"
 
+// Project Headers
 #include "RenCore/Public/Common/RenSaveGame.h"
 #include "RenShared/Public/Inventory/InventoryItem.h"
 
+// Generated Headers
 #include "Storage.generated.h"
 
 
@@ -21,8 +24,19 @@ class RENSTORAGE_API UStorage : public URenSaveGame
 
 public:
 
+	/**
+	* A map of inventory items
+	* <FName = UUID, Struct = FInventoryItem>
+	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage|Inventory")
-	TMap<FName, FInventoryItem> InventoryItems; // <FName = UUID, Struct = FInventoryItem>
+	TMap<FName, FInventoryItem> InventoryItems; // 
+
+	/**
+	* A map of stamped events, which is a map of UUIDs to timestamps
+	* <FName = UUID, Struct = FDateTime>
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage|Environment")
+	TMap<FName, FDateTime> StampedEvents; // <FName = UUID, Struct = FDateTime>
 
 };
 

@@ -9,17 +9,17 @@
 
 void URenGameInstanceSubsystem::PostInitialize_Implementation()
 {
-	LOG_INFO(this, LogTemp, "PostInitialize");
+	LOG_WARNING(this, LogTemp, "PostInitialize");
 }
 
 void URenGameInstanceSubsystem::OnInitialized_Implementation()
 {
-	LOG_INFO(this, LogTemp, "OnInitialized");
+	LOG_WARNING(this, LogTemp, "OnInitialized");
 }
 
 void URenGameInstanceSubsystem::OnDeinitialized_Implementation()
 {
-	LOG_INFO(this, LogTemp, "OnDeinitialized");
+	LOG_WARNING(this, LogTemp, "OnDeinitialized");
 }
 
 void URenGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -49,13 +49,16 @@ bool URenGameInstanceSubsystem::ShouldCreateSubsystem(UObject* Object) const
 		return false;
 	}
 
-	for (const TSubclassOf<USubsystem>& SubsystemClass : GameMetadata->SubsystemClasses)
+	for (auto& SubsystemClass : GameMetadata->SubsystemClasses)
 	{
-		if (this->GetClass() == SubsystemClass)
+		if (SubsystemClass == this->GetClass())
 		{
+			LOG_WARNING(this, LogTemp, "Subsystem found");
 			return true;
 		}
 	}
+
+	LOG_ERROR(this, LogTemp, "Subsystem not found");
 	return false;
 }
 

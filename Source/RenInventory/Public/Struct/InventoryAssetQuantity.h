@@ -24,4 +24,6 @@ struct FInventoryAssetQuantity
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<UInventoryAsset*, int32> InventoryItems;
 
+	TMap<FName, int> ConvertToIds();
+
 };

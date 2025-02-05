@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(DisplayName = "Equipment Asset")
+UCLASS(Abstract, DisplayName = "Equipment Asset")
 class RENINVENTORY_API UEquipmentAsset : public UEnhanceableAsset
 {
 

@@ -11,7 +11,7 @@
 /**
  *
  */
-UCLASS(DisplayName = "Ren SaveGame")
+UCLASS(Abstract, DisplayName = "Ren Save Game")
 class RENCORE_API URenSaveGame : public USaveGame
 {
 

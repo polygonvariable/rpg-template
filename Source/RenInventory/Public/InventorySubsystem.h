@@ -29,8 +29,8 @@ class RENINVENTORY_API UInventorySubsystem : public URenGameInstanceSubsystem
 public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
-	bool AddItem(UInventoryAsset* InventoryAsset, const int Quantity = 1);
-	virtual bool AddItem_Implementation(UInventoryAsset* InventoryAsset, const int Quantity = 1);
+	bool AddItem(UInventoryAsset* InventoryAssetId, const int Quantity = 1);
+	virtual bool AddItem_Implementation(UInventoryAsset* InventoryAssetId, const int Quantity = 1);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Items")

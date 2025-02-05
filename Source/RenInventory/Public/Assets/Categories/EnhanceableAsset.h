@@ -14,7 +14,7 @@ class UEnhanceAsset;
 /**
  * 
  */
-UCLASS(DisplayName = "Enhanceable Asset")
+UCLASS(Abstract, DisplayName = "Enhanceable Asset")
 class RENINVENTORY_API UEnhanceableAsset : public UCraftableAsset
 {
 

@@ -15,13 +15,14 @@
 void UStorageSubsystem::ReadStorage_Implementation(const FName Slot)
 {
 	const UGameMetadataSettings* Settings = GetDefault<UGameMetadataSettings>();
-	const TSubclassOf<USaveGame> StorageClass = Settings->StorageClass;
 
+	/*const TSubclassOf<USaveGame> StorageClass = Settings->StorageClass;
+	const TSubclassOf<UStorage> StorageClasss = Settings->StorageClasses.TryLoadClass<UStorage>();
 	if (Storage || !StorageClass || !StorageClass->IsChildOf(UStorage::StaticClass()))
 	{
 		LOG_ERROR(this, LogTemp, "Storage is already set or StorageClass is null or not a child of ESaveGame");
 		return;
-	}
+	}*/
 
 	if (DoesStorageExist(Slot))
 	{
@@ -30,8 +31,8 @@ void UStorageSubsystem::ReadStorage_Implementation(const FName Slot)
 	}
 	else
 	{
-		USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(StorageClass);
-		if (!NewSaveGame)
+		USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(UStorage::StaticClass());
+		if (!IsValid(NewSaveGame))
 		{
 			LOG_ERROR(this, LogTemp, "Failed to create save game object");
 			return;
@@ -39,12 +40,14 @@ void UStorageSubsystem::ReadStorage_Implementation(const FName Slot)
 
 		UGameplayStatics::SaveGameToSlot(NewSaveGame, Slot.ToString(), 0);
 		Storage = Cast<UStorage>(NewSaveGame);
+
+		LOG_INFO(this, LogTemp, "Storage created and saved to slot");
 	}
 }
 
 void UStorageSubsystem::UpdateStorage_Implementation(const FName Slot)
 {
-	if (!Storage)
+	if (!IsValid(Storage))
 	{
 		LOG_ERROR(this, LogTemp, "Storage is null");
 		return;
@@ -59,12 +62,20 @@ bool UStorageSubsystem::DoesStorageExist_Implementation(const FName Slot)
 
 UStorage* UStorageSubsystem::GetLocalStorage_Implementation(bool& bIsValid)
 {
-	bIsValid = Storage != nullptr;
+	bIsValid = IsValid(Storage);
 	return Storage;
 }
+
 
 void UStorageSubsystem::OnInitialized_Implementation()
 {
 	Super::OnInitialized_Implementation();
 	ReadStorage();
+}
+
+
+void UStorageSubsystem::OnDeinitialized_Implementation()
+{
+	UpdateStorage();
+	Super::OnDeinitialized_Implementation();
 }

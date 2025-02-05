@@ -65,7 +65,45 @@ bool UEnhanceItemSubsystem::LevelUpItem_Implementation(const FName EnhanceableSt
 
 bool UEnhanceItemSubsystem::RankUpItem_Implementation(const FName EnhanceableStorageId)
 {
-    return false;
+	bool bFound = false;
+	UInventoryAsset* REnhanceableAsset = nullptr;
+	FInventoryItem EnhanceableItem = InventorySubsystem->GetItemWithAsset(EnhanceableStorageId, REnhanceableAsset, bFound);
+	if (!bFound || !REnhanceableAsset)
+	{
+		LOG_ERROR(this, LogTemp, "Enhanceable item not found or invalid asset");
+		return false;
+	}
+
+	UEnhanceableAsset* EnhanceableAsset = Cast<UEnhanceableAsset>(REnhanceableAsset);
+	if (!EnhanceableAsset)
+	{
+		LOG_ERROR(this, LogTemp, "Inventory item is not of type enhanceable");
+		return false;
+	}
+
+	TMap<int, FInventoryAssetQuantity>& EnhanceRankings = EnhanceableAsset->EnhanceRankings;
+	FInventoryAssetQuantity* EnhanceRanking = EnhanceRankings.Find(EnhanceableItem.Rank);
+	if (!EnhanceRanking) {
+		LOG_ERROR(this, LogTemp, "Enhance rank not found");
+		return false;
+	}
+
+	const TMap<FName, int> RankCostsIds;// = EnhanceRanking->ConvertToIds();
+	if (!InventorySubsystem->RemoveItems(RankCostsIds))
+	{
+		LOG_ERROR(this, LogTemp, "Failed to remove rank costs");
+		return false;
+	}
+
+	EnhanceableItem.Rank++;
+	if (!InventorySubsystem->UpdateItem(EnhanceableStorageId, EnhanceableItem))
+	{
+		LOG_ERROR(this, LogTemp, "Failed to update enhanceable item");
+		return false;
+	}
+
+	LOG_WARNING(this, LogTemp, "Rank up successful");
+	return true;
 }
 
 bool UEnhanceItemSubsystem::HandleLevelUp(const FName& EnhanceableStorageId, const FName& EnhanceStorageId, FInventoryItem EnhanceableItem, UEnhanceableAsset* EnhanceableAsset, int EnhancePoint)

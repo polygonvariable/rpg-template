@@ -29,6 +29,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Runtime")
 	TObjectPtr<UStorage> Storage;
 
+	//UPROPERTY(BlueprintReadOnly, Category = "Runtime")
+	//TMap<FName, TObjectPtr<UStorage>> Storages;
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
 	void ReadStorage(const FName Slot = "Default");
 	virtual void ReadStorage_Implementation(const FName Slot = "Default");
@@ -48,5 +51,6 @@ public:
 public:
 
 	virtual void OnInitialized_Implementation() override;
+	virtual void OnDeinitialized_Implementation() override;
 
 };

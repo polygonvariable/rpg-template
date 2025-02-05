@@ -3,7 +3,15 @@
 
 #include "LifeCycle/LifeCycleLibrary.h"
 
+#include "RenShared/Public/Macro/LogMacro.h"
 #include "LifeCycle/LifeCycleInterface.h"
+
+
+#define EXECUTE_INTERFACE(Target, Interface, Function, ...) \
+    if (IsValid(Target) && Target->Implements<Interface>()) \
+    { \
+        Function(Target, __VA_ARGS__); \
+    }
 
 
 void ULifeCycleLibrary::StartLifecycle(UObject* Target, const FInstancedStruct& Parameters, const bool bSkipLoad, const bool bSkipValidate)
@@ -14,7 +22,7 @@ void ULifeCycleLibrary::StartLifecycle(UObject* Target, const FInstancedStruct& 
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Target does not implement ILifeCycleInterface"));
+        LOG_ERROR(Target, LogTemp, "Target does not implement ILifeCycleInterface");
     }
 }
 
@@ -36,7 +44,7 @@ void ULifeCycleLibrary::Loaded(UObject* Target)
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Target does not implement ILifeCycleInterface"));
+        LOG_ERROR(Target, LogTemp, "Target does not implement ILifeCycleInterface");
     }
 }
 

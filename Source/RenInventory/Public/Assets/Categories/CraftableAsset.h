@@ -12,7 +12,7 @@ class UInventoryAsset;
 /**
  * 
  */
-UCLASS(DisplayName = "Craftable Asset")
+UCLASS(Abstract, DisplayName = "Craftable Asset")
 class RENINVENTORY_API UCraftableAsset : public UPurchasableAsset
 {
 

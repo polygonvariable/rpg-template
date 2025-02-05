@@ -24,6 +24,7 @@ public class RPGTemplateTarget : TargetRules
                 "RenStorage",
                 "RenInventory",
                 "RenEnhanceItem",
+				"RenInteract"
 			}
 		);
 

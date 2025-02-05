@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(DisplayName = "NonEnhanceable Asset")
+UCLASS(Abstract, DisplayName = "NonEnhanceable Asset")
 class RENINVENTORY_API UNonEnhanceableAsset : public UCraftableAsset
 {
 
