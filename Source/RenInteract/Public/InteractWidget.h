@@ -15,6 +15,54 @@
 
 // Forward Declarations
 class AInteractActor;
+class UPanelWidget;
+class UTextBlock;
+
+
+/**
+ *
+ */
+UCLASS(Abstract, DisplayName = "Interact Entry Widget")
+class RENINTERACT_API UInteractEntryWidget : public UUserWidget
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Action")
+	bool InitializeEntry(AActor* Actor);
+	virtual bool InitializeEntry_Implementation(AActor* Actor);
+
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Interact Entry Widget|Binding")
+	TObjectPtr<UTextBlock> InteractTitle;
+
+
+	UPROPERTY(BlueprintReadWrite, Category = "Interact Entry Widget|Item")
+	FInteractItem InteractItem;
+
+
+	UPROPERTY(BlueprintReadWrite, Category = "Interact Entry Widget|Item")
+	AInteractActor* InteractActor;
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Action")
+	void SelectEntry();
+	virtual void SelectEntry_Implementation();
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Handler")
+	void OnItemUpdated(FInteractItem Item);
+	virtual void OnItemUpdated_Implementation(FInteractItem Item);
+
+protected:
+
+	virtual void NativeDestruct() override;
+
+};
 
 
 /**
@@ -26,21 +74,28 @@ class RENINTERACT_API UInteractWidget : public UUserWidget
 
 	GENERATED_BODY()
 
-public:
-
-	UPROPERTY(BlueprintReadWrite, Category = "Interact Widget|Item")
-	TSet<TObjectPtr<AActor>> InteractActors;
-
 protected:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Lifecycle")
-	void RegisterInteract();
-	virtual void RegisterInteract_Implementation();
+	UPROPERTY(BlueprintReadOnly, Category = "Interact Widget|Runtime")
+	TSubclassOf<UInteractEntryWidget> InteractEntryClass;
+
+
+	UPROPERTY(BlueprintReadOnly, Category = "Interact Widget|Runtime")
+	TMap<AActor*, TObjectPtr<UInteractEntryWidget>> InteractEntries;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Interact Widget|Binding")
+	TObjectPtr<UPanelWidget> InteractEntryPanel;
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Lifecycle")
-	void UnregisterInteract();
-	virtual void UnregisterInteract_Implementation();
+	void InitializeInteract();
+	virtual void InitializeInteract_Implementation();
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Lifecycle")
+	void DeinitializeInteract();
+	virtual void DeinitializeInteract_Implementation();
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Binding")
@@ -59,16 +114,6 @@ protected:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Handler")
-	void OnItemAdded(AActor* Actor);
-	virtual void OnItemAdded_Implementation(AActor* Actor);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Handler")
-	void OnItemRemoved(AActor* Actor);
-	virtual void OnItemRemoved_Implementation(AActor* Actor);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Widget|Handler")
 	void OnInteractStarted(AActor* Actor);
 	virtual void OnInteractStarted_Implementation(AActor* Actor);
 
@@ -80,43 +125,6 @@ protected:
 protected:
 
 	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
-
-};
-
-
-UCLASS(Abstract, DisplayName = "Interact Entry Widget")
-class RENINTERACT_API UInteractEntryWidget : public UUserWidget, public IUserObjectListEntry
-{
-
-	GENERATED_BODY()
-
-protected:
-
-	UPROPERTY(BlueprintReadWrite, Category = "Interact Entry Widget|Item")
-	FInteractItem InteractItem;
-
-
-	UPROPERTY(BlueprintReadWrite, Category = "Interact Entry Widget|Item")
-	AInteractActor* InteractActor;
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Action")
-	bool InitializeItem(UObject* Object);
-	virtual bool InitializeItem_Implementation(UObject* Object);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Action")
-	void Interact();
-	virtual void Interact_Implementation();
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Entry Widget|Handler")
-	void OnItemUpdated(FInteractItem Item);
-	virtual void OnItemUpdated_Implementation(FInteractItem Item);
-
-protected:
-
 	virtual void NativeDestruct() override;
 
 };

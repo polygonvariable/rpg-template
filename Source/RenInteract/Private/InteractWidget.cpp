@@ -4,20 +4,71 @@
 #include "InteractWidget.h"
 
 // Engine Headers
+#include "Components/PanelWidget.h"
+#include "Components/TextBlock.h"
 #include "GameFramework/HUD.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/LogMacro.h"
 #include "InteractActor.h"
 #include "InteractComponent.h"
+#include "RenShared/Public/Macro/LogMacro.h"
 
 
-void UInteractWidget::RegisterInteract_Implementation()
+bool UInteractEntryWidget::InitializeEntry_Implementation(AActor* Actor)
+{
+	if (!IsValid(Actor))
+	{
+		LOG_ERROR(this, LogTemp, "Actor is not valid");
+		return false;
+	}
+
+	InteractActor = Cast<AInteractActor>(Actor);
+	if (!IsValid(InteractActor))
+	{
+		LOG_ERROR(this, LogTemp, "Actor is not type of InteractActor");
+		return false;
+	}
+
+	InteractActor->OnItemUpdated.RemoveDynamic(this, &UInteractEntryWidget::OnItemUpdated);
+	InteractActor->OnItemUpdated.AddDynamic(this, &UInteractEntryWidget::OnItemUpdated);
+
+	OnItemUpdated(InteractActor->InteractItem);
+
+	return true;
+}
+
+void UInteractEntryWidget::SelectEntry_Implementation()
+{
+	if (IsValid(InteractActor))
+	{
+		InteractActor->Interact();
+	}
+}
+
+void UInteractEntryWidget::OnItemUpdated_Implementation(FInteractItem Item)
+{
+	InteractItem = Item;
+	if (InteractTitle) InteractTitle->SetText(Item.Name);
+	LOG_WARNING(this, LogTemp, "InteractItem: %s", *Item.Name.ToString());
+}
+
+void UInteractEntryWidget::NativeDestruct()
+{
+	if (IsValid(InteractActor))
+	{
+		InteractActor->OnItemUpdated.RemoveDynamic(this, &UInteractEntryWidget::OnItemUpdated);
+	}
+}
+
+
+
+
+void UInteractWidget::InitializeInteract_Implementation()
 {
 	HandleComponentBinding(false);
 }
 
-void UInteractWidget::UnregisterInteract_Implementation()
+void UInteractWidget::DeinitializeInteract_Implementation()
 {
 	HandleComponentBinding(true);
 }
@@ -61,24 +112,31 @@ void UInteractWidget::HandleComponentBinding_Implementation(bool bIsUnbind)
 
 void UInteractWidget::AddItem_Implementation(AActor* Actor)
 {
-	if (!InteractActors.Contains(Actor))
+	if (!InteractEntries.Contains(Actor))
 	{
-		InteractActors.Add(Actor);
-		OnItemAdded(Actor);
+		if (IsValid(InteractEntryClass) && IsValid(InteractEntryPanel))
+		{
+			UInteractEntryWidget* InteractEntryWidget = CreateWidget<UInteractEntryWidget>(GetWorld(), InteractEntryClass);
+			if (!IsValid(InteractEntryWidget))
+			{
+				LOG_ERROR(this, LogTemp, "Failed to create InteractEntryWidget");
+				return;
+			}
+			InteractEntries.Add(Actor, InteractEntryWidget);
+			InteractEntryPanel->AddChild(InteractEntryWidget);
+			InteractEntryWidget->InitializeEntry(Actor);
+		}
 	}
 }
 
 void UInteractWidget::RemoveItem_Implementation(AActor* Actor)
 {
-	if (InteractActors.Contains(Actor))
+	if (UInteractEntryWidget* InteractEntryWidget = *InteractEntries.Find(Actor))
 	{
-		InteractActors.Remove(Actor);
-		OnItemRemoved(Actor);
+		InteractEntryPanel->RemoveChild(InteractEntryWidget);
+		InteractEntries.Remove(Actor);
 	}
 }
-
-void UInteractWidget::OnItemAdded_Implementation(AActor* Actor) {}
-void UInteractWidget::OnItemRemoved_Implementation(AActor* Actor) {}
 
 
 void UInteractWidget::OnInteractStarted_Implementation(AActor* Actor)
@@ -100,56 +158,12 @@ void UInteractWidget::OnInteractEnded_Implementation(AActor* Actor)
 void UInteractWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	RegisterInteract();
+	InitializeInteract();
 }
 
 void UInteractWidget::NativeDestruct()
 {
-	UnregisterInteract();
+	DeinitializeInteract();
 	Super::NativeDestruct();
-}
-
-
-bool UInteractEntryWidget::InitializeItem_Implementation(UObject* Object)
-{
-	if (!IsValid(Object))
-	{
-		return false;
-	}
-
-	InteractActor = Cast<AInteractActor>(Object);
-	if (!IsValid(InteractActor))
-	{
-		return false;
-	}
-
-	InteractActor->OnItemUpdated.RemoveDynamic(this, &UInteractEntryWidget::OnItemUpdated);
-	InteractActor->OnItemUpdated.AddDynamic(this, &UInteractEntryWidget::OnItemUpdated);
-
-	InteractItem = InteractActor->GetInteractItem();
-
-	return true;
-}
-
-void UInteractEntryWidget::Interact_Implementation()
-{
-	if (IsValid(InteractActor))
-	{
-		InteractActor->Interact();
-	}
-}
-
-void UInteractEntryWidget::OnItemUpdated_Implementation(FInteractItem Item)
-{
-	InteractItem = Item;
-}
-
-void UInteractEntryWidget::NativeDestruct()
-{
-	if (IsValid(InteractActor))
-	{
-		InteractActor->OnItemUpdated.RemoveDynamic(this, &UInteractEntryWidget::OnItemUpdated);
-		InteractActor = nullptr;
-	}
 }
 

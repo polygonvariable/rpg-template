@@ -15,29 +15,24 @@ AInteractActor::AInteractActor()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-FInteractItem& AInteractActor::GetInteractItem()
-{
-	return InteractItem;
-}
-
 void AInteractActor::Interact_Implementation()
 {
 	OnInteracted();
 }
 
-void AInteractActor::BuildItem_Implementation()
+UInteractComponent* AInteractActor::GetInteractComponent_Implementation()
 {
-	InteractItem.UUID = GUID;
-	InteractItem.Name = Name;
-}
+	if (IsValid(InteractComponent))
+	{
+		return InteractComponent;
+	}
 
-UInteractComponent* AInteractActor::GetInteractComponent_Implementation() const
-{
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()) 
 	{
 		if (AHUD* HUD = PlayerController->GetHUD())
 		{
-			return Cast<UInteractComponent>(HUD->GetComponentByClass(UInteractComponent::StaticClass()));
+			InteractComponent = Cast<UInteractComponent>(HUD->GetComponentByClass(UInteractComponent::StaticClass()));
+			return InteractComponent;
 		}
 	}
 	return nullptr;
@@ -45,32 +40,27 @@ UInteractComponent* AInteractActor::GetInteractComponent_Implementation() const
 
 void AInteractActor::StartInteract_Implementation()
 {
-	if(UInteractComponent* InteractComponent = GetInteractComponent())
+	if(UInteractComponent* Component = GetInteractComponent())
 	{
-		InteractComponent->AddItem(this);
+		Component->AddItem(this);
 	}
 }
 
 void AInteractActor::EndInteract_Implementation()
 {
-	if (UInteractComponent* InteractComponent = GetInteractComponent())
+	if (UInteractComponent* Component = GetInteractComponent())
 	{
-		InteractComponent->RemoveItem(this);
+		Component->RemoveItem(this);
 	}
 }
 
 void AInteractActor::UpdateItem_Implementation()
 {
-	BuildItem();
 	OnItemUpdated.Broadcast(InteractItem);
 }
 
-void AInteractActor::OnInteracted_Implementation() {}
-
-
-void AInteractActor::BeginStage_Implementation(FInstancedStruct Parameters)
+void AInteractActor::OnInteracted_Implementation()
 {
-	BuildItem();
 }
 
 void AInteractActor::EndStage_Implementation()

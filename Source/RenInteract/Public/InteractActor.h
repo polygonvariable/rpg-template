@@ -29,35 +29,24 @@ public:
 
 	AInteractActor();
 
-	FInteractItem& GetInteractItem();
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact Actor|Item")
-	FGuid GUID = FGuid::NewGuid();
+	FInteractItem InteractItem;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact Actor|Item")
-	FText Name = FText::FromString("Item");
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Actor|Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Actor|Callback")
 	void Interact();
 	virtual void Interact_Implementation();
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Interact Actor|Runtime")
-	FInteractItem InteractItem;
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Actor|Item")
-	void BuildItem();
-	virtual void BuildItem_Implementation();
+	UPROPERTY(BlueprintReadWrite, Category = "Interact Actor|Runtime")
+	UInteractComponent* InteractComponent;
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected, BlueprintPure), Category = "Interact Actor|Action")
-	UInteractComponent* GetInteractComponent() const;
-	virtual UInteractComponent* GetInteractComponent_Implementation() const;
+	UInteractComponent* GetInteractComponent();
+	virtual UInteractComponent* GetInteractComponent_Implementation();
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Interact Actor|Action")
@@ -81,7 +70,6 @@ protected:
 
 protected:
 
-	virtual void BeginStage_Implementation(FInstancedStruct Parameters);
 	virtual void EndStage_Implementation();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
