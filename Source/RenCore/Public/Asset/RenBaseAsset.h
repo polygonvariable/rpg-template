@@ -28,7 +28,7 @@ public:
 	FText Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Base Details")
-	FSoftObjectPath Icon;
+	TSoftObjectPtr<UTexture2D> Icon;
 
 };
 

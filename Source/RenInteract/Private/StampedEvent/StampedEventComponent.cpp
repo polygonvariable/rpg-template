@@ -10,6 +10,12 @@
 #include "RenStorage/Public/StorageSubsystem.h"
 
 
+
+UStampedEventComponent::UStampedEventComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+}
+
 void UStampedEventComponent::BeginStage_Implementation(FInstancedStruct Parameters)
 {
 	UStorageSubsystem* StorageSubsystem;

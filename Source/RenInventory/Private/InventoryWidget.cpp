@@ -4,15 +4,19 @@
 #include "InventoryWidget.h"
 
 // Engine Headers
+#include "Components/Image.h"
 #include "Components/ListView.h"
+#include "Components/PanelWidget.h"
+#include "Components/TextBlock.h"
+#include "Components/WidgetSwitcher.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/LogMacro.h"
 #include "RenShared/Public/Macro/GameInstanceMacro.h"
+#include "RenShared/Public/Macro/LogMacro.h"
 
 // Module Headers
-#include "RenAsset/Public/Inventory/InventoryAsset.h"
 #include "InventorySubsystem.h"
+#include "RenAsset/Public/Inventory/InventoryAsset.h"
 
 
 void UInventoryWidget::DisplayStoredItems_Implementation(bool bForceRefresh)
@@ -126,7 +130,16 @@ void UInventoryEntryWidget::HandleEntry_Implementation(UInventoryEntryObject* En
 
 void UInventoryDetailWidget::InitializeDetail_Implementation(FInventoryItem InventoryItem, FName InventoryStorageId, UInventoryAsset* InventoryAsset)
 {
-	GET_SUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
+	if (!IsValid(InventoryAsset))
+	{
+		if (IsValid(DetailSwitcher)) DetailSwitcher->SetActiveWidgetIndex(0);
+		return;
+	}
+
+	if (!IsValid(InventorySubsystem))
+	{
+		GET_SUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
+	}
 
 	Item = InventoryItem;
 	ItemAsset = InventoryAsset;
@@ -156,5 +169,22 @@ void UInventoryDetailWidget::RefreshDetail_Implementation()
 
 void UInventoryDetailWidget::HandleDetail_Implementation()
 {
+	if(IsValid(ItemAsset))
+	{
+		if (IsValid(ItemTitle)) ItemTitle->SetText(ItemAsset->Name);
+		if (IsValid(ItemDescription)) ItemDescription->SetText(ItemAsset->Description);
+		if (IsValid(ItemImage) && ItemAsset->Icon.IsValid()) ItemImage->SetBrushFromSoftTexture(ItemAsset->Icon);
+
+		if (IsValid(ItemTypeWidget))
+		{
+			ItemTypeWidget->SetVisibility(ItemTypeVisibility.Contains(ItemAsset->ItemType) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+		}
+
+		if (IsValid(ItemRank)) ItemRank->SetText(FText::FromString(FString::FromInt(Item.Rank)));
+		if (IsValid(ItemLevel)) ItemLevel->SetText(FText::FromString(FString::FromInt(Item.Level)));
+		if (IsValid(ItemXp)) ItemXp->SetText(FText::FromString(FString::FromInt(Item.Xp)));
+	}
+
+	if(IsValid(DetailSwitcher)) DetailSwitcher->SetActiveWidgetIndex(IsValid(ItemAsset) ? 1 : 0);
 }
 

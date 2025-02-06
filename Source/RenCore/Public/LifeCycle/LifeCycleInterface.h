@@ -24,7 +24,7 @@ class ULifeCycleInterface : public UInterface
 /**
  *
  */
-class ILifeCycleInterface
+class RENCORE_API ILifeCycleInterface
 {
 
 	GENERATED_BODY()

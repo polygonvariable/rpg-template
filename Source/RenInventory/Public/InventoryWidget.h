@@ -14,10 +14,14 @@
 #include "InventoryWidget.generated.h"
 
 // Forward Declarations
+class UImage;
 class UListView;
+class UTextBlock;
+class UPanelWidget;
+class UWidgetSwitcher;
+
 class UInventoryAsset;
 class UInventorySubsystem;
-
 
 /**
  *
@@ -58,12 +62,12 @@ public:
 
 protected:
 
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Widget|Binding")
+	TObjectPtr<UListView> InventoryContainer;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidgetOptional), Category = "Inventory Widget|Filter")
 	FInventoryFilterRule InventoryFilterRule = FInventoryFilterRule();
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Widget|Binding")
-	TObjectPtr<UListView> InventoryContainer;
 
 
 	UPROPERTY(BlueprintReadWrite, Category = "Inventory Widget|Runtime")
@@ -152,6 +156,42 @@ public:
 	virtual void RefreshDetail_Implementation();
 
 protected:
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	TObjectPtr<UWidgetSwitcher> DetailSwitcher;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	TObjectPtr<UImage> ItemImage;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	TObjectPtr<UTextBlock> ItemTitle;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	TObjectPtr<UTextBlock> ItemDescription;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	TObjectPtr<UTextBlock> ItemRank;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	TObjectPtr<UTextBlock> ItemLevel;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	TObjectPtr<UTextBlock> ItemXp;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	TObjectPtr<UPanelWidget> ItemTypeWidget;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (GetOptions = "InventoryLibrary.GetInventoryTypes"), Category = "Inventory Detail Widget|Property")
+	TSet<FName> ItemTypeVisibility;
+
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Detail Widget|Runtime")
 	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;

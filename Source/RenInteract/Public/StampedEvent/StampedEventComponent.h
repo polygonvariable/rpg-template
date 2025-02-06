@@ -28,6 +28,9 @@ class RENINTERACT_API UStampedEventComponent : public UActorComponent, public IL
 
 public:
 
+	UStampedEventComponent();
+
+
 	UPROPERTY(EditAnywhere, Category = "Stamped Event Component|Item")
 	FGuid UUID;
 

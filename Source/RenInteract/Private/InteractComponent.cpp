@@ -4,6 +4,11 @@
 #include "InteractComponent.h"
 
 
+UInteractComponent::UInteractComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+}
+
 void UInteractComponent::AddItem_Implementation(AActor* Item)
 {
 	if (Item)

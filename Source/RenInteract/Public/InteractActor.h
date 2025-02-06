@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "InteractItem.h"
+#include "RenCore/Public/LifeCycle/LifeCycleInterface.h"
 
 // Generated Headers
 #include "InteractActor.generated.h"
@@ -19,14 +20,17 @@ class UInteractComponent;
  *
  */
 UCLASS(Abstract, DisplayName = "Interact Actor")
-class RENINTERACT_API AInteractActor : public AActor
+class RENINTERACT_API AInteractActor : public AActor, public ILifeCycleInterface
 {
 
 	GENERATED_BODY()
 	
 public:
 
+	AInteractActor();
+
 	FInteractItem& GetInteractItem();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact Actor|Item")
 	FGuid GUID = FGuid::NewGuid();
@@ -78,7 +82,7 @@ protected:
 protected:
 
 	virtual void BeginStage_Implementation(FInstancedStruct Parameters);
-	virtual void EndStage_Implementation(const EEndPlayReason::Type EndPlayReason);
+	virtual void EndStage_Implementation();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:

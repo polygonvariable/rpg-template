@@ -14,6 +14,8 @@ AEntity::AEntity()
 		Capsule->SetCapsuleHalfHeight(90.0f);
 		Capsule->SetCapsuleRadius(35.0f);
 	}
+
+	PrimaryActorTick.bStartWithTickEnabled = false;
 }
 
 void AEntity::BeginPlay()

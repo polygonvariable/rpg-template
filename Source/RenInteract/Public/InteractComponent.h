@@ -19,7 +19,9 @@ class RENINTERACT_API UInteractComponent : public UActorComponent
 
 	GENERATED_BODY()
 
-public:	
+public:
+
+	UInteractComponent();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Component|Item")
 	void AddItem(AActor* Item);

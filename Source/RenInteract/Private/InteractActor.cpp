@@ -10,6 +10,11 @@
 #include "InteractComponent.h"
 
 
+AInteractActor::AInteractActor()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
 FInteractItem& AInteractActor::GetInteractItem()
 {
 	return InteractItem;
@@ -68,14 +73,14 @@ void AInteractActor::BeginStage_Implementation(FInstancedStruct Parameters)
 	BuildItem();
 }
 
-void AInteractActor::EndStage_Implementation(const EEndPlayReason::Type EndPlayReason)
+void AInteractActor::EndStage_Implementation()
 {
 	EndInteract();
 }
 
 void AInteractActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	//Execute_EndStage(this, EndPlayReason);
+	Execute_EndStage(this);
 	Super::EndPlay(EndPlayReason);
 }
 
