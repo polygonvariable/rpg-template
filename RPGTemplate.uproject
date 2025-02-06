@@ -16,6 +16,16 @@
 			]
 		},
 		{
+			"Name": "RenShared",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RenWidget",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RenCore",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -26,17 +36,17 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenShared",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
 			"Name": "RenStorage",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
 			"Name": "RenInventory",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RenEntity",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

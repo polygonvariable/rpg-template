@@ -48,7 +48,7 @@ public:
 	UStorage* GetLocalStorage(bool& bIsValid);
 	virtual UStorage* GetLocalStorage_Implementation(bool& bIsValid);
 
-public:
+protected:
 
 	virtual void OnInitialized_Implementation() override;
 	virtual void OnDeinitialized_Implementation() override;

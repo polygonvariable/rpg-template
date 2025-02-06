@@ -232,6 +232,8 @@ void UInventorySubsystem::OverwriteItems_Implementation(const TMap<FName, FInven
 
 void UInventorySubsystem::PostInitialize_Implementation()
 {
+	Super::PostInitialize_Implementation();
+
 	UStorageSubsystem* StorageSubsystem = nullptr;
 	GET_SUBSYSTEM_FROM_GAMEINSTANCE(UStorageSubsystem, StorageSubsystem);
 

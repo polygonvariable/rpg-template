@@ -14,11 +14,13 @@ public class RPGTemplateEditorTarget : TargetRules
         ExtraModuleNames.AddRange(
             new string[]
             {
-                "RenCore",
                 "RenShared",
+                "RenWidget",
+                "RenCore",
                 "RenAsset",
                 "RenStorage",
                 "RenInventory",
+                "RenEntity",
                 "RenInteract"
             }
         );

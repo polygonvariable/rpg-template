@@ -10,23 +10,25 @@ public class RPGTemplateTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 
-        /*
+        /**
 		 * After adding new modules make sure to add them here,
-		 * and regenerate the project
+		 * and regenerate the project.
 		*/
 
         ExtraModuleNames.AddRange(new string[] { "RPGTemplate" });
         ExtraModuleNames.AddRange(
-			new string[]
-			{
-				"RenCore",
+            new string[]
+            {
                 "RenShared",
+                "RenWidget",
+                "RenCore",
                 "RenAsset",
                 "RenStorage",
                 "RenInventory",
-				"RenInteract"
-			}
-		);
+                "RenEntity",
+                "RenInteract",
+            }
+        );
 
     }
 }

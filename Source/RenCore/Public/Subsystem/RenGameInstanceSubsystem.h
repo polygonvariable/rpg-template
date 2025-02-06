@@ -2,10 +2,16 @@
 
 #pragma once
 
+// Engine Headers
 #include "CoreMinimal.h"
 
+// Project Headers
+#include "SubsystemInterface.h"
+
+// Generated Headers
 #include "RenGameInstanceSubsystem.generated.h"
 
+// Forward Declarations
 class UGameMetadataSettings;
 
 
@@ -13,23 +19,18 @@ class UGameMetadataSettings;
  *
  */
 UCLASS(Abstract, Blueprintable, DisplayName = "Ren Game Instance Subsystem")
-class RENCORE_API URenGameInstanceSubsystem : public UGameInstanceSubsystem
+class RENCORE_API URenGameInstanceSubsystem : public UGameInstanceSubsystem, public ISubsystemInterface
 {
 
 	GENERATED_BODY()
 
 public:
-	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Handler")
-	void PostInitialize();
+
 	virtual void PostInitialize_Implementation();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Handler")
-	void OnInitialized();
-	virtual void OnInitialized_Implementation();
+protected:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta=(ForceAsFunction), Category = "Handler")
-	void OnDeinitialized();
+	virtual void OnInitialized_Implementation();
 	virtual void OnDeinitialized_Implementation();
 
 protected:

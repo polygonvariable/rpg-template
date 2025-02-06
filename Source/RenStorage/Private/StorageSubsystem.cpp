@@ -73,7 +73,6 @@ void UStorageSubsystem::OnInitialized_Implementation()
 	ReadStorage();
 }
 
-
 void UStorageSubsystem::OnDeinitialized_Implementation()
 {
 	UpdateStorage();

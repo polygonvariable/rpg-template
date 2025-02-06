@@ -2,10 +2,12 @@
 
 #pragma once
 
+// Engine Headers
 #include "CoreMinimal.h"
 #include "InstancedStruct.h"
 #include "UObject/Interface.h"
 
+// Generated Headers
 #include "LifeCycleInterface.generated.h"
 
 

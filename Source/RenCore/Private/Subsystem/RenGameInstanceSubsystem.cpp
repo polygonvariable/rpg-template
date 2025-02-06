@@ -25,13 +25,13 @@ void URenGameInstanceSubsystem::OnDeinitialized_Implementation()
 void URenGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	OnInitialized();
+	Execute_OnInitialized(this);
 }
 
 void URenGameInstanceSubsystem::Deinitialize()
 {
+	Execute_OnDeinitialized(this);
 	Super::Deinitialize();
-	OnDeinitialized();
 }
 
 bool URenGameInstanceSubsystem::ShouldCreateSubsystem(UObject* Object) const
@@ -48,7 +48,7 @@ bool URenGameInstanceSubsystem::ShouldCreateSubsystem(UObject* Object) const
 		LOG_ERROR(this, LogTemp, "GameMetadataSettings is null");
 		return false;
 	}
-
+	
 	for (auto& SubsystemClass : GameMetadata->SubsystemClasses)
 	{
 		if (SubsystemClass == this->GetClass())

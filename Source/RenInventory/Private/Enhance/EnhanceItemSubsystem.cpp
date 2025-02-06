@@ -156,5 +156,7 @@ bool UEnhanceItemSubsystem::HandleLevelUp(const FName& EnhanceableStorageId, con
 
 void UEnhanceItemSubsystem::PostInitialize_Implementation()
 {
+	Super::PostInitialize_Implementation();
+
 	GET_SUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
 }

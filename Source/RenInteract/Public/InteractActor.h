@@ -26,15 +26,14 @@ class RENINTERACT_API AInteractActor : public AActor
 	
 public:
 
+	FInteractItem& GetInteractItem();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact Actor|Item")
 	FGuid GUID = FGuid::NewGuid();
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interact Actor|Item")
 	FText Name = FText::FromString("Item");
-
-
-	FInteractItem& GetInteractItem();
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Actor|Action")
