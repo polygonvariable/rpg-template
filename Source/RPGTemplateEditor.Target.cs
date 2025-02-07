@@ -21,6 +21,7 @@ public class RPGTemplateEditorTarget : TargetRules
                 "RenStorage",
                 "RenInventory",
                 "RenEntity",
+                "RenEnvironment",
                 "RenInteract"
             }
         );

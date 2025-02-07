@@ -9,19 +9,19 @@ UInteractComponent::UInteractComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UInteractComponent::AddItem_Implementation(AActor* Item)
+void UInteractComponent::AddItem_Implementation(AActor* Actor)
 {
-	if (Item)
+	if (IsValid(Actor))
 	{
-		OnInteractStarted.Broadcast(Item);
+		OnInteractStarted.Broadcast(Actor);
 	}
 }
 
-void UInteractComponent::RemoveItem_Implementation(AActor* Item)
+void UInteractComponent::RemoveItem_Implementation(AActor* Actor)
 {
-	if(Item)
+	if (IsValid(Actor))
 	{
-		OnInteractEnded.Broadcast(Item);
+		OnInteractEnded.Broadcast(Actor);
 	}
 }
 

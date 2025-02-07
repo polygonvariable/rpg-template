@@ -6,9 +6,6 @@
 #include "CoreMinimal.h"
 #include "Kismet/GameplayStatics.h"
 
-// Generated Headers
-// #include "StampedEventTypes.generated.h"
-
 
 /**
  *
@@ -32,3 +29,4 @@ enum EStampedEventCooldownStatus
 	Completed UMETA(DisplayName = "Completed"),
 	NotFound UMETA(DisplayName = "Not Found"),
 };
+

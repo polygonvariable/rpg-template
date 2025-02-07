@@ -25,22 +25,22 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Component|Item")
-	void AddItem(AActor* Item);
-	virtual void AddItem_Implementation(AActor* Item);
+	void AddItem(AActor* Actor);
+	virtual void AddItem_Implementation(AActor* Actor);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Interact Component|Item")
-	void RemoveItem(AActor* Item);
-	virtual void RemoveItem_Implementation(AActor* Item);
+	void RemoveItem(AActor* Actor);
+	virtual void RemoveItem_Implementation(AActor* Actor);
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractStarted, AActor*, Item);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractStarted, AActor*, Actor);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Interact Component|Event Dispatcher")
 	FOnInteractStarted OnInteractStarted;
 
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractEnded, AActor*, Item);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteractEnded, AActor*, Actor);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Interact Component|Event Dispatcher")
 	FOnInteractEnded OnInteractEnded;
 
