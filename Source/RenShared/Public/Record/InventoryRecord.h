@@ -2,53 +2,52 @@
 
 #pragma once
 
+// Engine Headers
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "InstancedStruct.h"
 
+// Project Headers
 #include "Filter/FilterRule.h"
+#include "Record/RenRecord.h"
+#include "Record/EnhanceRecord.h"
 
-#include "InventoryItem.generated.h"
+// Generated Headers
+#include "InventoryRecord.generated.h"
 
 
 /**
  * 
  */
-USTRUCT(BlueprintType, DisplayName = "Inventory Item")
-struct FInventoryItem
+USTRUCT(BlueprintType, DisplayName = "Inventory Record")
+struct FInventoryRecord : public FRenRecord
 {
 
 	GENERATED_BODY()
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName Id;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName Type = "Invalid";
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Quantity = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Rank = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Level = 1;
+	FEnhanceRecord EnhanceRecord;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Xp = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FInstancedStruct CustomData;
-
-	friend inline bool operator == (const FInventoryItem& A, const FInventoryItem& B)
+	friend inline bool operator == (const FInventoryRecord& A, const FInventoryRecord& B)
 	{
 		return A.Id == B.Id && A.Type == B.Type;
 	}
 
-	friend inline uint32 GetTypeHash(const FInventoryItem& Item)
+	friend inline uint32 GetTypeHash(const FInventoryRecord& Record)
 	{
-		return HashCombine(GetTypeHash(Item.Id.ToString()), GetTypeHash(Item.Type));
+		return HashCombine(GetTypeHash(Record.Id.ToString()), GetTypeHash(Record.Type));
 	}
 
 };
@@ -63,21 +62,9 @@ struct FInventoryTable : public FTableRowBase
 
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName Id;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPrimaryDataAsset* InventoryAsset = nullptr;
-
-	friend inline bool operator == (const FInventoryTable& A, const FInventoryTable& B)
-	{
-		return A.Id == B.Id;
-	}
-
-	friend inline uint32 GetTypeHash(const FInventoryTable& Item)
-	{
-		return GetTypeHash(Item.Id.ToString());
-	}
 
 };
 
@@ -91,50 +78,59 @@ struct FInventoryFilterRule
 
 	GENERATED_BODY()
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterNameRule FilterId = FFilterNameRule();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterNameRule FilterType = FFilterNameRule();
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterNameRule FilterRarity = FFilterNameRule();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterIntegerRule FilterRank = FFilterIntegerRule();
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterIntegerRule FilterLevel = FFilterIntegerRule();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterIntegerRule FilterXp = FFilterIntegerRule();
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterIntegerRule FilterQuantity = FFilterIntegerRule();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EFilterCombination FilterCombination = EFilterCombination::And;
 
-	bool Matches(const FInventoryItem& Item, const FName& Rarity) const
+
+	bool Matches(const FInventoryRecord& Record, const FName& Rarity) const
 	{
 		bool bPasses = (FilterCombination == EFilterCombination::And);
 
 		if (FilterCombination == EFilterCombination::And)
 		{
-			if (!FilterId.Matches(Item.Id) || !FilterType.Matches(Item.Type) ||
-				!FilterRarity.Matches(Rarity) || !FilterRank.Matches(Item.Rank) ||
-				!FilterLevel.Matches(Item.Level) || !FilterXp.Matches(Item.Xp) ||
-				!FilterQuantity.Matches(Item.Quantity))
+			if (!FilterId.Matches(Record.Id) || !FilterType.Matches(Record.Type) ||
+				!FilterRarity.Matches(Rarity) || !FilterRank.Matches(Record.EnhanceRecord.Rank) ||
+				!FilterLevel.Matches(Record.EnhanceRecord.Level) || !FilterXp.Matches(Record.EnhanceRecord.Experience) ||
+				!FilterQuantity.Matches(Record.Quantity))
 			{
 				bPasses = false;
 			}
 		}
 		else if (FilterCombination == EFilterCombination::Or)
 		{
-			if (FilterId.Matches(Item.Id) || FilterType.Matches(Item.Type) ||
-				FilterRarity.Matches(Rarity) || FilterRank.Matches(Item.Rank) ||
-				FilterLevel.Matches(Item.Level) || FilterXp.Matches(Item.Xp) ||
-				FilterQuantity.Matches(Item.Quantity))
+			if (FilterId.Matches(Record.Id) || FilterType.Matches(Record.Type) ||
+				FilterRarity.Matches(Rarity) || FilterRank.Matches(Record.EnhanceRecord.Rank) ||
+				FilterLevel.Matches(Record.EnhanceRecord.Level) || FilterXp.Matches(Record.EnhanceRecord.Experience) ||
+				FilterQuantity.Matches(Record.Quantity))
 			{
 				bPasses = true;
 			}

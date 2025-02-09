@@ -53,8 +53,8 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Meta = (ForceAsFunction), Category = "Stamped Event Subsystem|Action")
-	EStampedEventCooldownStatus GetEventCooldownStatus(const FGuid Id, const bool bIsOnlyOnce, const FDateTime CooldownTime);
-	virtual EStampedEventCooldownStatus GetEventCooldownStatus_Implementation(const FGuid Id, const bool bIsOnlyOnce, const FDateTime CooldownTime);
+	EStampedEventCooldownStatus GetEventCooldownStatus(const FGuid Id, const bool bIsOnlyOnce, const FTimespan CooldownTime);
+	virtual EStampedEventCooldownStatus GetEventCooldownStatus_Implementation(const FGuid Id, const bool bIsOnlyOnce, const FTimespan CooldownTime);
 
 protected:
 

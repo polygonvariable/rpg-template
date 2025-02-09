@@ -5,7 +5,6 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Blueprint/IUserObjectListEntry.h"
 
 // Project Headers
 #include "InteractItem.h"

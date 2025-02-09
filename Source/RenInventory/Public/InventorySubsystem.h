@@ -28,59 +28,59 @@ class RENINVENTORY_API UInventorySubsystem : public URenGameInstanceSubsystem
 
 public:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
-	bool AddItem(UInventoryAsset* InventoryAssetId, const int Quantity = 1);
-	virtual bool AddItem_Implementation(UInventoryAsset* InventoryAssetId, const int Quantity = 1);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
+	bool AddRecord(UInventoryAsset* InventoryAssetId, const int Quantity = 1);
+	virtual bool AddRecord_Implementation(UInventoryAsset* InventoryAssetId, const int Quantity = 1);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Items")
-	bool AddItems(const TMap<UInventoryAsset*, int32>& InventoryAssets);
-	virtual bool AddItems_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
+	bool AddRecords(const TMap<UInventoryAsset*, int32>& InventoryAssets);
+	virtual bool AddRecords_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
-	bool RemoveItem(const FName InventoryStorageId, const int Quantity = 1);
-	virtual bool RemoveItem_Implementation(const FName InventoryStorageId, const int Quantity = 1);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
+	bool RemoveRecord(const FName InventoryRecordId, const int Quantity = 1);
+	virtual bool RemoveRecord_Implementation(const FName InventoryRecordId, const int Quantity = 1);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Items")
-	bool RemoveItems(const TMap<FName, int32>& InventoryStorageIds);
-	virtual bool RemoveItems_Implementation(const TMap<FName, int32>& InventoryStorageIds);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
+	bool RemoveRecords(const TMap<FName, int32>& InventoryRecordIds);
+	virtual bool RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
-	bool UpdateItem(const FName InventoryStorageId, FInventoryItem InventoryItem);
-	virtual bool UpdateItem_Implementation(const FName InventoryStorageId, FInventoryItem InventoryItem);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
+	bool UpdateRecord(const FName InventoryRecordId, FInventoryRecord InventoryRecord);
+	virtual bool UpdateRecord_Implementation(const FName InventoryRecordId, FInventoryRecord InventoryRecord);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintPure), Category = "Inventory Subsystem|Item")
-	bool HasItem(const FName InventoryStorageId);
-	virtual bool HasItem_Implementation(const FName InventoryStorageId);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintPure), Category = "Inventory Subsystem|Record")
+	bool HasRecord(const FName InventoryRecordId);
+	virtual bool HasRecord_Implementation(const FName InventoryRecordId);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Item")
-	FInventoryItem GetItem(const FName InventoryStorageId, bool& bFound);
-	virtual FInventoryItem GetItem_Implementation(const FName InventoryStorageId, bool& bFound);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
+	FInventoryRecord GetRecord(const FName InventoryRecordId, bool& bFound);
+	virtual FInventoryRecord GetRecord_Implementation(const FName InventoryRecordId, bool& bFound);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Items")
-	TMap<FName, FInventoryItem> GetItems(bool& bIsValid);
-	virtual TMap<FName, FInventoryItem> GetItems_Implementation(bool& bIsValid);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Asset")
-	UInventoryAsset* GetItemAsset(const FName InventoryAssetId, bool& bFound);
-	virtual UInventoryAsset* GetItemAsset_Implementation(const FName InventoryAssetId, bool& bFound);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
+	TMap<FName, FInventoryRecord> GetRecords(bool& bIsValid);
+	virtual TMap<FName, FInventoryRecord> GetRecords_Implementation(bool& bIsValid);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Asset")
-	FInventoryItem GetItemWithAsset(const FName InventoryStorageId, UInventoryAsset*& InventoryAsset, bool& bFound);
-	virtual FInventoryItem GetItemWithAsset_Implementation(const FName InventoryStorageId, UInventoryAsset*& InventoryAsset, bool& bFound);
+	UInventoryAsset* GetRecordAsset(const FName InventoryAssetId, bool& bFound);
+	virtual UInventoryAsset* GetRecordAsset_Implementation(const FName InventoryAssetId, bool& bFound);
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Asset")
+	FInventoryRecord GetRecordWithAsset(const FName InventoryRecordId, UInventoryAsset*& InventoryAsset, bool& bFound);
+	virtual FInventoryRecord GetRecordWithAsset_Implementation(const FName InventoryRecordId, UInventoryAsset*& InventoryAsset, bool& bFound);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Dirty")
-	void OverwriteItems(const TMap<FName, FInventoryItem>& InventoryItems);
-	virtual void OverwriteItems_Implementation(const TMap<FName, FInventoryItem>& InventoryItems);
+	void OverwriteRecords(const TMap<FName, FInventoryRecord>& InventoryRecords);
+	virtual void OverwriteRecords_Implementation(const TMap<FName, FInventoryRecord>& InventoryRecords);
 
 protected:
 

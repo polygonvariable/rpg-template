@@ -21,7 +21,7 @@ struct FRenRecord
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FInstancedStruct Custom;
+	FInstancedStruct CustomRecord;
 
 };
 

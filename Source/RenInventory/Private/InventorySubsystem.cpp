@@ -5,20 +5,17 @@
 #include "InventorySubsystem.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/LogMacro.h"
-#include "RenShared/Public/Macro/GameInstanceMacro.h"
-#include "RenShared/Public/Inventory/InventoryItem.h"
-
+#include "RenAsset/Public/Inventory/InventoryAsset.h"
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-
+#include "RenShared/Public/Macro/GameInstanceMacro.h"
+#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenShared/Public/Record/InventoryRecord.h"
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
 
-#include "RenAsset/Public/Inventory/InventoryAsset.h"
 
 
-
-bool UInventorySubsystem::AddItem_Implementation(UInventoryAsset* InventoryAsset, const int Quantity)
+bool UInventorySubsystem::AddRecord_Implementation(UInventoryAsset* InventoryAsset, const int Quantity)
 {
 	if (!Storage || !InventoryAsset || Quantity <= 0)
 	{
@@ -26,57 +23,57 @@ bool UInventorySubsystem::AddItem_Implementation(UInventoryAsset* InventoryAsset
 		return false;
 	}
 
-	TMap<FName, FInventoryItem>& Items = Storage->InventoryItems;
-	FName ItemId = InventoryAsset->Id;
-	FName ItemType = InventoryAsset->ItemType;
+	TMap<FName, FInventoryRecord>& Records = Storage->InventoryRecords;
+	FName RecordId = InventoryAsset->Id;
+	FName AssetType = InventoryAsset->ItemType;
 
 	if (InventoryAsset->bIsStackable)
 	{
-		FInventoryItem* Item = Items.Find(ItemId);
+		FInventoryRecord* Record = Records.Find(RecordId);
 
-		if (Item)
+		if (Record)
 		{
-			Item->Quantity += Quantity;
-			LOG_INFO(this, LogTemp, "Stackable item %s updated", *InventoryAsset->Name.ToString());
+			Record->Quantity += Quantity;
+			LOG_INFO(this, LogTemp, "Stackable record %s updated", *InventoryAsset->Name.ToString());
 		}
 		else {
-			FInventoryItem NewItem;
-			NewItem.Id = ItemId;
-			NewItem.Type = ItemType;
-			NewItem.Quantity = Quantity;
+			FInventoryRecord NewRecord;
+			NewRecord.Id = RecordId;
+			NewRecord.Type = AssetType;
+			NewRecord.Quantity = Quantity;
 
-			Items.Add(ItemId, NewItem);
-			LOG_INFO(this, LogTemp, "Stackable item %s added", *InventoryAsset->Name.ToString());
+			Records.Add(RecordId, NewRecord);
+			LOG_INFO(this, LogTemp, "Stackable record %s added", *InventoryAsset->Name.ToString());
 		}
 	}
 	else {
-		FInventoryItem NewItem;
-		NewItem.Id = ItemId;
-		NewItem.Type = ItemType;
-		NewItem.Quantity = Quantity;
+		FInventoryRecord NewRecord;
+		NewRecord.Id = RecordId;
+		NewRecord.Type = AssetType;
+		NewRecord.Quantity = Quantity;
 
-		Items.Add(FName(FGuid::NewGuid().ToString()), NewItem);
-		LOG_INFO(this, LogTemp, "Non stackable item added: %s", *InventoryAsset->Name.ToString());
+		Records.Add(FName(FGuid::NewGuid().ToString()), NewRecord);
+		LOG_INFO(this, LogTemp, "Non stackable record added: %s", *InventoryAsset->Name.ToString());
 	}
 
 	return true;
 }
 
-bool UInventorySubsystem::AddItems_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets)
+bool UInventorySubsystem::AddRecords_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets)
 {
 	if (!IsValid(Storage))
 	{
 		LOG_ERROR(this, LogTemp, "Storage is null");
 		return false;
 	}
-	for (auto Item : InventoryAssets)
+	for (auto Record : InventoryAssets)
 	{
-		AddItem(Item.Key, Item.Value);
+		AddRecord(Record.Key, Record.Value);
 	}
 	return false;
 }
 
-bool UInventorySubsystem::RemoveItem_Implementation(const FName InventoryStorageId, const int Quantity)
+bool UInventorySubsystem::RemoveRecord_Implementation(const FName InventoryRecordId, const int Quantity)
 {
 	if (!Storage)
 	{
@@ -90,44 +87,46 @@ bool UInventorySubsystem::RemoveItem_Implementation(const FName InventoryStorage
 		return false;
 	}
 
-	TMap<FName, FInventoryItem>& Items = Storage->InventoryItems;
-	FInventoryItem* Item = Items.Find(InventoryStorageId);
+	TMap<FName, FInventoryRecord>& Records = Storage->InventoryRecords;
+	FInventoryRecord* Record = Records.Find(InventoryRecordId);
 
-	if (!Item)
+	if (!Record)
 	{
-		LOG_ERROR(this, LogTemp, "Item not found: %s", *InventoryStorageId.ToString());
+		LOG_ERROR(this, LogTemp, "Record not found: %s", *InventoryRecordId.ToString());
 		return false;
 	}
 
-	if (Item->Quantity > Quantity)
+	if (Record->Quantity > Quantity)
 	{
-		Item->Quantity -= Quantity;
-		LOG_INFO(this, LogTemp, "Item quantity reduced: %s", *InventoryStorageId.ToString());
+		Record->Quantity -= Quantity;
+		LOG_INFO(this, LogTemp, "Record quantity reduced: %s", *InventoryRecordId.ToString());
 	}
 	else
 	{
-		Items.Remove(InventoryStorageId);
-		LOG_INFO(this, LogTemp, "Item removed: %s", *InventoryStorageId.ToString());
+		Records.Remove(InventoryRecordId);
+		LOG_INFO(this, LogTemp, "Record removed: %s", *InventoryRecordId.ToString());
 	}
 
 	return true;
 }
 
-bool UInventorySubsystem::RemoveItems_Implementation(const TMap<FName, int32>& InventoryStorageIds)
+bool UInventorySubsystem::RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds)
 {
 	if (!IsValid(Storage))
 	{
 		LOG_ERROR(this, LogTemp, "Storage is null");
 		return false;
 	}
-	for (auto Item : InventoryStorageIds)
+
+	for (auto Record : InventoryRecordIds)
 	{
-		RemoveItem(Item.Key, Item.Value);
+		RemoveRecord(Record.Key, Record.Value);
 	}
+
 	return false;
 }
 
-bool UInventorySubsystem::UpdateItem_Implementation(const FName InventoryStorageId, FInventoryItem InventoryItem)
+bool UInventorySubsystem::UpdateRecord_Implementation(const FName InventoryRecordId, FInventoryRecord InventoryRecord)
 {
 	if (!IsValid(Storage))
 	{
@@ -135,52 +134,55 @@ bool UInventorySubsystem::UpdateItem_Implementation(const FName InventoryStorage
 		return false;
 	}
 
-	TMap<FName, FInventoryItem>& Items = Storage->InventoryItems;
-
-	if (Items.Contains(InventoryStorageId))
+	TMap<FName, FInventoryRecord>& Records = Storage->InventoryRecords;
+	if (Records.Contains(InventoryRecordId))
 	{
-		Items.Add(InventoryStorageId, InventoryItem);
-		LOG_INFO(this, LogTemp, "Item updated: %s", *InventoryStorageId.ToString());
+		Records.Add(InventoryRecordId, InventoryRecord);
+		LOG_INFO(this, LogTemp, "Record updated: %s", *InventoryRecordId.ToString());
 		return true;
 	}
 
-	LOG_ERROR(this, LogTemp, "Item not found: %s", *InventoryStorageId.ToString());
+	LOG_ERROR(this, LogTemp, "Record not found: %s", *InventoryRecordId.ToString());
 	return false;
 }
 
-bool UInventorySubsystem::HasItem_Implementation(const FName InventoryStorageId)
+bool UInventorySubsystem::HasRecord_Implementation(const FName InventoryRecordId)
 {
 	if (!IsValid(Storage))
 	{
 		return false;
 	}
-	return Storage->InventoryItems.Contains(InventoryStorageId);
+
+	return Storage->InventoryRecords.Contains(InventoryRecordId);
 }
 
-FInventoryItem UInventorySubsystem::GetItem_Implementation(const FName InventoryStorageId, bool& bFound)
+FInventoryRecord UInventorySubsystem::GetRecord_Implementation(const FName InventoryRecordId, bool& bFound)
 {
 	if (!IsValid(Storage))
 	{
 		bFound = false;
-		return FInventoryItem();
+		return FInventoryRecord();
 	}
-	FInventoryItem* Item = Storage->InventoryItems.Find(InventoryStorageId);
-	bFound = (Item != nullptr);
-	return *Item;
+
+	FInventoryRecord* Record = Storage->InventoryRecords.Find(InventoryRecordId);
+	bFound = (Record != nullptr);
+
+	return *Record;
 }
 
-TMap<FName, FInventoryItem> UInventorySubsystem::GetItems_Implementation(bool& bIsValid)
+TMap<FName, FInventoryRecord> UInventorySubsystem::GetRecords_Implementation(bool& bIsValid)
 {
 	if (!IsValid(Storage))
 	{
 		bIsValid = false;
-		return TMap<FName, FInventoryItem>();
+		return TMap<FName, FInventoryRecord>();
 	}
+
 	bIsValid = true;
-	return Storage->InventoryItems;
+	return Storage->InventoryRecords;
 }
 
-UInventoryAsset* UInventorySubsystem::GetItemAsset_Implementation(const FName InventoryAssetId, bool& bFound)
+UInventoryAsset* UInventorySubsystem::GetRecordAsset_Implementation(const FName InventoryAssetId, bool& bFound)
 {
 	if (!InventoryTable)
 	{
@@ -189,45 +191,46 @@ UInventoryAsset* UInventorySubsystem::GetItemAsset_Implementation(const FName In
 		return nullptr;
 	}
 
-	FInventoryTable* ItemTable = InventoryTable->FindRow<FInventoryTable>(InventoryAssetId, TEXT(""));
-	if (ItemTable)
+	FInventoryTable* RecordTable = InventoryTable->FindRow<FInventoryTable>(InventoryAssetId, TEXT(""));
+	if (RecordTable)
 	{
 		bFound = true;
-		return Cast<UInventoryAsset>(ItemTable->InventoryAsset);
+		return Cast<UInventoryAsset>(RecordTable->InventoryAsset);
 	}
 
 	bFound = false;
 	return nullptr;
 }
 
-FInventoryItem UInventorySubsystem::GetItemWithAsset_Implementation(const FName InventoryStorageId, UInventoryAsset*& InventoryAsset, bool& bFound)
+FInventoryRecord UInventorySubsystem::GetRecordWithAsset_Implementation(const FName InventoryRecordId, UInventoryAsset*& InventoryAsset, bool& bFound)
 {
 	bFound = false;
-	FInventoryItem Item = GetItem(InventoryStorageId, bFound);
+	FInventoryRecord Record = GetRecord(InventoryRecordId, bFound);
 	if (!bFound) {
 		InventoryAsset = nullptr;
-		return FInventoryItem();
+		return FInventoryRecord();
 	}
 
 	bFound = false;
-	InventoryAsset = GetItemAsset(Item.Id, bFound);
+	InventoryAsset = GetRecordAsset(Record.Id, bFound);
 	if (!bFound) {
 		InventoryAsset = nullptr;
-		return Item;
+		return Record;
 	}
 
-	return Item;
+	return Record;
 }
 
-void UInventorySubsystem::OverwriteItems_Implementation(const TMap<FName, FInventoryItem>& InventoryItems)
+void UInventorySubsystem::OverwriteRecords_Implementation(const TMap<FName, FInventoryRecord>& InventoryRecords)
 {
 	if (!IsValid(Storage))
 	{
 		LOG_ERROR(this, LogTemp, "Storage is null");
 		return;
 	}
-	Storage->InventoryItems = InventoryItems;
-	LOG_INFO(this, LogTemp, "Items overwritten");
+
+	Storage->InventoryRecords = InventoryRecords;
+	LOG_INFO(this, LogTemp, "Records overwritten");
 }
 
 void UInventorySubsystem::PostInitialize_Implementation()

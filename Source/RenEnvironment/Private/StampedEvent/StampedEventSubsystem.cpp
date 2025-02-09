@@ -62,7 +62,7 @@ EStampedEventStatus UStampedEventSubsystem::GetEventStatus_Implementation(const 
 	return HasChanged(Id) ? EStampedEventStatus::Changed : EStampedEventStatus::Unchanged;
 }
 
-EStampedEventCooldownStatus UStampedEventSubsystem::GetEventCooldownStatus_Implementation(const FGuid Id, const bool bIsOnlyOnce, const FDateTime CooldownTime)
+EStampedEventCooldownStatus UStampedEventSubsystem::GetEventCooldownStatus_Implementation(const FGuid Id, const bool bIsOnlyOnce, const FTimespan CooldownTime)
 {
 	if (HasChanged(Id)) {
 

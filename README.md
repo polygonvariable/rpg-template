@@ -1,4 +1,4 @@
-# RPG Template 🎲
+# RPG Template 🛞
 
 ---
 

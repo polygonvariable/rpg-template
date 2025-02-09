@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "RenCore/Public/Common/RenSaveGame.h"
-#include "RenShared/Public/Inventory/InventoryItem.h"
+#include "RenShared/Public/Record/InventoryRecord.h"
 
 // Generated Headers
 #include "Storage.generated.h"
@@ -26,10 +26,10 @@ public:
 	
 	/**
 	* A map of inventory items
-	* <FName = UUID, Struct = FInventoryItem>
+	* <FName = UUID, Struct = FInventoryRecord>
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage|Inventory")
-	TMap<FName, FInventoryItem> InventoryItems; // 
+	TMap<FName, FInventoryRecord> InventoryRecords; // 
 
 	/**
 	* A map of stamped events, which is a map of UUIDs to timestamps

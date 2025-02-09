@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Record/EnhanceRecord.h"
 #include "EnhanceLibrary.generated.h"
 
 /**
@@ -35,6 +36,6 @@ public:
 		bool& bDoesMaxLevelReached
 	);
 
-	static bool CanRankUp(int CurrentXp, int CurrentLevel, int LevelInterval);
+	static bool CanRankUp(const FEnhanceRecord& EnhanceRecord, const int LevelInterval);
 	
 };

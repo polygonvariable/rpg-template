@@ -19,7 +19,7 @@
 #include "RenAsset/Public/Inventory/InventoryAsset.h"
 
 
-void UInventoryWidget::DisplayStoredItems_Implementation(bool bForceRefresh)
+void UInventoryWidget::DisplayStoredRecords_Implementation(bool bForceRefresh)
 {
 	if (!EntryObjectClass || !EntryObjectClass->IsChildOf(UInventoryEntryObject::StaticClass()))
 	{
@@ -32,14 +32,14 @@ void UInventoryWidget::DisplayStoredItems_Implementation(bool bForceRefresh)
 		GET_SUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
 	}
 
-	if (InventoryItems.Num() == 0 || bForceRefresh)
+	if (InventoryRecords.Num() == 0 || bForceRefresh)
 	{
 		bool bSuccess = false;
-		InventoryItems = InventorySubsystem->GetItems(bSuccess);
+		InventoryRecords = InventorySubsystem->GetRecords(bSuccess);
 
 		if (!bSuccess)
 		{
-			LOG_ERROR(this, LogTemp, "Failed to get stored items");
+			LOG_ERROR(this, LogTemp, "Failed to get stored records");
 			return;
 		}
 	}
@@ -49,18 +49,18 @@ void UInventoryWidget::DisplayStoredItems_Implementation(bool bForceRefresh)
 		InventoryContainer->ClearListItems();
 	}
 
-	for (auto Item : InventoryItems)
+	for (auto Record : InventoryRecords)
 	{
 		bool bFound = false;
-		UInventoryAsset* ItemAsset = InventorySubsystem->GetItemAsset(Item.Value.Id, bFound);
+		UInventoryAsset* Asset = InventorySubsystem->GetRecordAsset(Record.Value.Id, bFound);
 
-		if (!bFound || !ItemAsset)
+		if (!bFound || !Asset)
 		{
-			LOG_ERROR(this, LogTemp, "Failed to get item asset");
+			LOG_ERROR(this, LogTemp, "Failed to get record asset");
 			continue;
 		}
 
-		if (!InventoryFilterRule.Matches(Item.Value, ItemAsset->ItemRarity))
+		if (!InventoryFilterRule.Matches(Record.Value, Asset->ItemRarity))
 		{
 			continue;
 		}
@@ -71,15 +71,15 @@ void UInventoryWidget::DisplayStoredItems_Implementation(bool bForceRefresh)
 			LOG_ERROR(this, LogTemp, "Failed to create entry object");
 			continue;
 		}
-		EntryObject->InventoryStorageId = Item.Key;
-		EntryObject->InventoryItem = Item.Value;
-		EntryObject->ItemAsset = ItemAsset;
+		EntryObject->InventoryRecordId = Record.Key;
+		EntryObject->InventoryRecord = Record.Value;
+		EntryObject->InventoryAsset = Asset;
 
-		HandleDisplayItem(EntryObject);
+		HandleDisplayRecord(EntryObject);
 	}
 }
 
-void UInventoryWidget::HandleDisplayItem_Implementation(UInventoryEntryObject* EntryObject)
+void UInventoryWidget::HandleDisplayRecord_Implementation(UInventoryEntryObject* EntryObject)
 {
 	if (IsValid(InventoryContainer))
 	{
@@ -87,7 +87,7 @@ void UInventoryWidget::HandleDisplayItem_Implementation(UInventoryEntryObject* E
 	}
 }
 
-void UInventoryWidget::HandleSelectedItem_Implementation(UObject* Object)
+void UInventoryWidget::HandleSelectedRecord_Implementation(UObject* Object)
 {
 }
 
@@ -101,9 +101,9 @@ void UInventoryEntryWidget::InitializeEntry_Implementation(UObject* Object)
 	}
 
 	TObjectPtr<UInventoryEntryObject> EntryObject = Cast<UInventoryEntryObject>(Object);
-	ItemSid = EntryObject->InventoryStorageId;
-	Item = EntryObject->InventoryItem;
-	ItemAsset = EntryObject->ItemAsset;
+	InventoryRecordId = EntryObject->InventoryRecordId;
+	InventoryRecord = EntryObject->InventoryRecord;
+	InventoryAsset = EntryObject->InventoryAsset;
 
 	HandleEntry(EntryObject);
 }
@@ -111,16 +111,16 @@ void UInventoryEntryWidget::InitializeEntry_Implementation(UObject* Object)
 void UInventoryEntryWidget::SelectEntry_Implementation()
 {
 	UListViewBase* ListViewBase = GetOwningListView();
-	UObject* ListItem = GetListItem();
+	UObject* ListRecord = GetListItem();
 
-	if (!IsValid(ListItem) || !IsValid(ListViewBase))
+	if (!IsValid(ListRecord) || !IsValid(ListViewBase))
 	{
-		LOG_ERROR(this, LogTemp, "ListItem or ListViewBase is null");
+		LOG_ERROR(this, LogTemp, "ListRecord or ListViewBase is null");
 		return;
 	}
 
 	UListView* ListView = CastChecked<UListView>(ListViewBase);
-	ListView->SetSelectedItem(ListItem);
+	ListView->SetSelectedItem(ListRecord);
 }
 
 void UInventoryEntryWidget::HandleEntry_Implementation(UInventoryEntryObject* EntryObject)
@@ -128,11 +128,12 @@ void UInventoryEntryWidget::HandleEntry_Implementation(UInventoryEntryObject* En
 }
 
 
-void UInventoryDetailWidget::InitializeDetail_Implementation(FInventoryItem InventoryItem, FName InventoryStorageId, UInventoryAsset* InventoryAsset)
+void UInventoryDetailWidget::InitializeDetail_Implementation(FInventoryRecord Record, FName RecordId, UInventoryAsset* Asset)
 {
-	if (!IsValid(InventoryAsset))
+	if (!IsValid(Asset))
 	{
 		if (IsValid(DetailSwitcher)) DetailSwitcher->SetActiveWidgetIndex(0);
+		LOG_ERROR(this, LogTemp, "Asset is null");
 		return;
 	}
 
@@ -141,26 +142,26 @@ void UInventoryDetailWidget::InitializeDetail_Implementation(FInventoryItem Inve
 		GET_SUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
 	}
 
-	Item = InventoryItem;
-	ItemAsset = InventoryAsset;
-	ItemSid = InventoryStorageId;
+	InventoryAsset = Asset;
+	InventoryRecord = Record;
+	InventoryRecordId = RecordId;
 
 	HandleDetail();
 }
 
 void UInventoryDetailWidget::RefreshDetail_Implementation()
 {
-	if (!ItemSid.IsValid() || !IsValid(InventorySubsystem)) {
-		LOG_ERROR(this, LogTemp, "Inventory Storage Id or InventorySubsystem is not valid");
+	if (!InventoryRecordId.IsValid() || !IsValid(InventorySubsystem)) {
+		LOG_ERROR(this, LogTemp, "InventoryRecordId or InventorySubsystem is not valid");
 		return;
 	}
 
 	bool bFound = false;
-	Item = InventorySubsystem->GetItem(ItemSid, bFound);
+	InventoryRecord = InventorySubsystem->GetRecord(InventoryRecordId, bFound);
 
 	if (!bFound)
 	{
-		LOG_ERROR(this, LogTemp, "Item not found to refresh detail widget");
+		LOG_ERROR(this, LogTemp, "Record not found to refresh detail widget");
 		return;
 	}
 
@@ -169,22 +170,22 @@ void UInventoryDetailWidget::RefreshDetail_Implementation()
 
 void UInventoryDetailWidget::HandleDetail_Implementation()
 {
-	if(IsValid(ItemAsset))
+	if(IsValid(InventoryAsset))
 	{
-		if (IsValid(ItemTitle)) ItemTitle->SetText(ItemAsset->Name);
-		if (IsValid(ItemDescription)) ItemDescription->SetText(ItemAsset->Description);
-		if (IsValid(ItemImage) && ItemAsset->Icon.IsValid()) ItemImage->SetBrushFromSoftTexture(ItemAsset->Icon);
+		if (IsValid(AssetTitle)) AssetTitle->SetText(InventoryAsset->Name);
+		if (IsValid(AssetDescription)) AssetDescription->SetText(InventoryAsset->Description);
+		if (IsValid(AssetImage) && InventoryAsset->Icon.IsValid()) AssetImage->SetBrushFromSoftTexture(InventoryAsset->Icon);
 
-		if (IsValid(ItemTypeWidget))
+		if (IsValid(AssetTypeWidget))
 		{
-			ItemTypeWidget->SetVisibility(ItemTypeVisibility.Contains(ItemAsset->ItemType) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+			AssetTypeWidget->SetVisibility(AssetTypeVisibility.Contains(InventoryAsset->ItemType) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 		}
 
-		if (IsValid(ItemRank)) ItemRank->SetText(FText::FromString(FString::FromInt(Item.Rank)));
-		if (IsValid(ItemLevel)) ItemLevel->SetText(FText::FromString(FString::FromInt(Item.Level)));
-		if (IsValid(ItemXp)) ItemXp->SetText(FText::FromString(FString::FromInt(Item.Xp)));
+		if (IsValid(RecordRank)) RecordRank->SetText(FText::FromString(FString::FromInt(InventoryRecord.EnhanceRecord.Rank)));
+		if (IsValid(RecordLevel)) RecordLevel->SetText(FText::FromString(FString::FromInt(InventoryRecord.EnhanceRecord.Level)));
+		if (IsValid(RecordExperience)) RecordExperience->SetText(FText::FromString(FString::FromInt(InventoryRecord.EnhanceRecord.Experience)));
 	}
 
-	if(IsValid(DetailSwitcher)) DetailSwitcher->SetActiveWidgetIndex(IsValid(ItemAsset) ? 1 : 0);
+	if(IsValid(DetailSwitcher)) DetailSwitcher->SetActiveWidgetIndex(IsValid(InventoryAsset) ? 1 : 0);
 }
 

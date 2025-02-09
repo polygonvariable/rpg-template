@@ -22,7 +22,7 @@ struct FInventoryAssetQuantity
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<UInventoryAsset*, int32> InventoryItems;
+	TMap<UInventoryAsset*, int32> InventoryRecords;
 
 	TMap<FName, int> ConvertToIds();
 

@@ -11,7 +11,7 @@
 TMap<FName, int> FInventoryAssetQuantity::ConvertToIds()
 {
 	TMap<FName, int> Ids;
-	for (auto& Pair : InventoryItems)
+	for (auto& Pair : InventoryRecords)
 	{
 		Ids.Add(Pair.Key->Id, Pair.Value);
 	}

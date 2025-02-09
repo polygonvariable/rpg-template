@@ -64,7 +64,7 @@ bool UEnhanceLibrary::CalculateEnhance(
     return true;
 }
 
-bool UEnhanceLibrary::CanRankUp(int CurrentXp, int CurrentLevel, int LevelInterval)
+bool UEnhanceLibrary::CanRankUp(const FEnhanceRecord& EnhanceRecord, const int LevelInterval)
 {
-    return CurrentXp == 0 && CurrentLevel % LevelInterval == 0;
+    return EnhanceRecord.Experience == 0 && EnhanceRecord.Level % LevelInterval == 0;
 }
