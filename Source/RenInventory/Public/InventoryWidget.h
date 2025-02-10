@@ -107,6 +107,14 @@ class RENINVENTORY_API UInventoryEntryWidget : public UUserWidget, public IUserO
 
 protected:
 
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Entry Widget|Binding")
+	TObjectPtr<UImage> AssetImage;
+
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Entry Widget|Binding")
+	TObjectPtr<UTextBlock> AssetTitle;
+
+
 	UPROPERTY(BlueprintReadWrite, Category = "Inventory Entry Widget|Runtime")
 	FName InventoryRecordId;
 

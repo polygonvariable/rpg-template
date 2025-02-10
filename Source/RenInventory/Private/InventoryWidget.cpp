@@ -125,6 +125,13 @@ void UInventoryEntryWidget::SelectEntry_Implementation()
 
 void UInventoryEntryWidget::HandleEntry_Implementation(UInventoryEntryObject* EntryObject)
 {
+	if (!IsValid(InventoryAsset))
+	{
+		LOG_ERROR(this, LogTemp, "InventoryAsset is null");
+		return;
+	}
+	if(IsValid(AssetImage)) AssetImage->SetBrushFromSoftTexture(InventoryAsset->Icon);
+	if(IsValid(AssetTitle)) AssetTitle->SetText(InventoryAsset->Name);
 }
 
 

@@ -13,7 +13,7 @@
 /**
  *
  */
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), DisplayName = "Interact Component")
+UCLASS(ClassGroup=(Custom), Meta=(BlueprintSpawnableComponent), DisplayName = "Interact Component")
 class RENINTERACT_API UInteractComponent : public UActorComponent
 {
 

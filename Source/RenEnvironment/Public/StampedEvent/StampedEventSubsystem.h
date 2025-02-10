@@ -28,33 +28,33 @@ class RENENVIRONMENT_API UStampedEventSubsystem : public URenGameInstanceSubsyst
 public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Stamped Event Subsystem|Action")
-	bool AddChange(const FGuid Id, const bool bForceAdd = false);
-	virtual bool AddChange_Implementation(const FGuid Id, const bool bForceAdd = false);
+	bool AddChange(const FName Id, const bool bForceAdd = false);
+	virtual bool AddChange_Implementation(const FName Id, const bool bForceAdd = false);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Stamped Event Subsystem|Action")
-	bool RemoveChange(const FGuid Id);
-	virtual bool RemoveChange_Implementation(const FGuid Id);
+	bool RemoveChange(const FName Id);
+	virtual bool RemoveChange_Implementation(const FName Id);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Meta = (ForceAsFunction), Category = "Stamped Event Subsystem|Action")
-	bool HasChanged(const FGuid Id);
-	virtual bool HasChanged_Implementation(const FGuid Id);
+	bool HasChanged(const FName Id);
+	virtual bool HasChanged_Implementation(const FName Id);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Stamped Event Subsystem|Action")
-	bool GetEventDate(const FGuid Id, FDateTime& EventDate);
-	virtual bool GetEventDate_Implementation(const FGuid Id, FDateTime& EventDate);
+	bool GetEventDate(const FName Id, FDateTime& EventDate);
+	virtual bool GetEventDate_Implementation(const FName Id, FDateTime& EventDate);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Meta = (ForceAsFunction), Category = "Stamped Event Subsystem|Action")
-	EStampedEventStatus GetEventStatus(const FGuid Id);
-	virtual EStampedEventStatus GetEventStatus_Implementation(const FGuid Id);
+	EStampedEventStatus GetEventStatus(const FName Id);
+	virtual EStampedEventStatus GetEventStatus_Implementation(const FName Id);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintPure, Meta = (ForceAsFunction), Category = "Stamped Event Subsystem|Action")
-	EStampedEventCooldownStatus GetEventCooldownStatus(const FGuid Id, const bool bIsOnlyOnce, const FTimespan CooldownTime);
-	virtual EStampedEventCooldownStatus GetEventCooldownStatus_Implementation(const FGuid Id, const bool bIsOnlyOnce, const FTimespan CooldownTime);
+	EStampedEventCooldownStatus GetEventCooldownStatus(const FName Id, const bool bIsOnlyOnce, const FTimespan CooldownTime);
+	virtual EStampedEventCooldownStatus GetEventCooldownStatus_Implementation(const FName Id, const bool bIsOnlyOnce, const FTimespan CooldownTime);
 
 protected:
 

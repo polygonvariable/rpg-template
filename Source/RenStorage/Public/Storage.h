@@ -36,7 +36,7 @@ public:
 	* <FName = UUID, Struct = FDateTime>
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage|Environment")
-	TMap<FGuid, FDateTime> StampedEvents; // <FGuid = FGuid, Struct = FDateTime>
+	TMap<FName, FDateTime> StampedEvents; // <FName = UUID, Struct = FDateTime>
 
 };
 

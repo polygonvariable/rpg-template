@@ -10,10 +10,10 @@
 #include "RenStorage/Public/StorageSubsystem.h"
 
 
-bool UStampedEventSubsystem::AddChange_Implementation(const FGuid Id, const bool bForceAdd)
+bool UStampedEventSubsystem::AddChange_Implementation(const FName Id, const bool bForceAdd)
 {
 	if (!IsValid(Storage)) {
-		LOG_ERROR(this, LogTemp, "Storage not null");
+		LOG_ERROR(this, LogTemp, "Storage is null");
 		return false;
 	}
 
@@ -27,10 +27,10 @@ bool UStampedEventSubsystem::AddChange_Implementation(const FGuid Id, const bool
 	return true;
 }
 
-bool UStampedEventSubsystem::RemoveChange_Implementation(const FGuid Id)
+bool UStampedEventSubsystem::RemoveChange_Implementation(const FName Id)
 {
 	if (!IsValid(Storage)) {
-		LOG_ERROR(this, LogTemp, "Storage not null");
+		LOG_ERROR(this, LogTemp, "Storage is null");
 		return false;
 	}
 	Storage->StampedEvents.Remove(Id);
@@ -38,7 +38,7 @@ bool UStampedEventSubsystem::RemoveChange_Implementation(const FGuid Id)
 	return true;
 }
 
-bool UStampedEventSubsystem::HasChanged_Implementation(const FGuid Id)
+bool UStampedEventSubsystem::HasChanged_Implementation(const FName Id)
 {
 	if (IsValid(Storage)) {
 		return Storage->StampedEvents.Contains(Id);
@@ -46,7 +46,7 @@ bool UStampedEventSubsystem::HasChanged_Implementation(const FGuid Id)
 	return false;
 }
 
-bool UStampedEventSubsystem::GetEventDate_Implementation(const FGuid Id, FDateTime& EventDate)
+bool UStampedEventSubsystem::GetEventDate_Implementation(const FName Id, FDateTime& EventDate)
 {
 	if (IsValid(Storage)) {
 		if (Storage->StampedEvents.Contains(Id)) {
@@ -57,12 +57,12 @@ bool UStampedEventSubsystem::GetEventDate_Implementation(const FGuid Id, FDateTi
 	return false;
 }
 
-EStampedEventStatus UStampedEventSubsystem::GetEventStatus_Implementation(const FGuid Id)
+EStampedEventStatus UStampedEventSubsystem::GetEventStatus_Implementation(const FName Id)
 {
 	return HasChanged(Id) ? EStampedEventStatus::Changed : EStampedEventStatus::Unchanged;
 }
 
-EStampedEventCooldownStatus UStampedEventSubsystem::GetEventCooldownStatus_Implementation(const FGuid Id, const bool bIsOnlyOnce, const FTimespan CooldownTime)
+EStampedEventCooldownStatus UStampedEventSubsystem::GetEventCooldownStatus_Implementation(const FName Id, const bool bIsOnlyOnce, const FTimespan CooldownTime)
 {
 	if (HasChanged(Id)) {
 
