@@ -1,41 +1,43 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Subsystem/RenGameInstanceSubsystem.h"
+#include "Subsystem/RenWorldSubsystem.h"
 
 // Project Headers
 #include "Developer/GameMetadataSettings.h"
 #include "RenShared/Public/Macro/LogMacro.h"
 
 
-void URenGameInstanceSubsystem::PostInitialize_Implementation()
+void URenWorldSubsystem::PostInitialize_Implementation()
 {
 	LOG_WARNING(this, LogTemp, "PostInitialize");
+	
 }
 
-void URenGameInstanceSubsystem::OnInitialized_Implementation()
+void URenWorldSubsystem::OnInitialized_Implementation()
 {
 	LOG_WARNING(this, LogTemp, "OnInitialized");
 }
 
-void URenGameInstanceSubsystem::OnDeinitialized_Implementation()
+void URenWorldSubsystem::OnDeinitialized_Implementation()
 {
 	LOG_WARNING(this, LogTemp, "OnDeinitialized");
 }
 
-void URenGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+
+void URenWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	Execute_OnInitialized(this);
 }
 
-void URenGameInstanceSubsystem::Deinitialize()
+void URenWorldSubsystem::Deinitialize()
 {
 	Execute_OnDeinitialized(this);
 	Super::Deinitialize();
 }
 
-bool URenGameInstanceSubsystem::ShouldCreateSubsystem(UObject* Object) const
+bool URenWorldSubsystem::ShouldCreateSubsystem(UObject* Object) const
 {
 	if (!Object)
 	{
@@ -49,7 +51,7 @@ bool URenGameInstanceSubsystem::ShouldCreateSubsystem(UObject* Object) const
 		LOG_ERROR(this, LogTemp, "GameMetadataSettings is null");
 		return false;
 	}
-	
+
 	for (auto& SubsystemClass : GameMetadata->SubsystemClasses)
 	{
 		if (SubsystemClass == this->GetClass())
@@ -62,9 +64,3 @@ bool URenGameInstanceSubsystem::ShouldCreateSubsystem(UObject* Object) const
 	LOG_ERROR(this, LogTemp, "Subsystem not found");
 	return false;
 }
-
-UWorld* URenGameInstanceSubsystem::GetWorld() const
-{
-	return nullptr;
-}
-

@@ -14,6 +14,7 @@ public class RenEnvironment : ModuleRules
                 "Core",
                 "CoreUObject",
                 "Engine",
+                "StructUtils",
                 "SunPosition"
             }
         );

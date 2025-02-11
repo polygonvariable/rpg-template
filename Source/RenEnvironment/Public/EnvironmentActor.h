@@ -11,7 +11,11 @@
 
 // Forward Declarations
 class USceneComponent;
+class USkyLightComponent;
+class USkyAtmosphereComponent;
+class UExponentialHeightFogComponent;
 class UOrbitalLightComponent;
+class UStaticMeshComponent;
 
 
 /**
@@ -27,29 +31,37 @@ public:
 
 	AEnvironmentActor();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Environment|Time")
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"), Category = "Environment|Time")
 	float Time = 0.0f;
 
 
-	UPROPERTY(BlueprintReadOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<USceneComponent> SceneComponent;
 
 
-	UPROPERTY(BlueprintReadOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	TObjectPtr<USkyLightComponent> SkyLightComponent;
+
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	TObjectPtr<USkyAtmosphereComponent> SkyAtmosphereComponent;
+
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	TObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFogComponent;
+
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<UOrbitalLightComponent> SunLightComponent;
 
 
-	UPROPERTY(BlueprintReadOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<UOrbitalLightComponent> MoonLightComponent;
 
-protected:
 
-	virtual void BeginPlay() override;
-
-	virtual void ProcessUserConstructionScript();
-
-public:
-
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	TObjectPtr<UStaticMeshComponent> SkyDome;
 
 };
+
