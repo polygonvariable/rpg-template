@@ -11,9 +11,6 @@
 // Generated Headers
 #include "EnvironmentSubsystem.generated.h"
 
-// Forward Declarations
-class UPrioritySystem;
-
 
 /**
  *
@@ -27,10 +24,6 @@ class RENENVIRONMENT_API UEnvironmentSubsystem : public URenWorldSubsystem
 public:
 
 	UEnvironmentSubsystem();
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration")
-	TObjectPtr<UPrioritySystem> RegionPrioritySystem;
 
 public:
 

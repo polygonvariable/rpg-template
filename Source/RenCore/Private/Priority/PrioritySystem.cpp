@@ -16,12 +16,12 @@ void UPrioritySystem::AddItem_Implementation(FInstancedStruct Item, const int Pr
 	int HighestPriority = GetHighestPriority();
 
 	Items.Add(Priority, Item);
-	OnItemAdded.Broadcast(Item);
+	OnItemAdded(Item);
 
 	if (Priority > HighestPriority)
 	{
 		ActiveItem = Item;
-		OnItemChanged.Broadcast(ActiveItem);
+		OnActiveItemChanged();
 	}
 	else
 	{
@@ -36,7 +36,7 @@ void UPrioritySystem::RemoveItem_Implementation(const int Priority)
 		int CurrentPriority = GetHighestPriority();
 
 		Items.Remove(Priority);
-		OnItemRemoved.Broadcast(*Item);
+		OnItemRemoved(*Item);
 
 		if (Priority != CurrentPriority)
 		{
@@ -47,7 +47,7 @@ void UPrioritySystem::RemoveItem_Implementation(const int Priority)
 		if (Items.Contains(NewPriority))
 		{
 			ActiveItem = Items.FindChecked(NewPriority);
-			OnItemChanged.Broadcast(ActiveItem);
+			OnActiveItemChanged();
 		}
 	}
 	else
@@ -72,5 +72,17 @@ int UPrioritySystem::GetHighestPriority()
 	}
 
 	return HighestPriority;
+}
+
+void UPrioritySystem::OnItemAdded_Implementation(FInstancedStruct Item)
+{
+}
+
+void UPrioritySystem::OnItemRemoved_Implementation(FInstancedStruct Item)
+{
+}
+
+void UPrioritySystem::OnActiveItemChanged_Implementation()
+{
 }
 

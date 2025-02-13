@@ -63,5 +63,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<UStaticMeshComponent> SkyDome;
 
+protected:
+
+	virtual void BeginPlay() override;
+
 };
 

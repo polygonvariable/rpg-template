@@ -39,23 +39,23 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int, FInstancedStruct> Items;
 
+
 	int GetHighestPriority();
 
-public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemAdded, FInstancedStruct, Item);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
-	FOnItemAdded OnItemAdded;
-
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemoved, FInstancedStruct, Item);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
-	FOnItemRemoved OnItemRemoved;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")
+	void OnItemAdded(FInstancedStruct Item);
+	virtual void OnItemAdded_Implementation(FInstancedStruct Item);
 
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemChanged, FInstancedStruct, Item);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
-	FOnItemChanged OnItemChanged;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")
+	void OnItemRemoved(FInstancedStruct Item);
+	virtual void OnItemRemoved_Implementation(FInstancedStruct Item);
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")
+	void OnActiveItemChanged();
+	virtual void OnActiveItemChanged_Implementation();
 
 };
 
