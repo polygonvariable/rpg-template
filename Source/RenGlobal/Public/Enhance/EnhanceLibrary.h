@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class RENSHARED_API UEnhanceLibrary : public UBlueprintFunctionLibrary
+class RENGLOBAL_API UEnhanceLibrary : public UBlueprintFunctionLibrary
 {
 
 	GENERATED_BODY()

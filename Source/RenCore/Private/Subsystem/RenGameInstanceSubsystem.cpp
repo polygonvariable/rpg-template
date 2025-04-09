@@ -5,7 +5,7 @@
 
 // Project Headers
 #include "Developer/GameMetadataSettings.h"
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 void URenGameInstanceSubsystem::PostInitialize_Implementation()

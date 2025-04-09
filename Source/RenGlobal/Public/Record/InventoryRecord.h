@@ -9,6 +9,8 @@
 #include "Filter/FilterRule.h"
 #include "Record/RenRecord.h"
 #include "Record/EnhanceRecord.h"
+#include "RenGlobal/Public/Inventory/InventoryItemType.h"
+#include "RenGlobal/Public/Inventory/InventoryItemRarity.h"
 
 // Generated Headers
 #include "InventoryRecord.generated.h"
@@ -25,29 +27,34 @@ struct FInventoryRecord : public FRenRecord
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName Id;
+	FName ItemId;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName Type = "Invalid";
+	TEnumAsByte<EInventoryItemType> ItemType = EInventoryItemType::Food;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Quantity = 1;
+	int ItemQuantity = 1;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FEnhanceRecord EnhanceRecord;
 
 
+	bool IsValid() const
+	{
+		return ItemId.IsValid() && ItemQuantity > 0;
+	}
+
 	friend inline bool operator == (const FInventoryRecord& A, const FInventoryRecord& B)
 	{
-		return A.Id == B.Id && A.Type == B.Type;
+		return A.ItemId == B.ItemId && A.ItemType == B.ItemType;
 	}
 
 	friend inline uint32 GetTypeHash(const FInventoryRecord& Record)
 	{
-		return HashCombine(GetTypeHash(Record.Id.ToString()), GetTypeHash(Record.Type));
+		return HashCombine(GetTypeHash(Record.ItemId.ToString()), GetTypeHash(Record.ItemType));
 	}
 
 };
@@ -84,11 +91,11 @@ struct FInventoryFilterRule
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FFilterNameRule FilterType = FFilterNameRule();
+	FFilterUInt8Rule FilterType = FFilterUInt8Rule();
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FFilterNameRule FilterRarity = FFilterNameRule();
+	FFilterUInt8Rule FilterRarity = FFilterUInt8Rule();
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -111,26 +118,26 @@ struct FInventoryFilterRule
 	EFilterCombination FilterCombination = EFilterCombination::And;
 
 
-	bool Matches(const FInventoryRecord& Record, const FName& Rarity) const
+	bool Matches(const FInventoryRecord& Record, const uint8& Rarity) const
 	{
 		bool bPasses = (FilterCombination == EFilterCombination::And);
 
 		if (FilterCombination == EFilterCombination::And)
 		{
-			if (!FilterId.Matches(Record.Id) || !FilterType.Matches(Record.Type) ||
+			if (!FilterId.Matches(Record.ItemId) || !FilterType.Matches(Record.ItemType) ||
 				!FilterRarity.Matches(Rarity) || !FilterRank.Matches(Record.EnhanceRecord.Rank) ||
 				!FilterLevel.Matches(Record.EnhanceRecord.Level) || !FilterXp.Matches(Record.EnhanceRecord.Experience) ||
-				!FilterQuantity.Matches(Record.Quantity))
+				!FilterQuantity.Matches(Record.ItemQuantity))
 			{
 				bPasses = false;
 			}
 		}
 		else if (FilterCombination == EFilterCombination::Or)
 		{
-			if (FilterId.Matches(Record.Id) || FilterType.Matches(Record.Type) ||
+			if (FilterId.Matches(Record.ItemId) || FilterType.Matches(Record.ItemType) ||
 				FilterRarity.Matches(Rarity) || FilterRank.Matches(Record.EnhanceRecord.Rank) ||
 				FilterLevel.Matches(Record.EnhanceRecord.Level) || FilterXp.Matches(Record.EnhanceRecord.Experience) ||
-				FilterQuantity.Matches(Record.Quantity))
+				FilterQuantity.Matches(Record.ItemQuantity))
 			{
 				bPasses = true;
 			}

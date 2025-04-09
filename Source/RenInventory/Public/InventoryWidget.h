@@ -8,7 +8,9 @@
 #include "Blueprint/IUserObjectListEntry.h"
 
 // Project Headers
-#include "RenShared/Public/Record/InventoryRecord.h"
+#include "RenGlobal/Public/Record/InventoryRecord.h"
+#include "RenGlobal/Public/Inventory/InventoryItemRarity.h"
+#include "RenGlobal/Public/Inventory/InventoryItemType.h"
 
 // Generated Headers
 #include "InventoryWidget.generated.h"
@@ -63,6 +65,9 @@ public:
 
 protected:
 
+	TObjectPtr<UInventorySubsystem> InventorySubsystem;
+
+
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Widget|Binding")
 	TObjectPtr<UListView> InventoryContainer;
 
@@ -75,23 +80,24 @@ protected:
 	TMap<FName, FInventoryRecord> InventoryRecords;
 
 
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory Widget|Runtime")
-	TObjectPtr<UInventorySubsystem> InventorySubsystem;
-
-
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Action")
-	void DisplayStoredRecords(bool bForceRefresh = false);
-	virtual void DisplayStoredRecords_Implementation(bool bForceRefresh = false);
+	void DisplayStoredRecords(const bool bForceRefresh = false);
+	virtual void DisplayStoredRecords_Implementation(const bool bForceRefresh = false);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Handler")
-	void HandleDisplayRecord(UInventoryEntryObject* EntryObject);
-	virtual void HandleDisplayRecord_Implementation(UInventoryEntryObject* EntryObject);
+	void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject);
+	virtual void HandleDisplayOfEntry_Implementation(UInventoryEntryObject* EntryObject);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Handler")
-	void HandleSelectedRecord(UObject* Object);
-	virtual void HandleSelectedRecord_Implementation(UObject* Object);
+	bool HandleEntryFiltering(const FInventoryRecord InventoryRecord, UInventoryAsset* InventoryAsset);
+	virtual bool HandleEntryFiltering_Implementation(const FInventoryRecord InventoryRecord, UInventoryAsset* InventoryAsset);
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Handler")
+	void HandleSelectedEntry(UObject* Object);
+	virtual void HandleSelectedEntry_Implementation(UObject* Object);
 
 };
 
@@ -166,6 +172,9 @@ public:
 
 protected:
 
+	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+
+
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
 	TObjectPtr<UWidgetSwitcher> DetailSwitcher;
 
@@ -198,12 +207,8 @@ protected:
 	TObjectPtr<UPanelWidget> AssetTypeWidget;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (GetOptions = "InventoryLibrary.GetInventoryTypes"), Category = "Inventory Detail Widget|Property")
-	TSet<FName> AssetTypeVisibility;
-
-
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory Detail Widget|Runtime")
-	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory Detail Widget|Property")
+	TSet<TEnumAsByte<EInventoryItemType>> AssetTypeVisibility;
 
 
 	UPROPERTY(BlueprintReadWrite, Category = "Inventory Detail Widget|Runtime")

@@ -2,7 +2,7 @@
 
 // Parent Header
 #include "Priority/PrioritySystem.h"
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 void UPrioritySystem::AddItem_Implementation(FInstancedStruct Item, const int Priority)

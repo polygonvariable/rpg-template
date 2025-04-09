@@ -4,7 +4,7 @@
 #include "Timer/AsyncAlphaTimer.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 UAsyncAlphaTimer* UAsyncAlphaTimer::Start(const UObject* InWorldContextObject, const float InTime, const float InTickFrequency)

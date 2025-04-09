@@ -2,7 +2,7 @@
 
 // Parent Header
 #include "Timer/Timer.h"
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 void UTimer::StartTimer_Implementation(const float InTime)
@@ -21,6 +21,7 @@ void UTimer::StartTimer_Implementation(const float InTime)
 		FTimerManager& TimerManager = World->GetTimerManager();
 		TimerManager.ClearTimer(TimerHandle);
 		TimerManager.SetTimer(TimerHandle, this, &UTimer::HandleTick, InTime, FTimerManagerTimerParameters{ .bLoop = bLooping, .bMaxOncePerFrame = true });
+		OnStart.Broadcast();
 	}
 }
 
@@ -31,6 +32,7 @@ void UTimer::StopTimer_Implementation()
 		World->GetTimerManager().ClearTimer(TimerHandle);
 		bIsActive = false;
 	}
+	OnComplete.Broadcast();
 }
 
 void UTimer::RestartTimer_Implementation(const float InTime)
@@ -43,6 +45,6 @@ void UTimer::RestartTimer_Implementation(const float InTime)
 void UTimer::HandleTick_Implementation()
 {
 	DeltaTime += DeltaTime;
-	OnTicked.Broadcast();
+	OnTick.Broadcast();
 	StopTimer();
 }

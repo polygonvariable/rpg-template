@@ -27,11 +27,16 @@ class RENWIDGET_API UTabControl : public UUserWidget
 public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Tab Control|Runtime")
-	FText Title;
+	uint8 TabIndex = 0;
+
+
+	UPROPERTY(BlueprintReadWrite, Category = "Tab Control|Runtime")
+	FText TabTitle;
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Tab Control|Action")
-	void Select(bool bSelected = false);
-	virtual void Select_Implementation(bool bSelected = false);
+	void SetSelected(bool bIsSelected = false);
+	virtual void SetSelected_Implementation(bool bIsSelected = false);
 
 protected:
 
@@ -40,11 +45,11 @@ protected:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Tab Control|Binding")
-	TObjectPtr<UTextBlock> TabText;
+	TObjectPtr<UTextBlock> TabTextBlock;
 
 
 	UPROPERTY(BlueprintReadWrite, Category = "Tab Control|Runtime")
-	bool bIsSelected = false;
+	bool bSelected = false;
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Tab Control|Handler")
@@ -57,9 +62,9 @@ protected:
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelect, UTabControl*, Tab);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelected, UTabControl*, TabControl);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Tab Control|Event Dispatcher")
-	FOnSelect OnSelect;
+	FOnSelected OnSelected;
 
 };
 
@@ -80,8 +85,8 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "TabBox Control|Action")
-	void BuildTabs(const TSet<FName>& Items);
-	virtual void BuildTabs_Implementation(const TSet<FName>& Items);
+	void BuildTabs(const TMap<uint8, FName>& TabItems);
+	virtual void BuildTabs_Implementation(const TMap<uint8, FName>& TabItems);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "TabBox Control|Action")
@@ -91,22 +96,23 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TabBox Control|Item")
-	TSubclassOf<UTabControl> TabClass = UTabControl::StaticClass();
+	TSubclassOf<UTabControl> TabControlClass = UTabControl::StaticClass();
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "TabBox Control|Action")
-	void OnTabSelected(UTabControl* Tab);
-	virtual void OnTabSelected_Implementation(UTabControl* Tab);
+	void HandleTabSelected(UTabControl* SelectedTab);
+	virtual void HandleTabSelected_Implementation(UTabControl* SelectedTab);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "TabBox Control|Handler")
-	void HandleTab(UTabControl* Tab);
-	virtual void HandleTab_Implementation(UTabControl* Tab);
+	void HandleTabSetup(UTabControl* NewTab);
+	virtual void HandleTabSetup_Implementation(UTabControl* NewTab);
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTabChanged, FName, Title);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTabChanged, uint8, TabIndex);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "TabBox Control|Event Dispatcher")
 	FOnTabChanged OnTabChanged;
 
 };
+

@@ -6,8 +6,10 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/ValueMacro.h"
-#include "RenCore/Public/Asset/RenBaseAsset.h"
+#include "RenGlobal/Public/Macro/ValueMacro.h"
+#include "RenCore/Public/Asset/RenDataAsset.h"
+#include "RenGlobal/Public/Inventory/InventoryItemRarity.h"
+#include "RenGlobal/Public/Inventory/InventoryItemType.h"
 
 // Generated Headers
 #include "InventoryAsset.generated.h"
@@ -17,18 +19,18 @@
  *
  */
 UCLASS(DisplayName = "Inventory Asset")
-class RENASSET_API UInventoryAsset : public URenBaseAsset
+class RENASSET_API UInventoryAsset : public URenDataAsset
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Meta = (GetOptions = "InventoryLibrary.GetInventoryTypes"), Category = "Inventory Item")
-	FName ItemType = TEXT_INVALID;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory Item")
+	TEnumAsByte<EInventoryItemType> ItemType;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Meta = (GetOptions = "InventoryLibrary.GetInventoryRarities"), Category = "Inventory Item")
-	FName ItemRarity = TEXT_INVALID;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory Item")
+	TEnumAsByte<EInventoryItemRarity> ItemRarity;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory Item")
 	bool bIsStackable = false;

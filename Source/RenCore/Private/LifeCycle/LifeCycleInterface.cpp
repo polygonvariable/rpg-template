@@ -4,7 +4,7 @@
 #include "LifeCycle/LifeCycleInterface.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 void ILifeCycleInterface::StartLifecycle(UObject* Target, FInstancedStruct Parameters, const bool bSkipLoad, const bool bSkipValidate)

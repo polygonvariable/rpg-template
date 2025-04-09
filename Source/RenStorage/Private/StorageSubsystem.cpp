@@ -8,11 +8,11 @@
 
 // Project Headers
 #include "Storage.h"
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
 
 
-void UStorageSubsystem::ReadStorage_Implementation(const FName Slot)
+void UStorageSubsystem::ReadStorage_Implementation(const FName SlotId)
 {
 	const UGameMetadataSettings* Settings = GetDefault<UGameMetadataSettings>();
 
@@ -24,9 +24,9 @@ void UStorageSubsystem::ReadStorage_Implementation(const FName Slot)
 		return;
 	}*/
 
-	if (DoesStorageExist(Slot))
+	if (DoesStorageExist(SlotId))
 	{
-		Storage = Cast<UStorage>(UGameplayStatics::LoadGameFromSlot(Slot.ToString(), 0));
+		Storage = Cast<UStorage>(UGameplayStatics::LoadGameFromSlot(SlotId.ToString(), 0));
 		LOG_INFO(this, LogTemp, "Storage loaded from slot");
 	}
 	else
@@ -38,32 +38,31 @@ void UStorageSubsystem::ReadStorage_Implementation(const FName Slot)
 			return;
 		}
 
-		UGameplayStatics::SaveGameToSlot(NewSaveGame, Slot.ToString(), 0);
+		UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotId.ToString(), 0);
 		Storage = Cast<UStorage>(NewSaveGame);
 
 		LOG_INFO(this, LogTemp, "Storage created and saved to slot");
 	}
 }
 
-void UStorageSubsystem::UpdateStorage_Implementation(const FName Slot)
+void UStorageSubsystem::UpdateStorage_Implementation(const FName SlotId)
 {
 	if (!IsValid(Storage))
 	{
 		LOG_ERROR(this, LogTemp, "Storage is null");
 		return;
 	}
-	UGameplayStatics::SaveGameToSlot(Storage, Slot.ToString(), 0);
+	UGameplayStatics::SaveGameToSlot(Storage, SlotId.ToString(), 0);
 }
 
-bool UStorageSubsystem::DoesStorageExist_Implementation(const FName Slot)
+bool UStorageSubsystem::DoesStorageExist_Implementation(const FName SlotId)
 {
-	return UGameplayStatics::DoesSaveGameExist(Slot.ToString(), 0);
+	return UGameplayStatics::DoesSaveGameExist(SlotId.ToString(), 0);
 }
 
-UStorage* UStorageSubsystem::GetLocalStorage_Implementation(bool& bIsValid)
+UStorage* UStorageSubsystem::GetLocalStorage_Implementation()
 {
-	bIsValid = IsValid(Storage);
-	return Storage;
+	return IsValid(Storage) ? Storage : nullptr;
 }
 
 

@@ -35,12 +35,5 @@ public:
 	TSoftObjectPtr<UDataTable> InventoryTable;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	TSet<FString> InventoryTypes = { "FOOD", "WEAPON", "SKILL" };
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	TSet<FString> InventoryRarities = { "COMMON", "RARE", "ULTRA_RARE" };
-
 };
 

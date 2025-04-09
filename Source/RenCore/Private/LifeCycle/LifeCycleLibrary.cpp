@@ -3,7 +3,7 @@
 
 #include "LifeCycle/LifeCycleLibrary.h"
 
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 #include "LifeCycle/LifeCycleInterface.h"
 
 

@@ -5,8 +5,8 @@
 #include "EnvironmentSubsystem.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/GameInstanceMacro.h"
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 UEnvironmentSubsystem::UEnvironmentSubsystem()

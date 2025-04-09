@@ -21,7 +21,7 @@ public class RenEnvironment : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "RenShared",
+                "RenGlobal",
                 "RenCore",
                 "RenStorage",
             }

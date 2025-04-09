@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RenShared : ModuleRules
+public class RenGlobal : ModuleRules
 {
-	public RenShared(ReadOnlyTargetRules Target) : base(Target)
+	public RenGlobal(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 

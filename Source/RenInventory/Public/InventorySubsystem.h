@@ -29,8 +29,8 @@ class RENINVENTORY_API UInventorySubsystem : public URenGameInstanceSubsystem
 public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
-	bool AddRecord(UInventoryAsset* InventoryAssetId, const int Quantity = 1);
-	virtual bool AddRecord_Implementation(UInventoryAsset* InventoryAssetId, const int Quantity = 1);
+	bool AddRecord(UInventoryAsset* InventoryAsset, const int Quantity = 1);
+	virtual bool AddRecord_Implementation(UInventoryAsset* InventoryAsset, const int Quantity = 1);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
@@ -44,8 +44,8 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
-	bool RemoveRecords(const TMap<FName, int32>& InventoryRecordIds);
-	virtual bool RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds);
+	bool RemoveRecords(const TMap<FName, int32>& InventoryRecordIds, const bool bSkipIfAnyFail = false);
+	virtual bool RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds, const bool bSkipIfAnyFail = false);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
@@ -59,23 +59,23 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
-	FInventoryRecord GetRecord(const FName InventoryRecordId, bool& bFound);
-	virtual FInventoryRecord GetRecord_Implementation(const FName InventoryRecordId, bool& bFound);
+	FInventoryRecord GetRecord(const FName InventoryRecordId);
+	virtual FInventoryRecord GetRecord_Implementation(const FName InventoryRecordId);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
-	TMap<FName, FInventoryRecord> GetRecords(bool& bIsValid);
-	virtual TMap<FName, FInventoryRecord> GetRecords_Implementation(bool& bIsValid);
+	TMap<FName, FInventoryRecord> GetRecords();
+	virtual TMap<FName, FInventoryRecord> GetRecords_Implementation();
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Asset")
-	UInventoryAsset* GetRecordAsset(const FName InventoryAssetId, bool& bFound);
-	virtual UInventoryAsset* GetRecordAsset_Implementation(const FName InventoryAssetId, bool& bFound);
+	UInventoryAsset* GetRecordAsset(const FName InventoryAssetId);
+	virtual UInventoryAsset* GetRecordAsset_Implementation(const FName InventoryAssetId);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Asset")
-	FInventoryRecord GetRecordWithAsset(const FName InventoryRecordId, UInventoryAsset*& InventoryAsset, bool& bFound);
-	virtual FInventoryRecord GetRecordWithAsset_Implementation(const FName InventoryRecordId, UInventoryAsset*& InventoryAsset, bool& bFound);
+	FInventoryRecord GetRecordWithAsset(const FName InventoryRecordId, UInventoryAsset*& OutInventoryAsset, bool& bOutFound);
+	virtual FInventoryRecord GetRecordWithAsset_Implementation(const FName InventoryRecordId, UInventoryAsset*& OutInventoryAsset, bool& bOutFound);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Dirty")

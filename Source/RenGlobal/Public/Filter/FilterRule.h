@@ -44,6 +44,38 @@ struct FFilterNameRule
 /**
  *
  */
+USTRUCT(BlueprintType, DisplayName = "Filter Byte Rule")
+struct FFilterUInt8Rule
+{
+
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnable = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnableStrictMode = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<uint8> Included;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<uint8> Excluded;
+
+	bool Matches(const uint8& Value) const
+	{
+		if (!bEnable) return true;
+		if (Excluded.Contains(Value)) return false;
+		if (bEnableStrictMode && Included.Num() == 0) return false;
+		if (Included.Num() > 0) return Included.Contains(Value);
+		return true;
+	}
+
+};
+
+/**
+ *
+ */
 USTRUCT(BlueprintType, DisplayName = "Filter Integer Rule")
 struct FFilterIntegerRule
 {

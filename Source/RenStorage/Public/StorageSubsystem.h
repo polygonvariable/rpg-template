@@ -33,20 +33,20 @@ public:
 	//TMap<FName, TObjectPtr<UStorage>> Storages;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
-	void ReadStorage(const FName Slot = "Default");
-	virtual void ReadStorage_Implementation(const FName Slot = "Default");
+	void ReadStorage(const FName SlotId = "Default");
+	virtual void ReadStorage_Implementation(const FName SlotId = "Default");
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
-	void UpdateStorage(const FName Slot = "Default");
-	virtual void UpdateStorage_Implementation(const FName Slot = "Default");
+	void UpdateStorage(const FName SlotId = "Default");
+	virtual void UpdateStorage_Implementation(const FName SlotId = "Default");
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintPure))
-	bool DoesStorageExist(const FName Slot = "Default");
-	virtual bool DoesStorageExist_Implementation(const FName Slot = "Default");
+	bool DoesStorageExist(const FName SlotId = "Default");
+	virtual bool DoesStorageExist_Implementation(const FName SlotId = "Default");
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
-	UStorage* GetLocalStorage(bool& bIsValid);
-	virtual UStorage* GetLocalStorage_Implementation(bool& bIsValid);
+	UStorage* GetLocalStorage();
+	virtual UStorage* GetLocalStorage_Implementation();
 
 protected:
 

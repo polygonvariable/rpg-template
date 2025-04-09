@@ -21,7 +21,7 @@ public class RenCore : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "RenShared",
+                "RenGlobal",
             }
         );
 

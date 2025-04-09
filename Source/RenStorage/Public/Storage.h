@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "RenCore/Public/Common/RenSaveGame.h"
-#include "RenShared/Public/Record/InventoryRecord.h"
+#include "RenGlobal/Public/Record/InventoryRecord.h"
 
 // Generated Headers
 #include "Storage.generated.h"

@@ -4,7 +4,7 @@
 #include "Timer/AsyncTimer.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 UAsyncTimer* UAsyncTimer::Start(const UObject* InWorldContextObject, const float InTime, const bool bInLooping)

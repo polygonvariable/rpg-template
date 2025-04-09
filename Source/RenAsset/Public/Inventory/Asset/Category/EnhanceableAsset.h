@@ -8,6 +8,8 @@
 // Project Headers
 #include "Inventory/Asset/Category/CraftableAsset.h"
 #include "Inventory/Type/InventoryAssetQuantity.h"
+#include "RenGlobal/Public/Inventory/InventoryItemRarity.h"
+#include "RenGlobal/Public/Inventory/InventoryItemType.h"
 
 // Generated Headers
 #include "EnhanceableAsset.generated.h"
@@ -43,8 +45,8 @@ public:
 	TSet<UEnhanceAsset*> EnhanceCosts;
 
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Meta = (GetKeyOptions = "InventoryLibrary.GetInventoryTypes"), Category = "Item Enhanceable")
-	TMap<FName, int> EnhanceExternalCosts;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	TMap<TEnumAsByte<EInventoryItemType>, int> EnhanceExternalCosts;
 
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")

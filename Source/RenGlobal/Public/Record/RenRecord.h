@@ -6,6 +6,9 @@
 #include "CoreMinimal.h"
 #include "InstancedStruct.h"
 
+// Module Headers
+#include "RenGlobal/Public/RenStruct.h"
+
 // Generated Headers
 #include "RenRecord.generated.h"
 

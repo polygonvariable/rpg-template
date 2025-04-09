@@ -20,7 +20,7 @@ public class RenStorage : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "RenShared",
+                "RenGlobal",
                 "RenCore",
             }
         );

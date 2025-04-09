@@ -19,7 +19,7 @@ public class RPGTemplateTarget : TargetRules
         ExtraModuleNames.AddRange(
             new string[]
             {
-                "RenShared",
+                "RenGlobal",
                 "RenWidget",
                 "RenCore",
                 "RenAsset",

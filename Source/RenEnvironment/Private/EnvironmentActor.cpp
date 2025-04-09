@@ -4,8 +4,8 @@
 #include "EnvironmentActor.h"
 
 // Project Header
-#include "RenShared/Public/Macro/GameInstanceMacro.h"
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 #include "Component/OrbitalLightComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
 #include "Components/SceneComponent.h"

@@ -4,8 +4,8 @@
 #include "StampedEvent/StampedEventSubsystem.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/GameInstanceMacro.h"
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
 
@@ -90,11 +90,10 @@ void UStampedEventSubsystem::PostInitialize_Implementation()
 	Super::PostInitialize_Implementation();
 
 	UStorageSubsystem* StorageSubsystem = nullptr;
-	GET_SUBSYSTEM_FROM_GAMEINSTANCE(UStorageSubsystem, StorageSubsystem);
+	GET_GAMEINSTANCESUBSYSTEM_FROM_GAMEINSTANCE(UStorageSubsystem, StorageSubsystem);
 
-	bool bIsValid = false;
-	Storage = StorageSubsystem->GetLocalStorage(bIsValid);
-	if (!bIsValid)
+	Storage = StorageSubsystem->GetLocalStorage();
+	if (!IsValid(Storage))
 	{
 		LOG_ERROR(this, LogTemp, "LocalStorage not found");
 	}

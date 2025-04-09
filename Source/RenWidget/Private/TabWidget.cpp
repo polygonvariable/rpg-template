@@ -9,17 +9,17 @@
 #include "Components/PanelWidget.h"
 
 // Project Headers
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
-void UTabControl::Select_Implementation(bool bSelected)
+void UTabControl::SetSelected_Implementation(bool bIsSelected)
 {
-	bIsSelected = bSelected;
+	bSelected = bIsSelected;
 }
 
 void UTabControl::HandleSelection_Implementation()
 {
-	OnSelect.Broadcast(this);
+	OnSelected.Broadcast(this);
 }
 
 void UTabControl::NativeConstruct()
@@ -28,40 +28,41 @@ void UTabControl::NativeConstruct()
 	{
 		TabButton->OnClicked.AddDynamic(this, &UTabControl::HandleSelection);
 	}
-	if (IsValid(TabText))
+	if (IsValid(TabTextBlock))
 	{
-		TabText->SetText(Title);
+		TabTextBlock->SetText(TabTitle);
 	}
 }
 
 
-void UTabBoxControl::BuildTabs_Implementation(const TSet<FName>& Items)
+void UTabBoxControl::BuildTabs_Implementation(const TMap<uint8, FName>& TabItems)
 {
-	if(!TabClass || !TabClass->IsChildOf(UTabControl::StaticClass()))
+	if(!TabControlClass || !TabControlClass->IsChildOf(UTabControl::StaticClass()))
 	{
-		LOG_ERROR(this, LogTemp, "TabClass must be child of UTabControl");
+		LOG_ERROR(this, LogTemp, "TabControlClass must be child of UTabControl");
 		return;
 	}
 	
-	for (FName Item : Items)
+	for (auto Item : TabItems)
 	{
-		UWidget* TabItem = CreateWidget<UTabControl>(this, TabClass);
-		if (!TabItem)
+		UWidget* TabItem = CreateWidget<UTabControl>(this, TabControlClass);
+		if (!IsValid(TabItem))
 		{
 			continue;
 		}
 
 		UTabControl* Tab = Cast<UTabControl>(TabItem);
-		if (!Tab)
+		if (!IsValid(Tab))
 		{
 			continue;
 		}
 
-		Tab->Title = FText::FromString(Item.ToString());
-		Tab->OnSelect.RemoveAll(this);
-		Tab->OnSelect.AddDynamic(this, &UTabBoxControl::OnTabSelected);
+		Tab->TabIndex = Item.Key;
+		Tab->TabTitle = FText::FromString(Item.Value.ToString());
+		Tab->OnSelected.RemoveAll(this);
+		Tab->OnSelected.AddDynamic(this, &UTabBoxControl::HandleTabSelected);
 
-		HandleTab(Tab);
+		HandleTabSetup(Tab);
 	}
 }
 
@@ -69,17 +70,17 @@ void UTabBoxControl::ClearTabs_Implementation()
 {
 	if (!IsValid(TabContainer))
 	{
-		LOG_ERROR(this, LogTemp, "TabContainer is null");
+		LOG_ERROR(this, LogTemp, "TabContainer is not valid");
 		return;
 	}
 	TabContainer->ClearChildren();
 }
 
-void UTabBoxControl::OnTabSelected_Implementation(UTabControl* Tab)
+void UTabBoxControl::HandleTabSelected_Implementation(UTabControl* SelectedTab)
 {
-	if (!IsValid(Tab) || !IsValid(TabContainer))
+	if (!IsValid(SelectedTab) || !IsValid(TabContainer))
 	{
-		LOG_ERROR(this, LogTemp, "Tab or TabContainer is null");
+		LOG_ERROR(this, LogTemp, "Tab or TabContainer is not valid");
 		return;
 	}
 
@@ -87,21 +88,22 @@ void UTabBoxControl::OnTabSelected_Implementation(UTabControl* Tab)
 	for (UWidget* RawTab : Tabs)
 	{
 		UTabControl* ResolvedTab = Cast<UTabControl>(RawTab);
-		if (!ResolvedTab)
+		if (!IsValid(ResolvedTab))
 		{
 			continue;
 		}
-		ResolvedTab->Select(RawTab == Tab);
+		ResolvedTab->SetSelected(RawTab == SelectedTab);
 	}
 
-	OnTabChanged.Broadcast(FName(Tab->Title.ToString()));
+	OnTabChanged.Broadcast(SelectedTab->TabIndex);
 }
 
-void UTabBoxControl::HandleTab_Implementation(UTabControl* Tab) {
+void UTabBoxControl::HandleTabSetup_Implementation(UTabControl* NewTab) {
 	if (!IsValid(TabContainer))
 	{
-		LOG_ERROR(this, LogTemp, "TabContainer is null");
+		LOG_ERROR(this, LogTemp, "TabContainer is not valid");
 		return;
 	}
-	TabContainer->AddChild(Tab);
+	TabContainer->AddChild(NewTab);
 }
+

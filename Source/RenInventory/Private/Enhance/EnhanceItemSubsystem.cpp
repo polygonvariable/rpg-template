@@ -7,10 +7,10 @@
 #include "RenAsset/Public/Inventory/Asset/Category/EnhanceableAsset.h"
 #include "RenAsset/Public/Inventory/Asset/Type/EnhanceAsset.h"
 #include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
-#include "RenShared/Public/Enhance/EnhanceLibrary.h"
-#include "RenShared/Public/Record/InventoryRecord.h"
-#include "RenShared/Public/Macro/GameInstanceMacro.h"
-#include "RenShared/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Enhance/EnhanceLibrary.h"
+#include "RenGlobal/Public/Record/InventoryRecord.h"
+#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName EnhanceableRecordId, const FName EnhanceRecordId)
@@ -157,6 +157,5 @@ bool UEnhanceRecordSubsystem::HandleLevelUp(const FName& EnhanceableRecordId, co
 void UEnhanceRecordSubsystem::PostInitialize_Implementation()
 {
 	Super::PostInitialize_Implementation();
-
-	GET_SUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
+	GET_GAMEINSTANCESUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
 }

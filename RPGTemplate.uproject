@@ -16,7 +16,7 @@
 			]
 		},
 		{
-			"Name": "RenShared",
+			"Name": "RenGlobal",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

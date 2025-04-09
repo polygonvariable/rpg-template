@@ -58,9 +58,19 @@ protected:
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTicked);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStart);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
-	FOnTicked OnTicked;
+	FOnStart OnStart;
+
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTick);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
+	FOnTick OnTick;
+
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnComplete);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
+	FOnComplete OnComplete;
 
 };
 

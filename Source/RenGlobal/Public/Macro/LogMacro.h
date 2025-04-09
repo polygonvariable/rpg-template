@@ -5,6 +5,8 @@
 // Engine Headers
 #include "CoreMinimal.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogInventorySubsystem, Log, All);
+
 
 template <typename T>
 FString GetClassName(const T* Object)
@@ -23,3 +25,4 @@ FString GetClassName(const T* Object)
 
 #define PRINT(Text, Color) \
     if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, Color, Text)
+
