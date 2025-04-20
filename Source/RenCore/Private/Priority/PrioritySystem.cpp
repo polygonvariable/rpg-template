@@ -47,7 +47,10 @@ void UPrioritySystem::RemoveItem_Implementation(const int Priority)
 		if (Items.Contains(NewPriority))
 		{
 			ActiveItem = Items.FindChecked(NewPriority);
-			OnActiveItemChanged();
+			if (ActiveItem.IsValid())
+			{
+				OnActiveItemChanged();
+			}
 		}
 	}
 	else
@@ -58,20 +61,20 @@ void UPrioritySystem::RemoveItem_Implementation(const int Priority)
 
 int UPrioritySystem::GetHighestPriority()
 {
-	int HighestPriority = -1;
-
-	TArray<int> Priorities;
-	Items.GetKeys(Priorities);
-
-	for (int Priority : Priorities)
+	if (Items.Num() == 0)
 	{
-		if (Priority > HighestPriority)
-		{
-			HighestPriority = Priority;
-		}
+		return -1;
 	}
 
-	return HighestPriority;
+	int Highest = TNumericLimits<int>::Lowest();
+	for (const auto& Pair : Items)
+	{
+		if (Pair.Key > Highest)
+		{
+			Highest = Pair.Key;
+		}
+	}
+	return Highest;
 }
 
 void UPrioritySystem::OnItemAdded_Implementation(FInstancedStruct Item)

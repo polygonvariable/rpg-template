@@ -5,46 +5,94 @@
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 
-void UTimer::StartTimer_Implementation(const float InTime)
+void UTimer::StartTimer_Implementation(const float InTickInterval, const int InTickLimit, const bool bPreserveTime)
 {
-	if (InTime < 0.01f)
+	if (InTickInterval < 0.001f)
 	{
-		LOG_ERROR(this, LogTemp, "Timer time cannot be less than 0.01f");
+		LOG_ERROR(this, LogTemp, "Timer time cannot be less than 0.001f");
 		return;
 	}
 
-	bIsActive = true;
-	DeltaTime = InTime;
+	TickLimit = InTickLimit;
+	TickInterval = InTickInterval;
+
+	if (!bPreserveTime)
+	{
+		Time = 0.0f;
+		TickCount = 0;
+	}
 
 	if (UWorld* World = GetWorld())
 	{
 		FTimerManager& TimerManager = World->GetTimerManager();
 		TimerManager.ClearTimer(TimerHandle);
-		TimerManager.SetTimer(TimerHandle, this, &UTimer::HandleTick, InTime, FTimerManagerTimerParameters{ .bLoop = bLooping, .bMaxOncePerFrame = true });
-		OnStart.Broadcast();
+
+		//bool bShouldLoop = TickLimit <= 0;
+		bool bShouldLoop = true;
+		TimerManager.SetTimer(TimerHandle, this, &UTimer::HandleTick, TickInterval, FTimerManagerTimerParameters{ .bLoop = bShouldLoop, .bMaxOncePerFrame = true });
+		
+		OnStarted.Broadcast();
 	}
 }
+
 
 void UTimer::StopTimer_Implementation()
 {
 	if (UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().ClearTimer(TimerHandle);
-		bIsActive = false;
+
+		Time = 0.0f;
+		TickCount = 0;
+
+		OnCompleted.Broadcast();
 	}
-	OnComplete.Broadcast();
 }
 
-void UTimer::RestartTimer_Implementation(const float InTime)
+
+void UTimer::RestartTimer_Implementation(const float InTickInterval, const int InTickLimit)
 {
 	StopTimer();
-	StartTimer(InTime);
+	StartTimer(InTickInterval, InTickLimit, false);
 }
 
+
+void UTimer::SetTickInterval_Implementation(const float InTickInterval)
+{
+	StopTimer();
+	StartTimer(InTickInterval, TickLimit, true);
+}
+
+
+const bool UTimer::bIsActive_Implementation()
+{
+	if (UWorld* World = GetWorld())
+	{
+		return World->GetTimerManager().IsTimerActive(TimerHandle);
+	}
+	return false;
+}
+
+
+const float UTimer::GetNormalizedAlpha_Implementation()
+{
+	if (TickLimit <= 0 || TickInterval <= 0.0f)
+	{
+		return 0.0f;
+	}
+	const float TotalTime = TickLimit * TickInterval;
+	return FMath::Clamp(Time / TotalTime, 0.0f, 1.0f);
+}
 
 void UTimer::HandleTick_Implementation()
 {
-	DeltaTime += DeltaTime;
-	OnTick.Broadcast();
-	StopTimer();
+	Time += TickInterval;
+	TickCount++;
+
+	OnTick.Broadcast(Time, TickLimit * TickInterval);
+
+	if (TickLimit > 0 && TickCount >= TickLimit)
+	{
+		StopTimer();
+	}
 }

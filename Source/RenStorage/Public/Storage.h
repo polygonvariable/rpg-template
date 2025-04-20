@@ -29,14 +29,14 @@ public:
 	* <FName = UUID, Struct = FInventoryRecord>
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage|Inventory")
-	TMap<FName, FInventoryRecord> InventoryRecords; // 
+	TMap<FName, FInventoryRecord> InventoryRecords;
 
 	/**
 	* A map of stamped events, which is a map of UUIDs to timestamps
 	* <FName = UUID, Struct = FDateTime>
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Storage|Environment")
-	TMap<FName, FDateTime> StampedEvents; // <FName = UUID, Struct = FDateTime>
+	TMap<FName, FDateTime> StampedEvents;
 
 };
 

@@ -34,8 +34,8 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
-	bool AddRecords(const TMap<UInventoryAsset*, int32>& InventoryAssets);
-	virtual bool AddRecords_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets);
+	bool AddRecords(const TMap<UInventoryAsset*, int32>& InventoryAssets, const bool bAllowRollback = false);
+	virtual bool AddRecords_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets, const bool bAllowRollback = false);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
@@ -44,8 +44,8 @@ public:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
-	bool RemoveRecords(const TMap<FName, int32>& InventoryRecordIds, const bool bSkipIfAnyFail = false);
-	virtual bool RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds, const bool bSkipIfAnyFail = false);
+	bool RemoveRecords(const TMap<FName, int32>& InventoryRecordIds, const bool bAllowRollback = false);
+	virtual bool RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds, const bool bAllowRollback = false);
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
@@ -83,6 +83,8 @@ public:
 	virtual void OverwriteRecords_Implementation(const TMap<FName, FInventoryRecord>& InventoryRecords);
 
 protected:
+
+	// TMap<FName, UInventoryAsset*> CachedAssetMap;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory Subsystem|Properties")
 	UDataTable* InventoryTable;

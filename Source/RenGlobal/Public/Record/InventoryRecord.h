@@ -61,6 +61,23 @@ struct FInventoryRecord : public FRenRecord
 
 
 /**
+ * Helper function library for inventory records in Blueprint
+ */
+UCLASS(MinimalAPI)
+class UInventoryRecordLibrary : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+
+public:
+
+	UFUNCTION(BlueprintPure, Category = "Inventory Record|Library")
+	static bool IsValid(const FInventoryRecord& Record) { return Record.IsValid(); }
+
+};
+
+
+
+/**
  *
  */
 USTRUCT(BlueprintType, DisplayName = "Inventory Table")

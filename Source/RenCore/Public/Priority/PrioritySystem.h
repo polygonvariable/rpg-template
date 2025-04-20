@@ -34,13 +34,15 @@ public:
 	void RemoveItem(const int Priority);
 	virtual void RemoveItem_Implementation(const int Priority);
 
+
+	UFUNCTION(BlueprintCallable)
+	int GetHighestPriority();
+
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int, FInstancedStruct> Items;
-
-
-	int GetHighestPriority();
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")

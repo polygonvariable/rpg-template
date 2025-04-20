@@ -3,6 +3,8 @@
 // Parent Header
 #include "Character/CharacterEntity.h"
 
+#include "RenGlobal/Public/Macro/LogMacro.h"
+
 // Engine Headers
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -47,32 +49,62 @@ ACharacterEntity::ACharacterEntity() : Super()
 	}
 
 	bUseControllerRotationYaw = false;
+
+
 }
 
-void ACharacterEntity::CameraPan(FVector2D Axis)
+void ACharacterEntity::CameraPan(const FVector2D Axis)
 {
 	AddControllerYawInput(Axis.X);
 	AddControllerPitchInput(Axis.Y);
 }
 
-void ACharacterEntity::CameraZoom(float Delta, float Multiplier)
+void ACharacterEntity::CameraZoom(const float Delta, const float Multiplier)
 {
 	float CurrentLength = SpringArm->TargetArmLength;
 	SpringArm->TargetArmLength = FMath::Clamp(CurrentLength + (Delta * Multiplier), CameraMinZoom, CameraMaxZoom);
 }
 
+
 void ACharacterEntity::SimpleMove_Implementation(FVector direction)
 {
-	float X = direction.X;
-	float Y = direction.Y;
-
 	FRotator Rotation = GetControlRotation();
-	float RotationX = Rotation.Roll;
-	float RotationZ = Rotation.Yaw;
+	FVector RightVector = UKismetMathLibrary::GetRightVector(FRotator(0.0f, Rotation.Yaw, Rotation.Roll));
+	FVector ForwardVector = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, Rotation.Yaw, 0.0f));
 
-	FVector RightVector = UKismetMathLibrary::GetRightVector(FRotator(0.0f, RotationZ, RotationX));
-	FVector ForwardVector = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, RotationZ, 0.0f));
-
-	AddMovementInput(RightVector, X, false);
-	AddMovementInput(ForwardVector, Y, false);
+	AddMovementInput(RightVector, direction.X, false);
+	AddMovementInput(ForwardVector, direction.Y, false);
 }
+
+
+//void ACharacterEntity::Tick(float DeltaTime)
+//{
+//	Super::Tick(DeltaTime);
+//	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
+//	{
+//		EMovementMode Mode = MovementComponent->MovementMode;
+//		switch (Mode)
+//		{
+//			case EMovementMode::MOVE_Walking:
+//				if (GetVelocity().IsNearlyZero(50.0f))
+//				{
+//					CurrentSubMovement = ESubMovement::Idle;
+//				}
+//				else if (GetVelocity().Size2D() > 50.0f && GetVelocity().Size2D() < 500.0f || !bCanSprint)
+//				{
+//					CurrentSubMovement = ESubMovement::Walk;
+//				}
+//				else if (GetVelocity().Size2D() > 500.0f && bCanSprint)
+//				{
+//					CurrentSubMovement = ESubMovement::Sprint;
+//				}
+//				break;
+//			case EMovementMode::MOVE_Falling:
+//				CurrentSubMovement = ESubMovement::Fall;
+//				break;
+//		}
+//	}
+//}
+// On_Jump_Pressed -> Give jump ability
+// On_Jump_Released -> Remove jump ability
+

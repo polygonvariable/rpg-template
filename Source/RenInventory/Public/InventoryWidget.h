@@ -65,15 +65,13 @@ public:
 
 protected:
 
+	// TMap<FName, TObjectPtr<UInventoryAsset>> CachedAssets;
+
 	TObjectPtr<UInventorySubsystem> InventorySubsystem;
 
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Widget|Binding")
 	TObjectPtr<UListView> InventoryContainer;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BindWidgetOptional), Category = "Inventory Widget|Filter")
-	FInventoryFilterRule InventoryFilterRule = FInventoryFilterRule();
 
 
 	UPROPERTY(BlueprintReadWrite, Category = "Inventory Widget|Runtime")
@@ -96,8 +94,17 @@ protected:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Handler")
-	void HandleSelectedEntry(UObject* Object);
-	virtual void HandleSelectedEntry_Implementation(UObject* Object);
+	void HandleSelectedEntry(UInventoryEntryObject* EntryObject);
+	virtual void HandleSelectedEntry_Implementation(UInventoryEntryObject* EntryObject);
+
+private:
+
+	void HandleSelectedEntryCast(UObject* Object);
+
+protected:
+
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 };
 
@@ -134,11 +141,6 @@ protected:
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Entry Widget|Action")
-	void InitializeEntry(UObject* Object);
-	virtual void InitializeEntry_Implementation(UObject* Object);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Entry Widget|Action")
 	void SelectEntry();
 	virtual void SelectEntry_Implementation();
 
@@ -146,6 +148,10 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Entry Widget|Handler")
 	void HandleEntry(UInventoryEntryObject* EntryObject);
 	virtual void HandleEntry_Implementation(UInventoryEntryObject* EntryObject);
+
+protected:
+
+	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 };
 
@@ -172,7 +178,7 @@ public:
 
 protected:
 
-	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	TObjectPtr<UInventorySubsystem> InventorySubsystem;
 
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")

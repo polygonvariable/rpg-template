@@ -6,13 +6,19 @@
 #include "CoreMinimal.h"
 #include "InstancedStruct.h"
 
+#include "Components/ExponentialHeightFogComponent.h"
+#include "Components/SkyAtmosphereComponent.h"
+#include "Components/DirectionalLightComponent.h"
+
 // Project Headers
 #include "RenCore/Public/Priority/PrioritySystem.h"
-#include "EnvironmentActor.h"
+#include "RenEnvironment/Public/Controller/EnvironmentProfile.h"
 
 // Generated Headers
 #include "EnvironmentController.generated.h"
 
+
+class UTimer;
 
 /**
  * 
@@ -25,23 +31,105 @@ class RENENVIRONMENT_API UEnvironmentController : public UPrioritySystem
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<AEnvironmentActor> EnvironmentActor;
+	UFUNCTION()
+	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components);
 
 protected:
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
-	void SetTimer(const float Duration = 5.0f, const float Interval = 1.0f);
-	virtual void SetTimer_Implementation(const float Duration = 5.0f, const float Interval = 1.0f);
+	UPROPERTY()
+	TObjectPtr<UTimer> TransitionTimer;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
-	void OnTransitioned(const float DeltaTime, const float Alpha);
-	virtual void OnTransitioned_Implementation(const float DeltaTime, const float Alpha);
+	UFUNCTION()
+	void SetTimer();
+
+
+	UFUNCTION()
+	virtual void OnTransitioned(const float CurrentTime, const float TotalTime);
+
+};
+
+
+/**
+ *
+ */
+UCLASS()
+class RENENVIRONMENT_API UEnvironmentFogController : public UEnvironmentController
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TWeakObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFog;
+
+	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
 
 protected:
 
-	virtual void OnItemAdded_Implementation(FInstancedStruct Item) override;
+	const FEnvironmentFogProfile* ActiveProfile;
+
+	virtual void OnActiveItemChanged_Implementation() override;
+
+	virtual void OnTransitioned(const float CurrentTime, const float TotalTime) override;
+
+};
+
+
+/**
+ *
+ */
+UCLASS()
+class RENENVIRONMENT_API UEnvironmentLightController : public UEnvironmentController
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TWeakObjectPtr<UDirectionalLightComponent> Sun;
+
+	UPROPERTY()
+	TWeakObjectPtr<UDirectionalLightComponent> Moon;
+
+	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
+
+protected:
+
+	const FEnvironmentLightProfile* ActiveProfile;
+
+	virtual void OnActiveItemChanged_Implementation() override;
+
+	virtual void OnTransitioned(const float CurrentTime, const float TotalTime) override;
+
+};
+
+
+/**
+ *
+ */
+UCLASS()
+class RENENVIRONMENT_API UEnvironmentAtmosphereController : public UEnvironmentController
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TWeakObjectPtr<USkyAtmosphereComponent> Atmosphere;
+
+	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
+
+protected:
+
+	const FEnvironmentAtmosphereProfile* ActiveProfile;
+
+	virtual void OnActiveItemChanged_Implementation() override;
+
+	virtual void OnTransitioned(const float CurrentTime, const float TotalTime) override;
 
 };
 

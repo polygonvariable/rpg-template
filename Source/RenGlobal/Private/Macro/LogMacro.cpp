@@ -4,3 +4,5 @@
 #include "Macro/LogMacro.h"
 
 
+DEFINE_LOG_CATEGORY(LogInventorySubsystem);
+DEFINE_LOG_CATEGORY(LogInventoryWidget);

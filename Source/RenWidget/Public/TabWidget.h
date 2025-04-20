@@ -40,6 +40,14 @@ public:
 
 protected:
 
+	UPROPERTY(BlueprintReadOnly, Category = "Tab Control|Property")
+	FColor TabInactiveColor = FColor::White;
+
+
+	UPROPERTY(BlueprintReadOnly, Category = "Tab Control|Property")
+	FColor TabActiveColor = FColor::Red;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Tab Control|Binding")
 	TObjectPtr<UButton> TabButton;
 
@@ -59,6 +67,7 @@ protected:
 protected:
 
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 public:
 
@@ -107,6 +116,7 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "TabBox Control|Handler")
 	void HandleTabSetup(UTabControl* NewTab);
 	virtual void HandleTabSetup_Implementation(UTabControl* NewTab);
+
 
 public:
 

@@ -13,7 +13,7 @@
  *
  */
 UENUM(BlueprintType, DisplayName = "Inventory Item Rarity")
-enum EInventoryItemRarity
+enum EInventoryItemRarity : uint8
 {
     Common UMETA(DisplayName = "Common"),
     Rare UMETA(DisplayName = "Rare"),

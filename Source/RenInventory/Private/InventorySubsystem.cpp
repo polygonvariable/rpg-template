@@ -13,7 +13,6 @@
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
 
-DEFINE_LOG_CATEGORY(LogInventorySubsystem);
 
 
 bool UInventorySubsystem::AddRecord_Implementation(UInventoryAsset* InventoryAsset, const int Quantity)
@@ -66,7 +65,7 @@ bool UInventorySubsystem::AddRecord_Implementation(UInventoryAsset* InventoryAss
 	return true;
 }
 
-bool UInventorySubsystem::AddRecords_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets)
+bool UInventorySubsystem::AddRecords_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets, const bool bAllowRollback)
 {
 	if (!IsValid(Storage))
 	{
@@ -74,12 +73,19 @@ bool UInventorySubsystem::AddRecords_Implementation(const TMap<UInventoryAsset*,
 		return false;
 	}
 
+	TMap<FName, FInventoryRecord> RecordsBackup;
+	if (bAllowRollback) RecordsBackup = Storage->InventoryRecords;
+
 	for (const auto& Record : InventoryAssets)
 	{
-		AddRecord(Record.Key, Record.Value);
+		if (!AddRecord(Record.Key, Record.Value) && bAllowRollback)
+		{
+			Storage->InventoryRecords = RecordsBackup;
+			return false;
+		}
 	}
 
-	return false;
+	return true;
 }
 
 bool UInventorySubsystem::RemoveRecord_Implementation(const FName InventoryRecordId, const int Quantity)
@@ -113,7 +119,7 @@ bool UInventorySubsystem::RemoveRecord_Implementation(const FName InventoryRecor
 	return true;
 }
 
-bool UInventorySubsystem::RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds, const bool bSkipIfAnyFail)
+bool UInventorySubsystem::RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds, const bool bAllowRollback)
 {
 	if (!IsValid(Storage))
 	{
@@ -121,10 +127,14 @@ bool UInventorySubsystem::RemoveRecords_Implementation(const TMap<FName, int32>&
 		return false;
 	}
 
+	TMap<FName, FInventoryRecord> RecordsBackup;
+	if (bAllowRollback) RecordsBackup = Storage->InventoryRecords;
+
 	for (const auto& Record : InventoryRecordIds)
 	{
-		if (!RemoveRecord(Record.Key, Record.Value) && !bSkipIfAnyFail)
+		if (!RemoveRecord(Record.Key, Record.Value) && bAllowRollback)
 		{
+			Storage->InventoryRecords = RecordsBackup;
 			return false;
 		}
 	}
@@ -141,15 +151,15 @@ bool UInventorySubsystem::UpdateRecord_Implementation(const FName InventoryRecor
 	}
 
 	TMap<FName, FInventoryRecord>& Records = Storage->InventoryRecords;
-	if (Records.Contains(InventoryRecordId))
+	if (!Records.Contains(InventoryRecordId))
 	{
-		Records.Add(InventoryRecordId, InventoryRecord);
-		LOG_INFO(this, LogInventorySubsystem, "Record updated: %s", *InventoryRecordId.ToString());
-		return true;
+		LOG_ERROR(this, LogInventorySubsystem, "Record not found: %s", *InventoryRecordId.ToString());
+		return false;
 	}
 
-	LOG_ERROR(this, LogInventorySubsystem, "Record not found: %s", *InventoryRecordId.ToString());
-	return false;
+	Records.Add(InventoryRecordId, InventoryRecord);
+	LOG_INFO(this, LogInventorySubsystem, "Record updated: %s", *InventoryRecordId.ToString());
+	return true;
 }
 
 bool UInventorySubsystem::HasRecord_Implementation(const FName InventoryRecordId)

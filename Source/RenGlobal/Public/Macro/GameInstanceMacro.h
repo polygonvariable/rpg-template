@@ -7,6 +7,20 @@
 #include "Engine/GameInstance.h"
 
 
+#define BREAK_GET_WORLDSUBSYSTEM(SubsystemClass, SubsystemReference) \
+	{ \
+        UWorld* ___World___ = GetWorld(); \
+        if (!IsValid(___World___)) { \
+            UE_LOG(LogTemp, Error, TEXT("[%s] Invalid world"), *FString(__FUNCTION__)); \
+            return; \
+        } \
+        SubsystemReference = ___World___->GetSubsystem<SubsystemClass>(); \
+        if (!IsValid(SubsystemReference)) { \
+            UE_LOG(LogTemp, Error, TEXT("[%s] Invalid world subsystem"), *FString(__FUNCTION__)); \
+            return; \
+        } \
+    }
+
 #define GET_GAMEINSTANCESUBSYSTEM_FROM_WORLD(SubsystemClass, SubsystemReference) \
     UWorld* World = GetWorld(); \
     if (!IsValid(World)) { \

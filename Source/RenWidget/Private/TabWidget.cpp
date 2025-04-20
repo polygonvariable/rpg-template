@@ -24,6 +24,7 @@ void UTabControl::HandleSelection_Implementation()
 
 void UTabControl::NativeConstruct()
 {
+	Super::NativeConstruct();
 	if (IsValid(TabButton))
 	{
 		TabButton->OnClicked.AddDynamic(this, &UTabControl::HandleSelection);
@@ -32,6 +33,15 @@ void UTabControl::NativeConstruct()
 	{
 		TabTextBlock->SetText(TabTitle);
 	}
+}
+
+void UTabControl::NativeDestruct()
+{
+	if (IsValid(TabButton))
+	{
+		TabButton->OnClicked.RemoveAll(this);
+	}
+	Super::NativeDestruct();
 }
 
 
@@ -73,6 +83,16 @@ void UTabBoxControl::ClearTabs_Implementation()
 		LOG_ERROR(this, LogTemp, "TabContainer is not valid");
 		return;
 	}
+	TArray<UWidget*> Tabs = TabContainer->GetAllChildren();
+	for (UWidget* Tab : Tabs)
+	{
+		UTabControl* ResolvedTab = Cast<UTabControl>(Tab);
+		if (!IsValid(ResolvedTab))
+		{
+			continue;
+		}
+		ResolvedTab->OnSelected.RemoveAll(this);
+	}
 	TabContainer->ClearChildren();
 }
 
@@ -85,14 +105,14 @@ void UTabBoxControl::HandleTabSelected_Implementation(UTabControl* SelectedTab)
 	}
 
 	TArray<UWidget*> Tabs = TabContainer->GetAllChildren();
-	for (UWidget* RawTab : Tabs)
+	for (UWidget* Tab : Tabs)
 	{
-		UTabControl* ResolvedTab = Cast<UTabControl>(RawTab);
+		UTabControl* ResolvedTab = Cast<UTabControl>(Tab);
 		if (!IsValid(ResolvedTab))
 		{
 			continue;
 		}
-		ResolvedTab->SetSelected(RawTab == SelectedTab);
+		ResolvedTab->SetSelected(Tab == SelectedTab);
 	}
 
 	OnTabChanged.Broadcast(SelectedTab->TabIndex);

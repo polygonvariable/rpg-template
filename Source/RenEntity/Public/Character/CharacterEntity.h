@@ -19,6 +19,21 @@ class UCameraComponent;
 /**
  *
  */
+//UENUM(BlueprintType, DisplayName = "Sub Movement Type")
+//enum ESubMovement
+//{
+//	Idle UMETA(DisplayName = "Idle"),
+//	Walk UMETA(DisplayName = "Walk"),
+//	Sprint UMETA(DisplayName = "Sprint"),
+//	Fall UMETA(DisplayName = "Fall")
+//};
+
+
+
+
+/**
+ *
+ */
 UCLASS(Abstract, DisplayName = "Character Entity")
 class RENENTITY_API ACharacterEntity : public AEntity
 {
@@ -28,6 +43,12 @@ class RENENTITY_API ACharacterEntity : public AEntity
 public:
 
 	ACharacterEntity();
+
+
+	//UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	//TEnumAsByte<ESubMovement> CurrentSubMovement = ESubMovement::Idle;
+	//UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Default")
+	//bool bCanSprint = false;
 
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
@@ -46,13 +67,17 @@ protected:
 	float CameraMaxZoom = 2000.0f;
 
 	UFUNCTION(BlueprintCallable, Category = "Character Entity|Input", Meta = (BlueprintProtected))
-	void CameraPan(FVector2D Axis);
+	void CameraPan(const FVector2D Axis);
 
 	UFUNCTION(BlueprintCallable, Category = "Character Entity|Input", Meta = (BlueprintProtected))
-	void CameraZoom(float Delta, float Multiplier = 5.0f);
+	void CameraZoom(const float Delta, const float Multiplier = 5.0f);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Character Entity|Input", Meta = (ForceAsFunction, BlueprintProtected))
 	void SimpleMove(FVector Direction);
 	virtual void SimpleMove_Implementation(FVector Direction);
 
+
+	//virtual void Tick(float DeltaTime) override;
+
 };
+

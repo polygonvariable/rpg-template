@@ -13,7 +13,7 @@
  *
  */
 UENUM(BlueprintType, DisplayName = "Inventory Item Type")
-enum EInventoryItemType
+enum EInventoryItemType : uint8
 {
     Food UMETA(DisplayName = "Food"),
     Weapon UMETA(DisplayName = "Weapon"),
