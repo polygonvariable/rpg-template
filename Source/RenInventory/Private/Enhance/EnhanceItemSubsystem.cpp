@@ -20,7 +20,7 @@ bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName Enhanceab
 	FInventoryRecord EnhanceableRecord = InventorySubsystem->GetRecordWithAsset(EnhanceableRecordId, REnhanceableAsset, bFound);
 	if (!bFound || !REnhanceableAsset)
 	{
-		LOG_ERROR(this, LogTemp, "Enhanceable record not found or invalid asset");
+		LOG_ERROR(LogTemp, "Enhanceable record not found or invalid asset");
 		return false;
 	}
 
@@ -29,14 +29,14 @@ bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName Enhanceab
 	FInventoryRecord EnhanceRecord = InventorySubsystem->GetRecordWithAsset(EnhanceRecordId, REnhanceAsset, bFound);
 	if (!bFound || !REnhanceAsset)
 	{
-		LOG_ERROR(this, LogTemp, "Enhance record not found or invalid asset");
+		LOG_ERROR(LogTemp, "Enhance record not found or invalid asset");
 		return false;
 	}
 
 	UEnhanceableAsset* EnhanceableAsset = Cast<UEnhanceableAsset>(REnhanceableAsset);
 	if (!EnhanceableAsset)
 	{
-		LOG_ERROR(this, LogTemp, "Inventory record is not of type enhanceable");
+		LOG_ERROR(LogTemp, "Inventory record is not of type enhanceable");
 		return false;
 	}
 
@@ -48,13 +48,13 @@ bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName Enhanceab
 			int EnhancePoint = EnhanceAsset->EnhancePoints;
 			return HandleLevelUp(EnhanceableRecordId, EnhanceRecordId, EnhanceableRecord, EnhanceableAsset, EnhancePoint);
 		}
-		LOG_ERROR(this, LogTemp, "Internal enhance failed, trying to check for external enhance");
+		LOG_ERROR(LogTemp, "Internal enhance failed, trying to check for external enhance");
 	}
 
 	int* EnhancePoints = EnhanceableAsset->EnhanceExternalCosts.Find(EnhanceAsset->ItemType);
 	if (!EnhancePoints)
 	{
-		LOG_ERROR(this, LogTemp, "External enhance failed and no points found");
+		LOG_ERROR(LogTemp, "External enhance failed and no points found");
 		return false;
 	}
 
@@ -70,39 +70,39 @@ bool UEnhanceRecordSubsystem::RankUpRecord_Implementation(const FName Enhanceabl
 	FInventoryRecord EnhanceableRecord = InventorySubsystem->GetRecordWithAsset(EnhanceableRecordId, REnhanceableAsset, bFound);
 	if (!bFound || !REnhanceableAsset)
 	{
-		LOG_ERROR(this, LogTemp, "Enhanceable record not found or invalid asset");
+		LOG_ERROR(LogTemp, "Enhanceable record not found or invalid asset");
 		return false;
 	}
 
 	UEnhanceableAsset* EnhanceableAsset = Cast<UEnhanceableAsset>(REnhanceableAsset);
 	if (!EnhanceableAsset)
 	{
-		LOG_ERROR(this, LogTemp, "Inventory record is not of type enhanceable");
+		LOG_ERROR(LogTemp, "Inventory record is not of type enhanceable");
 		return false;
 	}
 
 	TMap<int, FInventoryAssetQuantity>& EnhanceRankings = EnhanceableAsset->EnhanceRankings;
 	FInventoryAssetQuantity* EnhanceRanking = EnhanceRankings.Find(EnhanceableRecord.EnhanceRecord.Rank);
 	if (!EnhanceRanking) {
-		LOG_ERROR(this, LogTemp, "Enhance rank not found");
+		LOG_ERROR(LogTemp, "Enhance rank not found");
 		return false;
 	}
 
 	const TMap<FName, int> RankCostsIds;// = EnhanceRanking->ConvertToIds();
 	if (!InventorySubsystem->RemoveRecords(RankCostsIds))
 	{
-		LOG_ERROR(this, LogTemp, "Failed to remove rank costs");
+		LOG_ERROR(LogTemp, "Failed to remove rank costs");
 		return false;
 	}
 
 	EnhanceableRecord.EnhanceRecord.Rank++;
 	if (!InventorySubsystem->UpdateRecord(EnhanceableRecordId, EnhanceableRecord))
 	{
-		LOG_ERROR(this, LogTemp, "Failed to update enhanceable record");
+		LOG_ERROR(LogTemp, "Failed to update enhanceable record");
 		return false;
 	}
 
-	LOG_WARNING(this, LogTemp, "Rank up successful");
+	LOG_WARNING(LogTemp, "Rank up successful");
 	return true;
 }
 
@@ -131,7 +131,7 @@ bool UEnhanceRecordSubsystem::HandleLevelUp(const FName& EnhanceableRecordId, co
 
 	if (!bCanLevelUp)
 	{
-		LOG_ERROR(this, LogTemp, "Level up cancelled");
+		LOG_ERROR(LogTemp, "Level up cancelled");
 		return false;
 	}
 
@@ -140,17 +140,17 @@ bool UEnhanceRecordSubsystem::HandleLevelUp(const FName& EnhanceableRecordId, co
 
 	if (!InventorySubsystem->RemoveRecord(EnhanceRecordId, 1))
 	{
-		LOG_ERROR(this, LogTemp, "Failed to remove enhance record");
+		LOG_ERROR(LogTemp, "Failed to remove enhance record");
 		return false;
 	}
 
 	if (InventorySubsystem->UpdateRecord(EnhanceableRecordId, EnhanceableRecord))
 	{
-		LOG_WARNING(this, LogTemp, "Level up success, new xp: %s, new level: %s", *FString::FromInt(EnhanceableRecord.EnhanceRecord.Experience), *FString::FromInt(EnhanceableRecord.EnhanceRecord.Level));
+		LOG_WARNING(LogTemp, "Level up success, new xp: %s, new level: %s", *FString::FromInt(EnhanceableRecord.EnhanceRecord.Experience), *FString::FromInt(EnhanceableRecord.EnhanceRecord.Level));
 		return true;
 	}
 
-	LOG_ERROR(this, LogTemp, "Level up failed");
+	LOG_ERROR(LogTemp, "Level up failed");
 	return false;
 }
 

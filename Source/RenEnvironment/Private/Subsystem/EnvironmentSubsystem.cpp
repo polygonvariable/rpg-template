@@ -3,18 +3,15 @@
 // Parent Header
 #include "Subsystem/EnvironmentSubsystem.h"
 
+// Engine Header
+#include "Components/SceneComponent.h"
+
 // Project Header
-#include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 #include "Controller/EnvironmentProfile.h"
 #include "Type/EnvironmentController.h"
 
-#include "Components/ExponentialHeightFogComponent.h"
-#include "Components/SceneComponent.h"
-#include "Components/SkyAtmosphereComponent.h"
-#include "Components/SkyLightComponent.h"
-#include "Components/StaticMeshComponent.h"
 
 
 
@@ -22,14 +19,14 @@ bool UEnvironmentSubsystem::AddEnvironmentController(const TEnumAsByte<EEnvironm
 {
 	if(EnvironmentControllers.Contains(ProfileType))
 	{
-		LOG_ERROR(this, LogTemp, "Environment Controller already exists");
+		LOG_ERROR(LogTemp, "Environment Controller already exists");
 		return false;
 	}
 
 	UEnvironmentController* Controller = NewObject<UEnvironmentController>(this, ControllerClass);
 	if (!IsValid(Controller))
 	{
-		LOG_ERROR(this, LogTemp, "Failed to create Environment Controller");
+		LOG_ERROR(LogTemp, "Failed to create Environment Controller");
 		return false;
 	}
 
@@ -39,7 +36,7 @@ bool UEnvironmentSubsystem::AddEnvironmentController(const TEnumAsByte<EEnvironm
 	return true;
 }
 
-void UEnvironmentSubsystem::ValidateProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, const FInstancedStruct Profile, TFunctionRef<void(UEnvironmentController* Controller, const FEnvironmentProfile* Profile)> Callback, const FString& LogMessage)
+void UEnvironmentSubsystem::ValidateEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, const FInstancedStruct Profile, TFunctionRef<void(UEnvironmentController* Controller, const FEnvironmentProfile* Profile)> Callback, const FString& LogMessage)
 {
 	if (!Profile.IsValid()) return;
 	if (const FEnvironmentProfile* ResolvedProfile = Profile.GetPtr<FEnvironmentProfile>())
@@ -47,52 +44,39 @@ void UEnvironmentSubsystem::ValidateProfile(const TEnumAsByte<EEnvironmentProfil
 		if (UEnvironmentController* Controller = EnvironmentControllers.FindRef(ProfileType))
 		{
 			Callback(Controller, ResolvedProfile);
-			LOG_INFO(this, LogTemp, TEXT("%s"), *LogMessage);
+			LOG_INFO(LogTemp, TEXT("%s"), *LogMessage);
 		}
 	}
 }
 
 void UEnvironmentSubsystem::AddEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile)
 {
-	ValidateProfile(ProfileType, Profile,
+	ValidateEnvironmentProfile(ProfileType, Profile,
 		[Profile](UEnvironmentController* InController, const FEnvironmentProfile* InProfile)
 		{
 			InController->AddItem(Profile, InProfile->Priority);
 		},
 		TEXT("Environment Profile added")
 	);
-
-	//if (!Profile.IsValid()) return;
-	//
-	//if (const FEnvironmentProfile* ResolvedProfile = Profile.GetPtr<FEnvironmentProfile>())
-	//{
-	//	UEnvironmentController* Controller = EnvironmentControllers.FindRef(ProfileType);
-	//	if (IsValid(Controller))
-	//	{
-	//		LOG_INFO(this, LogTemp, "Environment Profile added");
-	//		Controller->AddItem(Profile, ResolvedProfile->Priority);
-	//	}
-	//}
 }
 
 void UEnvironmentSubsystem::RemoveEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile)
 {
-	ValidateProfile(ProfileType, Profile,
+	ValidateEnvironmentProfile(ProfileType, Profile,
 		[](UEnvironmentController* InController, const FEnvironmentProfile* InProfile)
 		{
 			InController->RemoveItem(InProfile->Priority);
 		},
 		TEXT("Environment Profile removed")
 	);
-	//if (!Profile.IsValid()) return;
+}
 
-	//if (const FEnvironmentProfile* ResolvedProfile = Profile.GetPtr<FEnvironmentProfile>())
-	//{
-	//	UEnvironmentController* Controller = EnvironmentControllers.FindRef(ProfileType);
-	//	if (IsValid(Controller))
-	//	{
-	//		LOG_INFO(this, LogTemp, "Environment Profile removed");
-	//		Controller->RemoveItem(ResolvedProfile->Priority);
-	//	}
-	//}
+FString UEnvironmentSubsystem::DumpProfiles()
+{
+	FString Profiles = "";
+	for (const TPair<TEnumAsByte<EEnvironmentProfileType>, UEnvironmentController*>& Controller : EnvironmentControllers)
+	{
+		Profiles += UEnum::GetValueAsString(Controller.Key) + "\n";
+	}
+	return Profiles;
 }

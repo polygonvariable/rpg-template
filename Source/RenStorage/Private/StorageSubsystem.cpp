@@ -20,28 +20,28 @@ void UStorageSubsystem::ReadStorage_Implementation(const FName SlotId)
 	const TSubclassOf<UStorage> StorageClasss = Settings->StorageClasses.TryLoadClass<UStorage>();
 	if (Storage || !StorageClass || !StorageClass->IsChildOf(UStorage::StaticClass()))
 	{
-		LOG_ERROR(this, LogTemp, "Storage is already set or StorageClass is null or not a child of ESaveGame");
+		LOG_ERROR(LogTemp, "Storage is already set or StorageClass is null or not a child of ESaveGame");
 		return;
 	}*/
 
 	if (DoesStorageExist(SlotId))
 	{
 		Storage = Cast<UStorage>(UGameplayStatics::LoadGameFromSlot(SlotId.ToString(), 0));
-		LOG_INFO(this, LogTemp, "Storage loaded from slot");
+		LOG_INFO(LogTemp, "Storage loaded from slot");
 	}
 	else
 	{
 		USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(UStorage::StaticClass());
 		if (!IsValid(NewSaveGame))
 		{
-			LOG_ERROR(this, LogTemp, "Failed to create save game object");
+			LOG_ERROR(LogTemp, "Failed to create save game object");
 			return;
 		}
 
 		UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotId.ToString(), 0);
 		Storage = Cast<UStorage>(NewSaveGame);
 
-		LOG_INFO(this, LogTemp, "Storage created and saved to slot");
+		LOG_INFO(LogTemp, "Storage created and saved to slot");
 	}
 }
 
@@ -49,7 +49,7 @@ void UStorageSubsystem::UpdateStorage_Implementation(const FName SlotId)
 {
 	if (!IsValid(Storage))
 	{
-		LOG_ERROR(this, LogTemp, "Storage is null");
+		LOG_ERROR(LogTemp, "Storage is null");
 		return;
 	}
 	UGameplayStatics::SaveGameToSlot(Storage, SlotId.ToString(), 0);

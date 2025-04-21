@@ -23,7 +23,7 @@ void UInventoryWidget::DisplayStoredRecords_Implementation(const bool bForceRefr
 {
 	if (!EntryObjectClass || !EntryObjectClass->IsChildOf(UInventoryEntryObject::StaticClass()))
 	{
-		LOG_ERROR(this, LogTemp, "EntryObjectClass is null or not a child of UInventoryEntryObject");
+		LOG_ERROR(LogTemp, "EntryObjectClass is null or not a child of UInventoryEntryObject");
 		return;
 	}
 
@@ -56,7 +56,7 @@ void UInventoryWidget::DisplayStoredRecords_Implementation(const bool bForceRefr
 		UInventoryAsset* Asset = InventorySubsystem->GetRecordAsset(Record.Value.ItemId);
 		if (!IsValid(Asset))
 		{
-			LOG_ERROR(this, LogTemp, "Failed to get record's asset");
+			LOG_ERROR(LogTemp, "Failed to get record's asset");
 			continue;
 		}
 
@@ -68,7 +68,7 @@ void UInventoryWidget::DisplayStoredRecords_Implementation(const bool bForceRefr
 		TObjectPtr<UInventoryEntryObject> EntryObject = NewObject<UInventoryEntryObject>(this, EntryObjectClass);
 		if (!IsValid(EntryObject))
 		{
-			LOG_ERROR(this, LogTemp, "Failed to create entry object");
+			LOG_ERROR(LogTemp, "Failed to create entry object");
 			continue;
 		}
 		EntryObject->InventoryRecordId = Record.Key;
@@ -136,7 +136,7 @@ void UInventoryEntryWidget::SelectEntry_Implementation()
 
 	if (!IsValid(ListRecord) || !IsValid(ListViewBase))
 	{
-		LOG_ERROR(this, LogTemp, "ListRecord or ListViewBase is null");
+		LOG_ERROR(LogTemp, "ListRecord or ListViewBase is null");
 		return;
 	}
 
@@ -148,7 +148,7 @@ void UInventoryEntryWidget::HandleEntry_Implementation(UInventoryEntryObject* En
 {
 	if (!IsValid(InventoryAsset) && !IsValid(EntryObject))
 	{
-		LOG_ERROR(this, LogTemp, "InventoryAsset is null");
+		LOG_ERROR(LogTemp, "InventoryAsset is null");
 		return;
 	}
 	if(IsValid(AssetImage)) AssetImage->SetBrushFromSoftTexture(InventoryAsset->AssetIcon);
@@ -175,7 +175,7 @@ void UInventoryDetailWidget::InitializeDetail_Implementation(FInventoryRecord Re
 	if (!IsValid(Asset))
 	{
 		if (IsValid(DetailSwitcher)) DetailSwitcher->SetActiveWidgetIndex(0);
-		LOG_ERROR(this, LogTemp, "Asset is null");
+		LOG_ERROR(LogTemp, "Asset is null");
 		return;
 	}
 
@@ -191,14 +191,14 @@ void UInventoryDetailWidget::InitializeDetail_Implementation(FInventoryRecord Re
 void UInventoryDetailWidget::RefreshDetail_Implementation()
 {
 	if (!InventoryRecordId.IsValid() || !IsValid(InventorySubsystem)) {
-		LOG_ERROR(this, LogTemp, "InventoryRecordId or InventorySubsystem is not valid");
+		LOG_ERROR(LogTemp, "InventoryRecordId or InventorySubsystem is not valid");
 		return;
 	}
 
 	InventoryRecord = InventorySubsystem->GetRecord(InventoryRecordId);
 	if (!InventoryRecord.IsValid())
 	{
-		LOG_ERROR(this, LogTemp, "Record not found to refresh detail widget");
+		LOG_ERROR(LogTemp, "Record not found to refresh detail widget");
 		return;
 	}
 

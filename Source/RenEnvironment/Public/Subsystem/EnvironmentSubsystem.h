@@ -13,11 +13,13 @@
 // Generated Headers
 #include "EnvironmentSubsystem.generated.h"
 
-
-class UTimer;
+// Forward Declarations
 class UEnvironmentController;
 
 
+/**
+ *
+ */
 UCLASS()
 class RENENVIRONMENT_API UEnvironmentSubsystem : public UWorldSubsystem
 {
@@ -29,6 +31,7 @@ public:
 	UFUNCTION()
 	bool AddEnvironmentController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentController> ControllerClass, const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components);
 
+
 	UFUNCTION(BlueprintCallable)
 	void AddEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
 
@@ -36,12 +39,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
 
+
+	UFUNCTION(BlueprintCallable)
+	FString DumpProfiles();
+
 protected:
 
 	UPROPERTY()
 	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentController>> EnvironmentControllers;
 
-	void ValidateProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, const FInstancedStruct Profile, TFunctionRef<void(UEnvironmentController* Controller, const FEnvironmentProfile* Profile)> Callback, const FString& LogMessage);
+
+	void ValidateEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, const FInstancedStruct Profile, TFunctionRef<void(UEnvironmentController* Controller, const FEnvironmentProfile* Profile)> Callback, const FString& LogMessage);
 
 };
 

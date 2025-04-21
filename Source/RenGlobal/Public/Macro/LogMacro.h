@@ -6,39 +6,50 @@
 #include "CoreMinimal.h"
 
 // Log Categories
+RENGLOBAL_API DECLARE_LOG_CATEGORY_EXTERN(LogGameCycleSubsystem, Log, All);
+
+RENGLOBAL_API DECLARE_LOG_CATEGORY_EXTERN(LogEnvironmentActor, Log, All);
+
 RENGLOBAL_API DECLARE_LOG_CATEGORY_EXTERN(LogInventorySubsystem, Log, All);
 RENGLOBAL_API DECLARE_LOG_CATEGORY_EXTERN(LogInventoryWidget, Log, All);
 
 
 
-
-template <typename T>
-FString GetClassName(const T* Object)
-{
-    return Object ? Object->GetClass()->GetName() : TEXT("UnknownClass");
-}
-
-#define LOG_INFO(Object, Category, Text, ...) \
+#define REN_LOG(Category, Verbosity, Text, ...) \
     { \
-        const FString __Message__ = FString::Printf(TEXT("[%s::%s] " Text), *GetClassName(Object), *FString(__FUNCTION__), ##__VA_ARGS__); \
-        UE_LOG(Category, Log, TEXT("%s"), *__Message__) \
-        PRINT(__Message__, FColor::Green) \
+        const FString __InternalName__ = this->GetClass()->GetName(); \
+        const FString __InternalMessage__ = FString::Printf(TEXT("[%s::%s] " Text), *__InternalName__, *FString(__FUNCTION__), ##__VA_ARGS__); \
+        UE_LOG(Category, Verbosity, TEXT("%s"), *__InternalMessage__) \
     }
 
-#define LOG_WARNING(Object, Category, Text, ...) \
+#define REN_PRINT(Message, Time, Color) \
+    if (GEngine) GEngine->AddOnScreenDebugMessage(-1, Time, Color, Message);
+
+#define REN_PRINT_LOG(Category, Verbosity, Time, Color, Text, ...) \
     { \
-        const FString __Message__ = FString::Printf(TEXT("[%s::%s] " Text), *GetClassName(Object), *FString(__FUNCTION__), ##__VA_ARGS__); \
-        UE_LOG(Category, Warning, TEXT("%s"), *__Message__) \
-        PRINT(__Message__, FColor::Orange) \
+        const FString __InternalName__ = this->GetClass()->GetName(); \
+        const FString __InternalMessage__ = FString::Printf(TEXT("[%s::%s] ", Text), *__InternalName__, *FString(__FUNCTION__), ##__VA_ARGS__); \
+        UE_LOG(Category, Verbosity, TEXT("%s"), *__InternalMessage__) \
+        REN_PRINT(__InternalMessage__, Time, Color) \
     }
 
-#define LOG_ERROR(Object, Category, Text, ...) \
-    { \
-        const FString __Message__ = FString::Printf(TEXT("[%s::%s] " Text), *GetClassName(Object), *FString(__FUNCTION__), ##__VA_ARGS__); \
-        UE_LOG(Category, Error, TEXT("%s"), *__Message__) \
-        PRINT(__Message__, FColor::Red) \
-    }
 
-#define PRINT(Text, Color) \
-    if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.0f, Color, Text);
+#define LOG_INFO(Category, Text, ...) \
+    REN_LOG(Category, Log, Text, ##__VA_ARGS__)
+
+#define LOG_WARNING(Category, Text, ...) \
+    REN_LOG(Category, Warning, Text, ##__VA_ARGS__)
+
+#define LOG_ERROR(Category, Text, ...) \
+    REN_LOG(Category, Error, Text, ##__VA_ARGS__)
+
+
+#define PRINT_INFO(Category, Time, Text, ...) \
+    REN_PRINT_LOG(Category, Log, Time, FColor::Green, Text, ##__VA_ARGS__)
+
+#define PRINT_WARNING(Category, Time, Text, ...) \
+    REN_PRINT_LOG(Category, Warning, Time, FColor::Orange, Text, ##__VA_ARGS__)
+
+#define PRINT_ERROR(Category, Time, Text, ...) \
+    REN_PRINT_LOG(Category, Error, Time, FColor::Red, Text, ##__VA_ARGS__)
 

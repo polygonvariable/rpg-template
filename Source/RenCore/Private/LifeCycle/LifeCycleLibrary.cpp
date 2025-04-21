@@ -20,10 +20,6 @@ void ULifeCycleLibrary::StartLifecycle(UObject* Target, FInstancedStruct Paramet
     {
         Interface->StartLifecycle(Target, Parameters, bSkipLoad, bSkipValidate);
     }
-    else
-    {
-        LOG_ERROR(Target, LogTemp, "Target does not implement ILifeCycleInterface");
-    }
 }
 
 void ULifeCycleLibrary::StartLifecycleWithLoader(UObject* Target, FInstancedStruct Parameters, const bool bSkipValidate)
@@ -41,10 +37,6 @@ void ULifeCycleLibrary::Loaded(UObject* Target)
     if (ILifeCycleInterface* Interface = Cast<ILifeCycleInterface>(Target))
     {
         Interface->OnLoaded(Target);
-    }
-    else
-    {
-        LOG_ERROR(Target, LogTemp, "Target does not implement ILifeCycleInterface");
     }
 }
 

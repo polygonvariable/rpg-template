@@ -24,6 +24,7 @@ public class RPGTemplateTarget : TargetRules
                 "RenCore",
                 "RenAsset",
                 "RenStorage",
+                "RenGameplay",
                 "RenInventory",
                 "RenEntity",
                 "RenEnvironment",

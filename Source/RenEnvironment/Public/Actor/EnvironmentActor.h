@@ -7,9 +7,6 @@
 #include "GameFramework/Actor.h"
 #include "InstancedStruct.h"
 
-// Project Headers
-#include "RenEnvironment/Public/Controller/EnvironmentProfileType.h"
-
 // Generated Headers
 #include "EnvironmentActor.generated.h"
 
@@ -23,12 +20,13 @@ class UStaticMeshComponent;
 class UTimer;
 class UEnvironmentController;
 class UEnvironmentSubsystem;
+class UGameClockSubsystem;
 
 
 /**
  *
  */
-UCLASS(DisplayName = "Environment Actor")
+UCLASS()
 class RENENVIRONMENT_API AEnvironmentActor : public AActor
 {
 
@@ -38,15 +36,20 @@ public:
 
 	AEnvironmentActor();
 
+
 	UPROPERTY()
 	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
+
+
+	UPROPERTY()
+	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"), Category = "Environment|Time")
 	float Time = 0.0f;
 
 
-	UPROPERTY(BlueprintReadOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<USceneComponent> SceneComponent;
 
 
@@ -73,39 +76,33 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<UStaticMeshComponent> SkyMesh;
 
+
 protected:
 
-	UPROPERTY(BlueprintReadWrite)
-	UTimer* DayCycleTimer;
+
+	UPROPERTY()
+	TObjectPtr<UTimer> DayCycleTimer;
 
 
-	UFUNCTION(BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintCallable)
 	void StartDayCycle();
 
 
-	UFUNCTION(BlueprintCallable, Category = "Handler")
-	void UpdateDayCycle(float CurrentTime, float TotalTime);
+	UFUNCTION(BlueprintCallable)
+	void HandleDayCycleTick(float CurrentTime);
 
 
-	UFUNCTION(BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintCallable)
 	void EndDayCycle();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Runtime")
-	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentController>> EnvironmentControllers;
-
-
-	UFUNCTION(BlueprintCallable, Category = "Action")
+	UFUNCTION(BlueprintCallable)
 	void InitializeEnvironmentControllers();
 
 
-	UFUNCTION(BlueprintCallable, Category = "Action")
-	void AddEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
+protected:
 
-
-	UFUNCTION(BlueprintCallable, Category = "Action")
-	void RemoveEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
-
+	virtual void BeginPlay() override;
 
 };
 

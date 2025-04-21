@@ -18,14 +18,14 @@ bool UInteractEntryWidget::InitializeEntry_Implementation(AActor* Actor)
 {
 	if (!IsValid(Actor))
 	{
-		LOG_ERROR(this, LogTemp, "Actor is not valid");
+		LOG_ERROR(LogTemp, "Actor is not valid");
 		return false;
 	}
 
 	InteractActor = Cast<AInteractActor>(Actor);
 	if (!IsValid(InteractActor))
 	{
-		LOG_ERROR(this, LogTemp, "Actor is not type of InteractActor");
+		LOG_ERROR(LogTemp, "Actor is not type of InteractActor");
 		return false;
 	}
 
@@ -49,7 +49,7 @@ void UInteractEntryWidget::OnItemUpdated_Implementation(FInteractItem Item)
 {
 	InteractItem = Item;
 	if (InteractTitle) InteractTitle->SetText(Item.Name);
-	LOG_WARNING(this, LogTemp, "InteractItem: %s", *Item.Name.ToString());
+	LOG_WARNING(LogTemp, "InteractItem: %s", *Item.Name.ToString());
 }
 
 void UInteractEntryWidget::NativeDestruct()
@@ -78,21 +78,21 @@ void UInteractWidget::HandleComponentBinding_Implementation(bool bIsUnbind)
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (!IsValid(PlayerController))
 	{
-		LOG_ERROR(this, LogTemp, "PlayerController is not valid");
+		LOG_ERROR(LogTemp, "PlayerController is not valid");
 		return;
 	}
 
 	AHUD* HUD = PlayerController->GetHUD();
 	if (!IsValid(HUD))
 	{
-		LOG_ERROR(this, LogTemp, "HUD is not valid");
+		LOG_ERROR(LogTemp, "HUD is not valid");
 		return;
 	}
 
 	UInteractComponent* InteractComponent = Cast<UInteractComponent>(HUD->GetComponentByClass(UInteractComponent::StaticClass()));
 	if (!IsValid(InteractComponent))
 	{
-		LOG_ERROR(this, LogTemp, "InteractComponent is not valid");
+		LOG_ERROR(LogTemp, "InteractComponent is not valid");
 		return;
 	}
 
@@ -119,7 +119,7 @@ void UInteractWidget::AddItem_Implementation(AActor* Actor)
 			UInteractEntryWidget* InteractEntryWidget = CreateWidget<UInteractEntryWidget>(GetWorld(), InteractEntryClass);
 			if (!IsValid(InteractEntryWidget))
 			{
-				LOG_ERROR(this, LogTemp, "Failed to create InteractEntryWidget");
+				LOG_ERROR(LogTemp, "Failed to create InteractEntryWidget");
 				return;
 			}
 			InteractEntries.Add(Actor, InteractEntryWidget);

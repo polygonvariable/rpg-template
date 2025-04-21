@@ -23,7 +23,7 @@ void UEnvironmentController::SetTimer()
 		TransitionTimer = NewObject<UTimer>(this);
 		if (!IsValid(TransitionTimer))
 		{
-			LOG_ERROR(this, LogTemp, "Failed to create timer");
+			LOG_ERROR(LogTemp, "Failed to create timer");
 			return;
 		}
 		TransitionTimer->OnTick.AddDynamic(this, &UEnvironmentController::OnTransitioned);
@@ -31,7 +31,7 @@ void UEnvironmentController::SetTimer()
 	TransitionTimer->StartTimer(1.0f, 5, false);
 }
 
-void UEnvironmentController::OnTransitioned(const float CurrentTime, const float TotalTime)
+void UEnvironmentController::OnTransitioned(const float CurrentTime)
 {
 }
 
@@ -55,9 +55,13 @@ void UEnvironmentFogController::OnActiveItemChanged_Implementation()
 	}
 }
 
-void UEnvironmentFogController::OnTransitioned(const float CurrentTime, const float TotalTime)
+void UEnvironmentFogController::OnTransitioned(const float CurrentTime)
 {
-	if (!ExponentialHeightFog.IsValid() || !ActiveProfile) return;
+	if (!ExponentialHeightFog.IsValid() || !ActiveProfile)
+	{
+		TransitionTimer->StopTimer();
+		return;
+	}
 
 	float Alpha = TransitionTimer->GetNormalizedAlpha();
 	float ADensity = ExponentialHeightFog->FogDensity;
@@ -87,9 +91,13 @@ void UEnvironmentLightController::OnActiveItemChanged_Implementation()
 	}
 }
 
-void UEnvironmentLightController::OnTransitioned(const float CurrentTime, const float TotalTime)
+void UEnvironmentLightController::OnTransitioned(const float CurrentTime)
 {
-	if (!Sun.IsValid() || !Moon.IsValid() || !ActiveProfile) return;
+	if (!Sun.IsValid() || !Moon.IsValid() || !ActiveProfile)
+	{
+		TransitionTimer->StopTimer();
+		return;
+	}
 
 	float Alpha = TransitionTimer->GetNormalizedAlpha();
 	float ASunIntensity = Sun->Intensity;
@@ -128,9 +136,13 @@ void UEnvironmentAtmosphereController::OnActiveItemChanged_Implementation()
 	}
 }
 
-void UEnvironmentAtmosphereController::OnTransitioned(const float CurrentTime, const float TotalTime)
+void UEnvironmentAtmosphereController::OnTransitioned(const float CurrentTime)
 {
-	if (!Atmosphere.IsValid() || !ActiveProfile) return;
+	if (!Atmosphere.IsValid() || !ActiveProfile)
+	{
+		TransitionTimer->StopTimer();
+		return;
+	}
 
 	float Alpha = TransitionTimer->GetNormalizedAlpha();
 	float AScatter = Atmosphere->MieScatteringScale;

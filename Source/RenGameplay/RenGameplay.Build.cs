@@ -2,34 +2,39 @@
 
 using UnrealBuildTool;
 
-public class RenInteract : ModuleRules
+public class RenGameplay : ModuleRules
 {
-	public RenInteract(ReadOnlyTargetRules Target) : base(Target)
+	public RenGameplay(ReadOnlyTargetRules Target) : base(Target)
 	{
-        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		/*
+		 * This is the top level module for the project.
+		 * And should not be included in any other custom modules.
+		 * Only engine modules should be used here.
+		*/
 
         PublicDependencyModuleNames.AddRange(
-            new string[]
-            {
-                "Core",
-                "CoreUObject",
-                "Engine",
-                "UMG",
+			new string[]
+			{
+				"Core",
+				"CoreUObject",
+				"Engine",
                 "StructUtils",
+                "UMG",
             }
-        );
+		);
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
                 "RenGlobal",
                 "RenCore",
                 "RenStorage",
-                "RenGameplay",
             }
         );
 
-        PrivateDependencyModuleNames.AddRange(new string[] {  });
-		
+        PrivateDependencyModuleNames.AddRange(new string[] { });
+
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		

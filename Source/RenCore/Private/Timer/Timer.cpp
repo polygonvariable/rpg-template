@@ -9,7 +9,7 @@ void UTimer::StartTimer_Implementation(const float InTickInterval, const int InT
 {
 	if (InTickInterval < 0.001f)
 	{
-		LOG_ERROR(this, LogTemp, "Timer time cannot be less than 0.001f");
+		LOG_ERROR(LogTemp, "Timer time cannot be less than 0.001f");
 		return;
 	}
 
@@ -89,7 +89,7 @@ void UTimer::HandleTick_Implementation()
 	Time += TickInterval;
 	TickCount++;
 
-	OnTick.Broadcast(Time, TickLimit * TickInterval);
+	OnTick.Broadcast(Time);
 
 	if (TickLimit > 0 && TickCount >= TickLimit)
 	{

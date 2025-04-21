@@ -4,21 +4,22 @@
 #include "Actor/EnvironmentActor.h"
 
 // Project Header
-#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Timer/Timer.h"
+#include "RenGlobal/Public/Library/MiscLibrary.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
+
+#include "RenGameplay/Public/GameClockSubsystem.h"
 
 #include "Component/OrbitalLightComponent.h"
 #include "Subsystem/EnvironmentSubsystem.h"
 
-#include "Type/EnvironmentController.h"
-#include "Controller/EnvironmentProfile.h"
-
-#include "Components/SceneComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
+#include "Components/SceneComponent.h"
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Controller/EnvironmentProfileType.h"
+#include "Type/EnvironmentController.h"
 
 
 AEnvironmentActor::AEnvironmentActor()
@@ -86,41 +87,44 @@ AEnvironmentActor::AEnvironmentActor()
 	}
 }
 
+
 void AEnvironmentActor::StartDayCycle()
 {
-	if (IsValid(DayCycleTimer))
+	if (IsValid(DayCycleTimer) || !IsValid(GameClockSubsystem))
 	{
-		LOG_ERROR(this, LogTemp, "DayCycleTimer is already valid");
+		LOG_ERROR(LogTemp, "DayCycleTimer is already valid or GameClockSubsystem is not valid");
 		return;
 	}
 
-	DayCycleTimer = NewObject<UTimer>(this, UTimer::StaticClass());
+	DayCycleTimer = NewObject<UTimer>(this);
 	if(!IsValid(DayCycleTimer))
 	{
-		LOG_ERROR(this, LogTemp, "Failed to create DayCycleTimer");
+		LOG_ERROR(LogTemp, "Failed to create DayCycleTimer");
 		return;
 	}
 
-	DayCycleTimer->OnTick.AddDynamic(this, &AEnvironmentActor::UpdateDayCycle);
-	DayCycleTimer->StartTimer(0.25f, 0); // Total Seconds in a Game's Day / (24 / Tick Rate)
+	DayCycleTimer->OnTick.AddDynamic(this, &AEnvironmentActor::HandleDayCycleTick);
+	DayCycleTimer->StartTimer(0.1f, 0);
 }
 
-void AEnvironmentActor::UpdateDayCycle(float CurrentTime, float TotalTime)
+
+void AEnvironmentActor::HandleDayCycleTick(float CurrentTime)
 {
-	Time += 0.025f;
-	if (Time > 24.0f) Time = 0.0f;
+	float NormalizedTime = GameClockSubsystem->GetSmoothNormalizedTimeOfDay();
+	float RealTime = NormalizedTime * 24.0f;
 
 	if (IsValid(Sun))
 	{
-		Sun->SetTime(Time);
+		Sun->SetTime(RealTime);
 		Sun->Update();
 	}
 	if (IsValid(Moon))
 	{
-		Moon->SetTime(Time);
+		Moon->SetTime(RealTime);
 		Moon->Update();
 	}
 }
+
 
 void AEnvironmentActor::EndDayCycle()
 {
@@ -130,20 +134,10 @@ void AEnvironmentActor::EndDayCycle()
 	}
 }
 
+
 void AEnvironmentActor::InitializeEnvironmentControllers()
 {
-	//UEnvironmentFogController* FogController = NewObject<UEnvironmentFogController>(this, UEnvironmentFogController::StaticClass());
-	//FogController->ExponentialHeightFog = ExponentialHeightFog;
-	//UEnvironmentLightController* LightController = NewObject<UEnvironmentLightController>(this, UEnvironmentLightController::StaticClass());
-	//LightController->Sun = Sun;
-	//LightController->Moon = Moon;
-	//UEnvironmentAtmosphereController* AtmosphereController = NewObject<UEnvironmentAtmosphereController>(this, UEnvironmentAtmosphereController::StaticClass());
-	//AtmosphereController->Atmosphere = SkyAtmosphere;
-	//EnvironmentControllers.Add(EEnvironmentProfileType::Fog, FogController);
-	//EnvironmentControllers.Add(EEnvironmentProfileType::Light, LightController);
-	//EnvironmentControllers.Add(EEnvironmentProfileType::Atmosphere, AtmosphereController);
-
-	BREAK_GET_WORLDSUBSYSTEM(UEnvironmentSubsystem, EnvironmentSubsystem);
+	if(!IsValid(EnvironmentSubsystem)) return;
 
 	TMap<uint8, TWeakObjectPtr<USceneComponent>> FogComponents;
 	FogComponents.Add(0, ExponentialHeightFog);
@@ -158,38 +152,13 @@ void AEnvironmentActor::InitializeEnvironmentControllers()
 	EnvironmentSubsystem->AddEnvironmentController(EEnvironmentProfileType::Fog, UEnvironmentFogController::StaticClass(), FogComponents);
 	EnvironmentSubsystem->AddEnvironmentController(EEnvironmentProfileType::Light, UEnvironmentLightController::StaticClass(), LightComponents);
 	EnvironmentSubsystem->AddEnvironmentController(EEnvironmentProfileType::Atmosphere, UEnvironmentAtmosphereController::StaticClass(), AtmosphereComponents);
-
 }
 
-void AEnvironmentActor::AddEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile)
-{
-	//if(!Profile.IsValid())
-	//{
-	//	return;
-	//}
-	//if (const FEnvironmentProfile* ResolvedProfile = Profile.GetPtr<FEnvironmentProfile>())
-	//{
-	//	UEnvironmentController* Controller = *EnvironmentControllers.Find(ProfileType);
-	//	if (IsValid(Controller))
-	//	{
-	//		Controller->AddItem(Profile, ResolvedProfile->Priority);
-	//	}
-	//}
-}
 
-void AEnvironmentActor::RemoveEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile)
+void AEnvironmentActor::BeginPlay()
 {
-	//if (!Profile.IsValid())
-	//{
-	//	return;
-	//}
-	//if (const FEnvironmentProfile* ResolvedProfile = Profile.GetPtr<FEnvironmentProfile>())
-	//{
-	//	UEnvironmentController* Controller = *EnvironmentControllers.Find(ProfileType);
-	//	if (IsValid(Controller))
-	//	{
-	//		Controller->RemoveItem(ResolvedProfile->Priority);
-	//	}
-	//}
+	GetSubsystemReference<UGameClockSubsystem>(GetWorld(), GameClockSubsystem);
+	GetSubsystemReference<UEnvironmentSubsystem>(GetWorld(), EnvironmentSubsystem);
+	Super::BeginPlay();
 }
 

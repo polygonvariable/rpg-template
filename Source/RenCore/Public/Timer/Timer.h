@@ -83,7 +83,7 @@ public:
 	FOnStarted OnStarted;
 
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTick, float, CurrentTime, float, TotalTime);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTick, float, CurrentTime);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
 	FOnTick OnTick;
 

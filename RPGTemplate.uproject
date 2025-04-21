@@ -44,6 +44,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RenGameplay",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RenInventory",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

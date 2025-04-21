@@ -10,18 +10,18 @@
 
 void URenWorldSubsystem::PostInitialize_Implementation()
 {
-	LOG_WARNING(this, LogTemp, "PostInitialize");
+	LOG_WARNING(LogTemp, "PostInitialize");
 	
 }
 
 void URenWorldSubsystem::OnInitialized_Implementation()
 {
-	LOG_WARNING(this, LogTemp, "OnInitialized");
+	LOG_WARNING(LogTemp, "OnInitialized");
 }
 
 void URenWorldSubsystem::OnDeinitialized_Implementation()
 {
-	LOG_WARNING(this, LogTemp, "OnDeinitialized");
+	LOG_WARNING(LogTemp, "OnDeinitialized");
 }
 
 
@@ -41,14 +41,14 @@ bool URenWorldSubsystem::ShouldCreateSubsystem(UObject* Object) const
 {
 	if (!Object)
 	{
-		LOG_ERROR(this, LogTemp, "Object is null");
+		LOG_ERROR(LogTemp, "Object is null");
 		return false;
 	}
 
 	const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>();
 	if (!GameMetadata)
 	{
-		LOG_ERROR(this, LogTemp, "GameMetadataSettings is null");
+		LOG_ERROR(LogTemp, "GameMetadataSettings is null");
 		return false;
 	}
 
@@ -56,11 +56,11 @@ bool URenWorldSubsystem::ShouldCreateSubsystem(UObject* Object) const
 	{
 		if (SubsystemClass == this->GetClass())
 		{
-			LOG_WARNING(this, LogTemp, "Subsystem found");
+			LOG_WARNING(LogTemp, "Subsystem found");
 			return true;
 		}
 	}
 
-	LOG_ERROR(this, LogTemp, "Subsystem not found");
+	LOG_ERROR(LogTemp, "Subsystem not found");
 	return false;
 }

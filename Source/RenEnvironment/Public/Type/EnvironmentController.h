@@ -45,7 +45,7 @@ protected:
 
 
 	UFUNCTION()
-	virtual void OnTransitioned(const float CurrentTime, const float TotalTime);
+	virtual void OnTransitioned(const float CurrentTime);
 
 };
 
@@ -72,7 +72,7 @@ protected:
 
 	virtual void OnActiveItemChanged_Implementation() override;
 
-	virtual void OnTransitioned(const float CurrentTime, const float TotalTime) override;
+	virtual void OnTransitioned(const float CurrentTime) override;
 
 };
 
@@ -102,7 +102,7 @@ protected:
 
 	virtual void OnActiveItemChanged_Implementation() override;
 
-	virtual void OnTransitioned(const float CurrentTime, const float TotalTime) override;
+	virtual void OnTransitioned(const float CurrentTime) override;
 
 };
 
@@ -129,7 +129,7 @@ protected:
 
 	virtual void OnActiveItemChanged_Implementation() override;
 
-	virtual void OnTransitioned(const float CurrentTime, const float TotalTime) override;
+	virtual void OnTransitioned(const float CurrentTime) override;
 
 };
 

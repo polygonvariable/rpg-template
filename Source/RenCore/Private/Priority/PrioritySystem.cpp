@@ -9,7 +9,7 @@ void UPrioritySystem::AddItem_Implementation(FInstancedStruct Item, const int Pr
 {
 	if (!Item.IsValid() || Priority < 0)
 	{
-		LOG_ERROR(this, LogTemp, "Item is not valid or Priority is less than 0");
+		LOG_ERROR(LogTemp, "Item is not valid or Priority is less than 0");
 		return;
 	}
 
@@ -25,7 +25,7 @@ void UPrioritySystem::AddItem_Implementation(FInstancedStruct Item, const int Pr
 	}
 	else
 	{
-		LOG_WARNING(this, LogTemp, "Priority is less than highest priority, added in queue");
+		LOG_WARNING(LogTemp, "Priority is less than highest priority, added in queue");
 	}
 }
 
@@ -55,7 +55,7 @@ void UPrioritySystem::RemoveItem_Implementation(const int Priority)
 	}
 	else
 	{
-		LOG_WARNING(this, LogTemp, "Priority not found");
+		LOG_WARNING(LogTemp, "Priority not found");
 	}
 }
 

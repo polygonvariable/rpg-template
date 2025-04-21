@@ -13,28 +13,28 @@
 bool UStampedEventSubsystem::AddChange_Implementation(const FName Id, const bool bForceAdd)
 {
 	if (!IsValid(Storage)) {
-		LOG_ERROR(this, LogTemp, "Storage is null");
+		LOG_ERROR(LogTemp, "Storage is null");
 		return false;
 	}
 
 	if (HasChanged(Id) && !bForceAdd) {
-		LOG_ERROR(this, LogTemp, "Stamped event already exists");
+		LOG_ERROR(LogTemp, "Stamped event already exists");
 		return false;
 	}
 
 	Storage->StampedEvents.Add(Id, FDateTime::Now());
-	LOG_INFO(this, LogTemp, "Stamped event added");
+	LOG_INFO(LogTemp, "Stamped event added");
 	return true;
 }
 
 bool UStampedEventSubsystem::RemoveChange_Implementation(const FName Id)
 {
 	if (!IsValid(Storage)) {
-		LOG_ERROR(this, LogTemp, "Storage is null");
+		LOG_ERROR(LogTemp, "Storage is null");
 		return false;
 	}
 	Storage->StampedEvents.Remove(Id);
-	LOG_INFO(this, LogTemp, "Stamped event removed");
+	LOG_INFO(LogTemp, "Stamped event removed");
 	return true;
 }
 
@@ -95,7 +95,7 @@ void UStampedEventSubsystem::PostInitialize_Implementation()
 	Storage = StorageSubsystem->GetLocalStorage();
 	if (!IsValid(Storage))
 	{
-		LOG_ERROR(this, LogTemp, "LocalStorage not found");
+		LOG_ERROR(LogTemp, "LocalStorage not found");
 	}
 }
 
