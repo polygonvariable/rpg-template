@@ -5,7 +5,6 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "InstancedStruct.h"
 
 // Generated Headers
 #include "EnvironmentActor.generated.h"
@@ -17,8 +16,8 @@ class USkyAtmosphereComponent;
 class UExponentialHeightFogComponent;
 class UOrbitalLightComponent;
 class UStaticMeshComponent;
+
 class UTimer;
-class UEnvironmentController;
 class UEnvironmentSubsystem;
 class UGameClockSubsystem;
 

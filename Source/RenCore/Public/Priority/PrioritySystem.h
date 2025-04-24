@@ -21,43 +21,31 @@ class RENCORE_API UPrioritySystem : public UObject
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FInstancedStruct ActiveItem;
+	UFUNCTION()
+	virtual void AddItem(FInstancedStruct Item, const int Priority);
 
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Action")
-	void AddItem(FInstancedStruct Item, const int Priority);
-	virtual void AddItem_Implementation(FInstancedStruct Item, const int Priority);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Action")
-	void RemoveItem(const int Priority);
-	virtual void RemoveItem_Implementation(const int Priority);
-
+	UFUNCTION()
+	virtual void RemoveItem(const int Priority);
 
 	UFUNCTION(BlueprintCallable)
 	int GetHighestPriority();
 
-
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
+	FInstancedStruct ActiveItem;
+
+	UPROPERTY()
 	TMap<int, FInstancedStruct> Items;
 
+	UFUNCTION()
+	virtual void HandleItemAdded(const FInstancedStruct& Item);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")
-	void OnItemAdded(FInstancedStruct Item);
-	virtual void OnItemAdded_Implementation(FInstancedStruct Item);
+	UFUNCTION()
+	virtual void HandleItemRemoved(const FInstancedStruct& Item);
 
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")
-	void OnItemRemoved(FInstancedStruct Item);
-	virtual void OnItemRemoved_Implementation(FInstancedStruct Item);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")
-	void OnActiveItemChanged();
-	virtual void OnActiveItemChanged_Implementation();
+	UFUNCTION()
+	virtual void HandleItemChanged(const FInstancedStruct& Item);
 
 };
 

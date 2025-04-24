@@ -24,14 +24,6 @@ public:
 	UOrbitalLightComponent();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0.0001", ClampMin = "0.0001"), Category = "Orbital Light|Time")
-	float TimeIncrement = 0.001f;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "5", ClampMin = "5"), Category = "Orbital Light|Time")
-	int DayLength = 300;
-
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Orbital Light|Time")
 	bool bInverseRotation = false;
 
@@ -64,29 +56,17 @@ public:
 	float NorthPoleOffset = 0.0f;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Orbital Light|Action")
+	UFUNCTION(BlueprintCallable)
 	void SetTime(float NewTime);
-	virtual void SetTime_Implementation(float NewTime);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Orbital Light|Action")
+	UFUNCTION(BlueprintCallable)
 	float GetTime();
-	virtual float GetTime_Implementation();
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Orbital Light|Action")
-	void Update();
-	virtual void Update_Implementation();
 
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"), Category = "Orbital Light|Time")
 	float Time = 12.0f;
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Orbital Light|Action")
-	void GetHMS(const float InTime, int& OutHour, int& OutMinute, int& OutSecond);
-	virtual void GetHMS_Implementation(const float InTime, int& OutHour, int& OutMinute, int& OutSecond);
 
 };
 

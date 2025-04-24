@@ -17,51 +17,38 @@ UOrbitalLightComponent::UOrbitalLightComponent()
 	DynamicShadowDistanceMovableLight = 4000.0f;
 }
 
-void UOrbitalLightComponent::SetTime_Implementation(float NewTime)
+void UOrbitalLightComponent::SetTime(float NewTime)
 {
 	Time = NewTime;
-	Update();
+
+	int Hour = static_cast<int>(Time) % 24;
+	int Minute = static_cast<int>((Time - Hour) * 60.0f) % 60;
+	int Second = static_cast<int>(((Time - Hour) * 60.0f - Minute) * 60.0f) % 60;
+
+	FSunPositionData SunPositionData;
+	USunPositionFunctionLibrary::GetSunPosition(
+		Latitude,
+		Longitude,
+		TimeZone,
+		true,
+		Year,
+		Month,
+		Day,
+		Hour,
+		Minute,
+		Second,
+		SunPositionData
+	);
+
+	float RotationOrientation = bInverseRotation ? -1 : 1;
+	float RotationYaw = (SunPositionData.Azimuth + NorthPoleOffset) * RotationOrientation;
+	float RotationPitch = SunPositionData.CorrectedElevation * RotationOrientation;
+
+	SetRelativeRotation(FRotator(RotationPitch, RotationYaw, 0.0f));
 }
 
-float UOrbitalLightComponent::GetTime_Implementation()
+float UOrbitalLightComponent::GetTime()
 {
 	return Time;
 }
 
-void UOrbitalLightComponent::Update_Implementation()
-{
-	int Hour, Minute, Second;
-	GetHMS(Time, Hour, Minute, Second);
-	
-	FSunPositionData SunPositionData;
-	USunPositionFunctionLibrary::GetSunPosition(
-	    Latitude,
-	    Longitude,
-	    TimeZone,
-	    true,
-	    Year,
-	    Month,
-	    Day,
-	    Hour,
-	    Minute,
-	    Second,
-	    SunPositionData
-	);
-	
-	float RotationOrientation = bInverseRotation ? -1 : 1;
-	float RotationYaw = (SunPositionData.Azimuth + NorthPoleOffset) * RotationOrientation;
-	float RotationPitch = SunPositionData.CorrectedElevation * RotationOrientation;
-	
-	SetRelativeRotation(FRotator(RotationPitch, RotationYaw, 0.0f));
-}
-
-void UOrbitalLightComponent::GetHMS_Implementation(const float InTime, int& OutHour, int& OutMinute, int& OutSecond)
-{
-	OutHour = static_cast<int>(InTime) % 24;
-	
-	float MinuteFraction = (InTime - OutHour) * 60.0f;
-	OutMinute = static_cast<int>(MinuteFraction) % 60;
-	
-	float SecondFraction = (MinuteFraction - OutMinute) * 60.0f;
-	OutSecond = static_cast<int>(SecondFraction) % 60;
-}

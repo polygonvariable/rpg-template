@@ -17,7 +17,7 @@
 /**
  *
  */
-UCLASS(DisplayName = "Storage")
+UCLASS()
 class RENSTORAGE_API UStorage : public URenSaveGame
 {
 
@@ -26,20 +26,24 @@ class RENSTORAGE_API UStorage : public URenSaveGame
 public:
 	
 	/**
-	* A map of inventory items
-	* <FName = UUID, Struct = FInventoryRecord>
-	*/
+	 * A map of inventory items
+	 * <FName = UUID, FInventoryRecord>
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FInventoryRecord> InventoryRecords;
 
 	/**
-	* A map of stamped events, which is a map of UUIDs to timestamps
-	* <FName = UUID, Struct = FDateTime>
-	*/
+	 * A map of stamped events, which is a map of UUIDs to timestamps
+	 * <FName = UUID, FDateTime>
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FDateTime> StampedEvents;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/**
+	 * A map of clock related data according to level's name
+	 * <FName = Level Name, FClockRecord>
+	 */
+	UPROPERTY()
 	TMap<FName, FClockRecord> ClockRecords;
 
 };

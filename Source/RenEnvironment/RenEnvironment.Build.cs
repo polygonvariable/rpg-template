@@ -15,7 +15,8 @@ public class RenEnvironment : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "StructUtils",
-                "SunPosition"
+                "SunPosition",
+                "UMG",
             }
         );
         PublicDependencyModuleNames.AddRange(

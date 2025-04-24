@@ -5,7 +5,7 @@
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 
-void UPrioritySystem::AddItem_Implementation(FInstancedStruct Item, const int Priority)
+void UPrioritySystem::AddItem(FInstancedStruct Item, const int Priority)
 {
 	if (!Item.IsValid() || Priority < 0)
 	{
@@ -16,12 +16,12 @@ void UPrioritySystem::AddItem_Implementation(FInstancedStruct Item, const int Pr
 	int HighestPriority = GetHighestPriority();
 
 	Items.Add(Priority, Item);
-	OnItemAdded(Item);
+	HandleItemAdded(Item);
 
 	if (Priority > HighestPriority)
 	{
 		ActiveItem = Item;
-		OnActiveItemChanged();
+		HandleItemChanged(ActiveItem);
 	}
 	else
 	{
@@ -29,42 +29,33 @@ void UPrioritySystem::AddItem_Implementation(FInstancedStruct Item, const int Pr
 	}
 }
 
-void UPrioritySystem::RemoveItem_Implementation(const int Priority)
+void UPrioritySystem::RemoveItem(const int Priority)
 {
-	if (FInstancedStruct* Item = Items.Find(Priority))
-	{
-		int CurrentPriority = GetHighestPriority();
-
-		Items.Remove(Priority);
-		OnItemRemoved(*Item);
-
-		if (Priority != CurrentPriority)
-		{
-			return;
-		}
-
-		int NewPriority = GetHighestPriority();
-		if (Items.Contains(NewPriority))
-		{
-			ActiveItem = Items.FindChecked(NewPriority);
-			if (ActiveItem.IsValid())
-			{
-				OnActiveItemChanged();
-			}
-		}
-	}
-	else
+	FInstancedStruct* Item = Items.Find(Priority);
+	if (!Item)
 	{
 		LOG_WARNING(LogTemp, "Priority not found");
+		return;
+	}
+
+	int CurrentPriority = GetHighestPriority();
+	
+	Items.Remove(Priority);
+	HandleItemRemoved(*Item);
+
+	if (Priority != CurrentPriority) return;
+
+	int NewPriority = GetHighestPriority();
+	if (FInstancedStruct* NewItem = Items.Find(NewPriority))
+	{
+		ActiveItem = *NewItem;
+		if (ActiveItem.IsValid()) HandleItemChanged(ActiveItem);
 	}
 }
 
 int UPrioritySystem::GetHighestPriority()
 {
-	if (Items.Num() == 0)
-	{
-		return -1;
-	}
+	if (Items.Num() == 0) return -1;
 
 	int Highest = TNumericLimits<int>::Lowest();
 	for (const auto& Pair : Items)
@@ -77,15 +68,15 @@ int UPrioritySystem::GetHighestPriority()
 	return Highest;
 }
 
-void UPrioritySystem::OnItemAdded_Implementation(FInstancedStruct Item)
+void UPrioritySystem::HandleItemAdded(const FInstancedStruct& Item)
 {
 }
 
-void UPrioritySystem::OnItemRemoved_Implementation(FInstancedStruct Item)
+void UPrioritySystem::HandleItemRemoved(const FInstancedStruct& Item)
 {
 }
 
-void UPrioritySystem::OnActiveItemChanged_Implementation()
+void UPrioritySystem::HandleItemChanged(const FInstancedStruct& Item)
 {
 }
 

@@ -13,6 +13,7 @@
 class UTimer;
 class UStorage;
 
+
 /**
  *
  */
@@ -21,6 +22,11 @@ class RENGAMEPLAY_API UGameClockSubsystem : public UWorldSubsystem
 {
 
 	GENERATED_BODY()
+
+protected:
+
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
 
 public:
 
@@ -57,9 +63,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetTotalDays() const;
 
-	UFUNCTION(BlueprintCallable)
-	void RequestStorageUpdate();
-
 protected:
 
 	UPROPERTY()
@@ -67,7 +70,6 @@ protected:
 
 	UPROPERTY()
 	TWeakObjectPtr<UStorage> Storage;
-
 
 	UPROPERTY()
 	int DayCounter = 0;
@@ -84,12 +86,10 @@ protected:
 	UFUNCTION()
 	void LoadStoredTime();
 
-protected:
+	UFUNCTION()
+	void SaveStoredTime();
 
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
-
-	FDelegateHandle OnWorldTearDownHandle;
+	FDelegateHandle OnWorldBeginTearDownHandle;
 	virtual void HandleWorldBeginTearDown(UWorld* World);
 
 public:

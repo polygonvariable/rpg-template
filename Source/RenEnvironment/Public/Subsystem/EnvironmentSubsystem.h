@@ -5,10 +5,11 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "Blueprint/UserWidget.h"
 
 // Project Headers
-#include "RenEnvironment/Public/Controller/EnvironmentProfile.h"
-#include "RenEnvironment/Public/Controller/EnvironmentProfileType.h"
+#include "RenEnvironment/Public/Profile/EnvironmentProfile.h"
+#include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 // Generated Headers
 #include "EnvironmentSubsystem.generated.h"
@@ -40,9 +41,6 @@ public:
 	void RemoveEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
 
 
-	UFUNCTION(BlueprintCallable)
-	FString DumpProfiles();
-
 protected:
 
 	UPROPERTY()
@@ -50,6 +48,30 @@ protected:
 
 
 	void ValidateEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, const FInstancedStruct Profile, TFunctionRef<void(UEnvironmentController* Controller, const FEnvironmentProfile* Profile)> Callback, const FString& LogMessage);
+
+};
+
+
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class RENENVIRONMENT_API UEnvironmentControllerWidget : public UUserWidget
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	//virtual void NativeConstruct() override;
+	//virtual void NativeDestruct() override;
+
+public:
+
+	UPROPERTY()
+	UEnvironmentSubsystem* EnvironmentSubsystem;
+
 
 };
 

@@ -9,8 +9,8 @@
 // Project Header
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
-#include "Controller/EnvironmentProfile.h"
-#include "Type/EnvironmentController.h"
+#include "Profile/EnvironmentProfile.h"
+#include "Controller/EnvironmentController.h"
 
 
 
@@ -71,12 +71,3 @@ void UEnvironmentSubsystem::RemoveEnvironmentProfile(const TEnumAsByte<EEnvironm
 	);
 }
 
-FString UEnvironmentSubsystem::DumpProfiles()
-{
-	FString Profiles = "";
-	for (const TPair<TEnumAsByte<EEnvironmentProfileType>, UEnvironmentController*>& Controller : EnvironmentControllers)
-	{
-		Profiles += UEnum::GetValueAsString(Controller.Key) + "\n";
-	}
-	return Profiles;
-}

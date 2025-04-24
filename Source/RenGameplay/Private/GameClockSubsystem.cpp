@@ -13,6 +13,36 @@
 #include "RenStorage/Public/StorageSubsystem.h"
 
 
+void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+	LOG_WARNING(LogGameCycleSubsystem, TEXT("ClockSubsystem initialized"));
+
+	if (!OnWorldBeginTearDownHandle.IsValid() && GetWorld()->IsGameWorld())
+	{
+		FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UGameClockSubsystem::HandleWorldBeginTearDown);
+	}
+
+	if (UStorageSubsystem* StorageSubsystem = GetGameInstanceSubsystem<UStorageSubsystem>(GetWorld()))
+	{
+		Storage = StorageSubsystem->GetLocalStorage();
+		LoadStoredTime();
+	}
+}
+
+
+void UGameClockSubsystem::Deinitialize()
+{
+	if (OnWorldBeginTearDownHandle.IsValid())
+	{
+		FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
+	}
+
+	LOG_WARNING(LogGameCycleSubsystem, TEXT("ClockSubsystem deinitialized"));
+	Super::Deinitialize();
+}
+
+
 void UGameClockSubsystem::StartTimer()
 {
 	if(IsValid(ClockTimer))
@@ -93,29 +123,6 @@ int UGameClockSubsystem::GetTotalDays() const
 	return DayCounter;
 }
 
-void UGameClockSubsystem::RequestStorageUpdate()
-{
-	if (Storage.IsValid())
-	{
-		TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
-		if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
-		{
-			ClockRecord->Time = TimeOfTheDay;
-			ClockRecord->DayCount = DayCounter;
-
-			LOG_INFO(LogGameCycleSubsystem, TEXT("Clock day & time updated"));
-		}
-		else {
-			Records.Add("DEFAULT", FClockRecord(TimeOfTheDay, DayCounter));
-			LOG_INFO(LogGameCycleSubsystem, TEXT("Clock day & time added"));
-		}
-	}
-	else
-	{
-		LOG_ERROR(LogGameCycleSubsystem, TEXT("Storage is not valid"));
-	}
-}
-
 void UGameClockSubsystem::HandleClockTick(float CurrentTime)
 {
 	TimeOfTheDay += 1.0f;
@@ -143,6 +150,7 @@ void UGameClockSubsystem::LoadStoredTime()
 	{
 		TimeOfTheDay = ClockRecord->Time;
 		DayCounter = ClockRecord->DayCount;
+
 		LOG_INFO(LogGameCycleSubsystem, TEXT("Clock day & time loaded"));
 	}
 	else {
@@ -150,37 +158,33 @@ void UGameClockSubsystem::LoadStoredTime()
 	}
 }
 
-void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+void UGameClockSubsystem::SaveStoredTime()
 {
-	Super::Initialize(Collection);
-	LOG_WARNING(LogGameCycleSubsystem, TEXT("ClockSubsystem initialized"));
-
-	if (!OnWorldTearDownHandle.IsValid() && GetWorld()->IsGameWorld())
+	if (Storage.IsValid())
 	{
-		FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UGameClockSubsystem::HandleWorldBeginTearDown);
-	}
+		TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
+		if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
+		{
+			ClockRecord->Time = TimeOfTheDay;
+			ClockRecord->DayCount = DayCounter;
 
-	if (UStorageSubsystem* StorageSubsystem = GetGameInstanceSubsystem<UStorageSubsystem>(GetWorld()))
+			LOG_INFO(LogGameCycleSubsystem, TEXT("Clock day & time updated"));
+		}
+		else {
+			Records.Add("DEFAULT", FClockRecord(TimeOfTheDay, DayCounter));
+
+			LOG_INFO(LogGameCycleSubsystem, TEXT("Clock day & time added"));
+		}
+	}
+	else
 	{
-	 	Storage = StorageSubsystem->GetLocalStorage();
-	 	LoadStoredTime();
+		LOG_ERROR(LogGameCycleSubsystem, TEXT("Storage is not valid"));
 	}
-}
-
-void UGameClockSubsystem::Deinitialize()
-{
-	if (OnWorldTearDownHandle.IsValid())
-	{
-		FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
-	}
-
-	LOG_WARNING(LogGameCycleSubsystem, TEXT("ClockSubsystem deinitialized"));
-	Super::Deinitialize();
 }
 
 void UGameClockSubsystem::HandleWorldBeginTearDown(UWorld* World)
 {
-	this->RequestStorageUpdate();
+	SaveStoredTime();
 	if (UStorageSubsystem* StorageSubsystem = GetGameInstanceSubsystem<UStorageSubsystem>(World))
 	{
 		StorageSubsystem->UpdateStorage();

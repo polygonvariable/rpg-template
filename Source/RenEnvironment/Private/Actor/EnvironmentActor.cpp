@@ -3,23 +3,26 @@
 // Parent Header
 #include "Actor/EnvironmentActor.h"
 
-// Project Header
-#include "RenCore/Public/Timer/Timer.h"
-#include "RenGlobal/Public/Library/MiscLibrary.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
-
-#include "RenGameplay/Public/GameClockSubsystem.h"
-
-#include "Component/OrbitalLightComponent.h"
-#include "Subsystem/EnvironmentSubsystem.h"
-
+// Engine Header
 #include "Components/ExponentialHeightFogComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkyAtmosphereComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Controller/EnvironmentProfileType.h"
-#include "Type/EnvironmentController.h"
+
+// Project Header
+#include "RenCore/Public/Timer/Timer.h"
+#include "RenGameplay/Public/GameClockSubsystem.h"
+#include "RenGlobal/Public/Library/MiscLibrary.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
+
+#include "Component/OrbitalLightComponent.h"
+#include "Controller/EnvironmentAtmosphereController.h"
+#include "Controller/EnvironmentFogController.h"
+#include "Controller/EnvironmentLightController.h"
+#include "Profile/EnvironmentProfileType.h"
+#include "Subsystem/EnvironmentSubsystem.h"
+
 
 
 AEnvironmentActor::AEnvironmentActor()
@@ -113,16 +116,8 @@ void AEnvironmentActor::HandleDayCycleTick(float CurrentTime)
 	float NormalizedTime = GameClockSubsystem->GetSmoothNormalizedTimeOfDay();
 	float RealTime = NormalizedTime * 24.0f;
 
-	if (IsValid(Sun))
-	{
-		Sun->SetTime(RealTime);
-		Sun->Update();
-	}
-	if (IsValid(Moon))
-	{
-		Moon->SetTime(RealTime);
-		Moon->Update();
-	}
+	if (IsValid(Sun)) Sun->SetTime(RealTime);
+	if (IsValid(Moon)) Moon->SetTime(RealTime);
 }
 
 
