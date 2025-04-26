@@ -24,10 +24,17 @@ class RENENVIRONMENT_API UEnvironmentController : public UPrioritySystem
 
 	GENERATED_BODY()
 
+
 public:
 
 	UFUNCTION()
 	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components);
+
+	//UFUNCTION()
+	//virtual void Initialize(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components);
+
+	//UFUNCTION()
+	//virtual void Cleanup();
 
 protected:
 	
@@ -40,89 +47,15 @@ protected:
 
 
 	UFUNCTION()
-	virtual void OnTransitioned(const float CurrentTime);
+	void StopTransition();
+
+
+	UFUNCTION()
+	virtual void HandleTransitionTick(float CurrentTime);
+
+protected:
+
+	virtual void BeginDestroy();
 
 };
-
-
-// UCLASS()
-// class RENENVIRONMENT_API UEnvironmentFogController : public UEnvironmentController
-// {
-
-// 	GENERATED_BODY()
-
-// public:
-
-// 	UPROPERTY()
-// 	TWeakObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFog;
-
-// protected:
-
-// 	const FEnvironmentFogProfile* ActiveProfile;
-
-// public:
-
-// 	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
-
-// protected:
-
-// 	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
-// 	virtual void OnTransitioned(const float CurrentTime) override;
-
-// };
-
-// UCLASS()
-// class RENENVIRONMENT_API UEnvironmentLightController : public UEnvironmentController
-// {
-
-// 	GENERATED_BODY()
-
-// public:
-
-// 	UPROPERTY()
-// 	TWeakObjectPtr<UDirectionalLightComponent> Sun;
-
-// 	UPROPERTY()
-// 	TWeakObjectPtr<UDirectionalLightComponent> Moon;
-
-// protected:
-
-// 	const FEnvironmentLightProfile* ActiveProfile;
-
-// public:
-
-// 	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
-
-// protected:
-
-// 	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
-// 	virtual void OnTransitioned(const float CurrentTime) override;
-
-// };
-
-// UCLASS()
-// class RENENVIRONMENT_API UEnvironmentAtmosphereController : public UEnvironmentController
-// {
-
-// 	GENERATED_BODY()
-
-// public:
-
-// 	UPROPERTY()
-// 	TWeakObjectPtr<USkyAtmosphereComponent> Atmosphere;
-
-// protected:
-
-// 	const FEnvironmentAtmosphereProfile* ActiveProfile;
-
-// public:
-
-// 	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
-
-// protected:
-
-// 	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
-// 	virtual void OnTransitioned(const float CurrentTime) override;
-
-// };
 

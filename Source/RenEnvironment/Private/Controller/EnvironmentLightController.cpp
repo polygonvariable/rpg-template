@@ -30,11 +30,11 @@ void UEnvironmentLightController::HandleItemChanged(const FInstancedStruct& Item
 	}
 }
 
-void UEnvironmentLightController::OnTransitioned(const float CurrentTime)
+void UEnvironmentLightController::HandleTransitionTick(float CurrentTime)
 {
 	if (!Sun.IsValid() || !Moon.IsValid() || !ActiveProfile)
 	{
-		TransitionTimer->StopTimer();
+		StopTransition();
 		return;
 	}
 

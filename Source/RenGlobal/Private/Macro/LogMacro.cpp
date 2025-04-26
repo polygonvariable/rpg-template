@@ -4,7 +4,7 @@
 #include "Macro/LogMacro.h"
 
 // Log Categories
-DEFINE_LOG_CATEGORY(LogGameCycleSubsystem);
+DEFINE_LOG_CATEGORY(LogClockSubsystem);
 
 DEFINE_LOG_CATEGORY(LogEnvironmentActor);
 

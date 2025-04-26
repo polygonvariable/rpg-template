@@ -7,9 +7,15 @@
 #include "GameFramework/Actor.h"
 #include "InstancedStruct.h"
 
+// Project Headers
+#include "Profile/EnvironmentProfile.h"
+#include "Profile/EnvironmentProfileType.h"
+
 // Generated Headers
 #include "RegionActor.generated.h"
 
+// Forward Declarations
+class UEnvironmentSubsystem;
 
 /**
  *
@@ -19,21 +25,25 @@ class RENENVIRONMENT_API ARegionActor : public AActor
 {
 
 	GENERATED_BODY()
-	
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration")
-	FInstancedStruct RegionConfiguration;
 
 protected:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")
-	void OnPlayerEntered();
-	virtual void OnPlayerEntered_Implementation();
+	virtual void BeginPlay() override;
+	
+public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (BaseStruct = "/Script/RenEnvironment.EnvironmentProfile"))
+	TMap<TEnumAsByte<EEnvironmentProfileType>,FInstancedStruct> EnvironmentProfiles;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Handler")
-	void OnPlayerExited();
-	virtual void OnPlayerExited_Implementation();
+protected:
+
+	UPROPERTY()
+	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
+
+	UFUNCTION(BlueprintCallable)
+	void HandlePlayerEntered();
+
+	UFUNCTION(BlueprintCallable)
+	void HandlePlayerExited();
 
 };

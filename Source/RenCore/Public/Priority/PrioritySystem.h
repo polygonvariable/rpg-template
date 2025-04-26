@@ -22,20 +22,20 @@ class RENCORE_API UPrioritySystem : public UObject
 public:
 
 	UFUNCTION()
-	virtual void AddItem(FInstancedStruct Item, const int Priority);
+	virtual void AddItem(FInstancedStruct Item, int Priority);
 
 	UFUNCTION()
-	virtual void RemoveItem(const int Priority);
+	virtual void RemoveItem(int Priority);
 
 	UFUNCTION(BlueprintCallable)
-	int GetHighestPriority();
+	int GetHighestPriority() const;
 
 protected:
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FInstancedStruct ActiveItem;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TMap<int, FInstancedStruct> Items;
 
 	UFUNCTION()

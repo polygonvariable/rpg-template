@@ -5,15 +5,15 @@
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 
-void UPrioritySystem::AddItem(FInstancedStruct Item, const int Priority)
+void UPrioritySystem::AddItem(FInstancedStruct Item, int Priority)
 {
 	if (!Item.IsValid() || Priority < 0)
 	{
-		LOG_ERROR(LogTemp, "Item is not valid or Priority is less than 0");
+		LOG_ERROR(LogTemp, TEXT("Item is not valid or Priority is less than 0"));
 		return;
 	}
 
-	int HighestPriority = GetHighestPriority();
+	const int HighestPriority = GetHighestPriority();
 
 	Items.Add(Priority, Item);
 	HandleItemAdded(Item);
@@ -25,20 +25,20 @@ void UPrioritySystem::AddItem(FInstancedStruct Item, const int Priority)
 	}
 	else
 	{
-		LOG_WARNING(LogTemp, "Priority is less than highest priority, added in queue");
+		LOG_WARNING(LogTemp, TEXT("Priority is less than highest priority, added in queue"));
 	}
 }
 
-void UPrioritySystem::RemoveItem(const int Priority)
+void UPrioritySystem::RemoveItem(int Priority)
 {
 	FInstancedStruct* Item = Items.Find(Priority);
 	if (!Item)
 	{
-		LOG_WARNING(LogTemp, "Priority not found");
+		LOG_WARNING(LogTemp, TEXT("Priority not found"));
 		return;
 	}
 
-	int CurrentPriority = GetHighestPriority();
+	const int CurrentPriority = GetHighestPriority();
 	
 	Items.Remove(Priority);
 	HandleItemRemoved(*Item);
@@ -53,7 +53,7 @@ void UPrioritySystem::RemoveItem(const int Priority)
 	}
 }
 
-int UPrioritySystem::GetHighestPriority()
+int UPrioritySystem::GetHighestPriority() const
 {
 	if (Items.Num() == 0) return -1;
 

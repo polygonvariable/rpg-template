@@ -28,11 +28,11 @@ void UEnvironmentAtmosphereController::HandleItemChanged(const FInstancedStruct&
 	}
 }
 
-void UEnvironmentAtmosphereController::OnTransitioned(const float CurrentTime)
+void UEnvironmentAtmosphereController::HandleTransitionTick(float CurrentTime)
 {
 	if (!Atmosphere.IsValid() || !ActiveProfile)
 	{
-		TransitionTimer->StopTimer();
+		StopTransition();
 		return;
 	}
 

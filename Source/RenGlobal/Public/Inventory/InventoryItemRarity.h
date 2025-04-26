@@ -8,6 +8,9 @@
 // Generated Headers
 #include "InventoryItemRarity.generated.h"
 
+// TODO:
+// Replace with gameplay tags
+// Inventory.Rarity.*
 
 /**
  *

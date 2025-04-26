@@ -11,7 +11,7 @@
 /**
  *
  */
-USTRUCT(BlueprintType, DisplayName = "Environment Profile")
+USTRUCT(BlueprintType)
 struct FEnvironmentProfile
 {
 
@@ -27,7 +27,7 @@ public:
 /**
  * 
  */
-USTRUCT(BlueprintType, DisplayName = "Environment Fog Profile")
+USTRUCT(BlueprintType)
 struct FEnvironmentFogProfile : public FEnvironmentProfile
 {
  
@@ -43,7 +43,7 @@ public:
 /**
  * 
  */
-USTRUCT(BlueprintType, DisplayName = "Environment Light Profile")
+USTRUCT(BlueprintType)
 struct FEnvironmentLightProfile : public FEnvironmentProfile
 {
  
@@ -68,7 +68,7 @@ public:
 /**
  * 
  */
-USTRUCT(BlueprintType, DisplayName = "Environment Atmosphere Profile")
+USTRUCT(BlueprintType)
 struct FEnvironmentAtmosphereProfile : public FEnvironmentProfile
 {
  
@@ -77,7 +77,7 @@ struct FEnvironmentAtmosphereProfile : public FEnvironmentProfile
 public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float MieScatteringScale = 1.0f;
+    float MieScatteringScale = 0.003996f;
 
 };
 

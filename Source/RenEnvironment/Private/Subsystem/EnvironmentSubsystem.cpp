@@ -36,6 +36,17 @@ bool UEnvironmentSubsystem::AddEnvironmentController(const TEnumAsByte<EEnvironm
 	return true;
 }
 
+bool UEnvironmentSubsystem::RemoveEnvironmentController(const TEnumAsByte<EEnvironmentProfileType> ProfileType)
+{
+	if (!EnvironmentControllers.Contains(ProfileType))
+	{
+		LOG_ERROR(LogTemp, "Environment Controller does not exist");
+		return false;
+	}
+	EnvironmentControllers.Remove(ProfileType);
+	return true;
+}
+
 void UEnvironmentSubsystem::ValidateEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, const FInstancedStruct Profile, TFunctionRef<void(UEnvironmentController* Controller, const FEnvironmentProfile* Profile)> Callback, const FString& LogMessage)
 {
 	if (!Profile.IsValid()) return;

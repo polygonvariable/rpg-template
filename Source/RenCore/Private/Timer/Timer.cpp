@@ -5,11 +5,11 @@
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 
-void UTimer::StartTimer_Implementation(const float InTickInterval, const int InTickLimit, const bool bPreserveTime)
+void UTimer::StartTimer(const float InTickInterval, const int InTickLimit, const bool bPreserveTime)
 {
 	if (InTickInterval < 0.001f)
 	{
-		LOG_ERROR(LogTemp, "Timer time cannot be less than 0.001f");
+		LOG_ERROR(LogTemp, "Timer interval cannot be less than 0.001f");
 		return;
 	}
 
@@ -36,11 +36,12 @@ void UTimer::StartTimer_Implementation(const float InTickInterval, const int InT
 }
 
 
-void UTimer::StopTimer_Implementation()
+void UTimer::StopTimer(bool bInvalidate)
 {
 	if (UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().ClearTimer(TimerHandle);
+		if (bInvalidate) TimerHandle.Invalidate();
 
 		Time = 0.0f;
 		TickCount = 0;
@@ -50,21 +51,21 @@ void UTimer::StopTimer_Implementation()
 }
 
 
-void UTimer::RestartTimer_Implementation(const float InTickInterval, const int InTickLimit)
+void UTimer::RestartTimer(const float InTickInterval, const int InTickLimit)
 {
 	StopTimer();
 	StartTimer(InTickInterval, InTickLimit, false);
 }
 
 
-void UTimer::SetTickInterval_Implementation(const float InTickInterval)
+void UTimer::SetTickInterval(const float InTickInterval)
 {
 	StopTimer();
 	StartTimer(InTickInterval, TickLimit, true);
 }
 
 
-const bool UTimer::bIsActive_Implementation()
+const bool UTimer::bIsActive()
 {
 	if (UWorld* World = GetWorld())
 	{
@@ -74,7 +75,7 @@ const bool UTimer::bIsActive_Implementation()
 }
 
 
-const float UTimer::GetNormalizedAlpha_Implementation()
+const float UTimer::GetNormalizedAlpha()
 {
 	if (TickLimit <= 0 || TickInterval <= 0.0f)
 	{
@@ -84,7 +85,7 @@ const float UTimer::GetNormalizedAlpha_Implementation()
 	return FMath::Clamp(Time / TotalTime, 0.0f, 1.0f);
 }
 
-void UTimer::HandleTick_Implementation()
+void UTimer::HandleTick()
 {
 	Time += TickInterval;
 	TickCount++;

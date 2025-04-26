@@ -20,76 +20,68 @@ class RENCORE_API UTimer : public UObject
 
 public:
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Action")
+	UFUNCTION(BlueprintCallable)
 	void StartTimer(const float InTickInterval = 1.0f, const int InTickLimit = 10, const bool bPreserveTime = false);
-	virtual void StartTimer_Implementation(const float InTickInterval = 1.0f, const int InTickLimit = 10, const bool bPreserveTime = false);
 	
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Action")
-	void StopTimer();
-	virtual void StopTimer_Implementation();
+	UFUNCTION(BlueprintCallable)
+	void StopTimer(bool bInvalidate = false);
 	
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Action")
+	UFUNCTION(BlueprintCallable)
 	void RestartTimer(const float InTickInterval = 1.0f, const int InTickLimit = 10);
-	virtual void RestartTimer_Implementation(const float InTickInterval = 1.0f, const int InTickLimit = 10);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Action")
+	UFUNCTION()
 	void SetTickInterval(const float InTickInterval = 1.0f);
-	virtual void SetTickInterval_Implementation(const float InTickInterval = 1.0f);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Property")
+	UFUNCTION()
 	const bool bIsActive();
-	virtual const bool bIsActive_Implementation();
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Property")
+	UFUNCTION()
 	const float GetNormalizedAlpha();
-	const virtual float GetNormalizedAlpha_Implementation();
 
 protected:
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	FTimerHandle TimerHandle;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Property")
+	UPROPERTY()
 	int TickLimit = 0;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Property")
+	UPROPERTY()
 	float TickInterval = 0.0f;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Runtime")
+	UPROPERTY()
 	int TickCount = 0;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Runtime")
+	UPROPERTY()
 	float Time = 0.0f;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Handler")
-	void HandleTick();
-	virtual void HandleTick_Implementation();
-
+	UFUNCTION()
+	virtual void HandleTick();
 
 public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStarted);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnStarted OnStarted;
 
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTick, float, CurrentTime);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnTick OnTick;
 
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCompleted);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Event Dispatcher")
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnCompleted OnCompleted;
 
 };

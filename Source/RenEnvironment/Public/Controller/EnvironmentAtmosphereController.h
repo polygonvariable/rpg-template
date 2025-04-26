@@ -43,7 +43,7 @@ public:
 protected:
 
 	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
-	virtual void OnTransitioned(const float CurrentTime) override;
+	virtual void HandleTransitionTick(float CurrentTime) override;
 
 };
 

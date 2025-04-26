@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Log Categories
-RENGLOBAL_API DECLARE_LOG_CATEGORY_EXTERN(LogGameCycleSubsystem, Log, All);
+RENGLOBAL_API DECLARE_LOG_CATEGORY_EXTERN(LogClockSubsystem, Log, All);
 
 RENGLOBAL_API DECLARE_LOG_CATEGORY_EXTERN(LogEnvironmentActor, Log, All);
 

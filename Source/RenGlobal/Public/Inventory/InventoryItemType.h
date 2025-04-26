@@ -8,6 +8,9 @@
 // Generated Headers
 #include "InventoryItemType.generated.h"
 
+// TODO:
+// Replace with gameplay tags
+// Inventory.Type.*
 
 /**
  *

@@ -23,21 +23,21 @@ class RENGAMEPLAY_API UGameClockSubsystem : public UWorldSubsystem
 
 	GENERATED_BODY()
 
-protected:
-
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
-
 public:
+
+	UPROPERTY()
+	bool bAutoStart = true;
 
 	UPROPERTY()
 	float TotalSecondsInADay = 60.0f; // Total time of a day in game
 
-	UFUNCTION(BlueprintCallable)
-	void StartTimer();
 
 	UFUNCTION(BlueprintCallable)
-	void StopTimer();
+	void StartClock();
+
+	UFUNCTION(BlueprintCallable)
+	void StopClock();
+
 
 	UFUNCTION(BlueprintCallable)
 	float GetTimeOfTheDay() const;
@@ -54,22 +54,27 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetRealTimeOfDay() const;
 
+
+	UFUNCTION(BlueprintCallable)
+	int GetDay() const;
+
 	UFUNCTION(BlueprintPure)
 	bool IsDay() const;
 
 	UFUNCTION(BlueprintPure)
 	bool IsNight() const;
 
-	UFUNCTION(BlueprintCallable)
-	int GetTotalDays() const;
-
 protected:
+
+	FDelegateHandle OnWorldBeginTearDownHandle;
+
 
 	UPROPERTY()
 	TObjectPtr<UTimer> ClockTimer;
 
 	UPROPERTY()
 	TWeakObjectPtr<UStorage> Storage;
+
 
 	UPROPERTY()
 	int DayCounter = 0;
@@ -80,17 +85,24 @@ protected:
 	UPROPERTY()
 	float LastTickAt = 0.0f;
 
+
+	UFUNCTION()
+	void LoadWorldTime();
+
+	UFUNCTION()
+	void SaveWorldTime();
+
+
 	UFUNCTION()
 	void HandleClockTick(float CurrentTime);
 
 	UFUNCTION()
-	void LoadStoredTime();
+	void HandleWorldBeginTearDown(UWorld* World);
 
-	UFUNCTION()
-	void SaveStoredTime();
+protected:
 
-	FDelegateHandle OnWorldBeginTearDownHandle;
-	virtual void HandleWorldBeginTearDown(UWorld* World);
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
 
 public:
 
@@ -101,6 +113,14 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTimeChanged, float, Time);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnTimeChanged OnTimeChanged;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClockStarted);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnClockStarted OnClockStarted;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClockStopped);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnClockStopped OnClockStopped;
 
 };
 

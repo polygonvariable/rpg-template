@@ -36,7 +36,7 @@ public:
 	AEnvironmentActor();
 
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
 
 
@@ -78,30 +78,55 @@ public:
 
 protected:
 
-
 	UPROPERTY()
 	TObjectPtr<UTimer> DayCycleTimer;
 
 
+
 	UFUNCTION(BlueprintCallable)
+	void InitializeEnvironment();
+
+	UFUNCTION(BlueprintCallable)
+	void CleanupEnvironment();
+
+
+
+	UFUNCTION()
 	void StartDayCycle();
 
+	UFUNCTION()
+	void StopDayCycle();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void HandleDayCycleTick(float CurrentTime);
 
 
-	UFUNCTION(BlueprintCallable)
-	void EndDayCycle();
+
+	UFUNCTION()
+	void RegisterClock();
+
+	UFUNCTION()
+	void UnregisterClock();
+
+	UFUNCTION()
+	void HandleClockStarted();
+
+	UFUNCTION()
+	void HandleClockStopped();
 
 
+
 	UFUNCTION(BlueprintCallable)
-	void InitializeEnvironmentControllers();
+	void InitializeControllers();
+
+	UFUNCTION(BlueprintCallable)
+	void CleanupControllers();
 
 
 protected:
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 };
 

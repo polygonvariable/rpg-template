@@ -21,7 +21,7 @@ class UEnvironmentController;
 /**
  *
  */
-UCLASS()
+UCLASS(Blueprintable) // Add Blueprintable for easiy debug in live blueprint debugger
 class RENENVIRONMENT_API UEnvironmentSubsystem : public UWorldSubsystem
 {
 
@@ -32,6 +32,9 @@ public:
 	UFUNCTION()
 	bool AddEnvironmentController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentController> ControllerClass, const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components);
 
+	UFUNCTION()
+	bool RemoveEnvironmentController(const TEnumAsByte<EEnvironmentProfileType> ProfileType);
+
 
 	UFUNCTION(BlueprintCallable)
 	void AddEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
@@ -40,38 +43,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
 
-
 protected:
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentController>> EnvironmentControllers;
 
 
 	void ValidateEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, const FInstancedStruct Profile, TFunctionRef<void(UEnvironmentController* Controller, const FEnvironmentProfile* Profile)> Callback, const FString& LogMessage);
-
-};
-
-
-
-/**
- *
- */
-UCLASS(Abstract)
-class RENENVIRONMENT_API UEnvironmentControllerWidget : public UUserWidget
-{
-
-	GENERATED_BODY()
-
-protected:
-
-	//virtual void NativeConstruct() override;
-	//virtual void NativeDestruct() override;
-
-public:
-
-	UPROPERTY()
-	UEnvironmentSubsystem* EnvironmentSubsystem;
-
 
 };
 

@@ -13,62 +13,36 @@
 #include "RenStorage/Public/StorageSubsystem.h"
 
 
-void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
-{
-	Super::Initialize(Collection);
-	LOG_WARNING(LogGameCycleSubsystem, TEXT("ClockSubsystem initialized"));
-
-	if (!OnWorldBeginTearDownHandle.IsValid() && GetWorld()->IsGameWorld())
-	{
-		FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UGameClockSubsystem::HandleWorldBeginTearDown);
-	}
-
-	if (UStorageSubsystem* StorageSubsystem = GetGameInstanceSubsystem<UStorageSubsystem>(GetWorld()))
-	{
-		Storage = StorageSubsystem->GetLocalStorage();
-		LoadStoredTime();
-	}
-}
-
-
-void UGameClockSubsystem::Deinitialize()
-{
-	if (OnWorldBeginTearDownHandle.IsValid())
-	{
-		FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
-	}
-
-	LOG_WARNING(LogGameCycleSubsystem, TEXT("ClockSubsystem deinitialized"));
-	Super::Deinitialize();
-}
-
-
-void UGameClockSubsystem::StartTimer()
+void UGameClockSubsystem::StartClock()
 {
 	if(IsValid(ClockTimer))
 	{
-		LOG_WARNING(LogGameCycleSubsystem, TEXT("ClockTimer is already valid"));
+		LOG_WARNING(LogClockSubsystem, TEXT("ClockTimer is already valid"));
 		return;
 	}
 
 	ClockTimer = NewObject<UTimer>(this);
 	if (!IsValid(ClockTimer))
 	{
-		LOG_ERROR(LogGameCycleSubsystem, TEXT("Failed to create ClockTimer"));
+		LOG_ERROR(LogClockSubsystem, TEXT("Failed to create ClockTimer"));
 		return;
 	}
 	ClockTimer->OnTick.AddDynamic(this, &UGameClockSubsystem::HandleClockTick);
 	ClockTimer->StartTimer(1.0f, 0);
+	OnClockStarted.Broadcast();
+
+	LOG_INFO(LogClockSubsystem, TEXT("ClockTimer created & started"));
 }
 
-void UGameClockSubsystem::StopTimer()
+void UGameClockSubsystem::StopClock()
 {
 	if(!IsValid(ClockTimer))
 	{
-		LOG_ERROR(LogGameCycleSubsystem, TEXT("ClockTimer is not valid"));
+		LOG_ERROR(LogClockSubsystem, TEXT("ClockTimer is not valid"));
 		return;
 	}
 	ClockTimer->StopTimer();
+	OnClockStopped.Broadcast();
 }
 
 float UGameClockSubsystem::GetTimeOfTheDay() const
@@ -107,6 +81,12 @@ float UGameClockSubsystem::GetRealTimeOfDay() const
 	return FMath::GetMappedRangeValueClamped(TRange<float>(0.0f, TotalSecondsInADay), TRange<float>(0.0f, 24.0f), TimeOfTheDay);
 }
 
+
+int UGameClockSubsystem::GetDay() const
+{
+	return DayCounter;
+}
+
 bool UGameClockSubsystem::IsDay() const
 {
 	float RealHour = GetRealTimeOfDay();
@@ -118,10 +98,51 @@ bool UGameClockSubsystem::IsNight() const
 	return !IsDay();
 }
 
-int UGameClockSubsystem::GetTotalDays() const
+
+void UGameClockSubsystem::LoadWorldTime()
 {
-	return DayCounter;
+	if (!Storage.IsValid())
+	{
+		LOG_ERROR(LogClockSubsystem, TEXT("Storage is not valid"));
+		return;
+	}
+
+	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
+	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
+	{
+		TimeOfTheDay = ClockRecord->Time;
+		DayCounter = ClockRecord->DayCount;
+
+		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time loaded"));
+	}
+	else {
+		LOG_ERROR(LogClockSubsystem, TEXT("Clock day & time not found"));
+	}
 }
+
+void UGameClockSubsystem::SaveWorldTime()
+{
+	if (!Storage.IsValid())
+	{
+		LOG_ERROR(LogClockSubsystem, TEXT("Storage is not valid"));
+		return;
+	}
+
+	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
+	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
+	{
+		ClockRecord->Time = TimeOfTheDay;
+		ClockRecord->DayCount = DayCounter;
+
+		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time updated"));
+	}
+	else {
+		Records.Add("DEFAULT", FClockRecord(TimeOfTheDay, DayCounter));
+
+		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time added"));
+	}
+}
+
 
 void UGameClockSubsystem::HandleClockTick(float CurrentTime)
 {
@@ -137,57 +158,46 @@ void UGameClockSubsystem::HandleClockTick(float CurrentTime)
 	OnTimeChanged.Broadcast(TimeOfTheDay);
 }
 
-void UGameClockSubsystem::LoadStoredTime()
-{
-	if (!Storage.IsValid())
-	{
-		LOG_ERROR(LogGameCycleSubsystem, TEXT("Storage is not valid"));
-		return;
-	}
-
-	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
-	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
-	{
-		TimeOfTheDay = ClockRecord->Time;
-		DayCounter = ClockRecord->DayCount;
-
-		LOG_INFO(LogGameCycleSubsystem, TEXT("Clock day & time loaded"));
-	}
-	else {
-		LOG_ERROR(LogGameCycleSubsystem, TEXT("Clock day & time not found"));
-	}
-}
-
-void UGameClockSubsystem::SaveStoredTime()
-{
-	if (Storage.IsValid())
-	{
-		TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
-		if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
-		{
-			ClockRecord->Time = TimeOfTheDay;
-			ClockRecord->DayCount = DayCounter;
-
-			LOG_INFO(LogGameCycleSubsystem, TEXT("Clock day & time updated"));
-		}
-		else {
-			Records.Add("DEFAULT", FClockRecord(TimeOfTheDay, DayCounter));
-
-			LOG_INFO(LogGameCycleSubsystem, TEXT("Clock day & time added"));
-		}
-	}
-	else
-	{
-		LOG_ERROR(LogGameCycleSubsystem, TEXT("Storage is not valid"));
-	}
-}
-
 void UGameClockSubsystem::HandleWorldBeginTearDown(UWorld* World)
 {
-	SaveStoredTime();
-	if (UStorageSubsystem* StorageSubsystem = GetGameInstanceSubsystem<UStorageSubsystem>(World))
+	SaveWorldTime();
+}
+
+
+void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem initialized"));
+
+	if (!OnWorldBeginTearDownHandle.IsValid() && GetWorld()->IsGameWorld())
 	{
-		StorageSubsystem->UpdateStorage();
+		FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UGameClockSubsystem::HandleWorldBeginTearDown);
 	}
+
+	if (UStorageSubsystem* StorageSubsystem = GetGameInstanceSubsystem<UStorageSubsystem>(GetWorld()))
+	{
+		Storage = StorageSubsystem->GetLocalStorage();
+		LoadWorldTime();
+	}
+
+	if (bAutoStart) StartClock();
+}
+
+void UGameClockSubsystem::Deinitialize()
+{
+	if (OnWorldBeginTearDownHandle.IsValid())
+	{
+		FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
+	}
+
+	if (IsValid(ClockTimer))
+	{
+		ClockTimer->StopTimer();
+		ClockTimer->OnTick.RemoveAll(this);
+		ClockTimer->MarkAsGarbage();
+	}
+
+	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem deinitialized"));
+	Super::Deinitialize();
 }
 

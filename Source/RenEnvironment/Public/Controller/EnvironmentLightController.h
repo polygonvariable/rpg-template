@@ -6,7 +6,6 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "InstancedStruct.h"
-#include "Components/DirectionalLightComponent.h"
 
 // Project Headers
 #include "RenEnvironment/Public/Controller/EnvironmentController.h"
@@ -47,7 +46,7 @@ public:
 protected:
 
 	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
-	virtual void OnTransitioned(const float CurrentTime) override;
+	virtual void HandleTransitionTick(float CurrentTime) override;
 
 };
 

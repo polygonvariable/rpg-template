@@ -29,11 +29,11 @@ void UEnvironmentFogController::HandleItemChanged(const FInstancedStruct& Item)
 	}
 }
 
-void UEnvironmentFogController::OnTransitioned(const float CurrentTime)
+void UEnvironmentFogController::HandleTransitionTick(float CurrentTime)
 {
 	if (!ExponentialHeightFog.IsValid() || !ActiveProfile)
 	{
-		TransitionTimer->StopTimer();
+		StopTransition();
 		return;
 	}
 

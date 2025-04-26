@@ -3,12 +3,44 @@
 // Parent Header
 #include "Region/RegionActor.h"
 
+// Project Headers
+#include "RenGlobal/Public/Library/MiscLibrary.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
-void ARegionActor::OnPlayerEntered_Implementation()
+#include "Subsystem/EnvironmentSubsystem.h"
+
+
+void ARegionActor::BeginPlay()
 {
+	GetSubsystemReference<UEnvironmentSubsystem>(GetWorld(), EnvironmentSubsystem);
+	Super::BeginPlay();
 }
 
-void ARegionActor::OnPlayerExited_Implementation()
+void ARegionActor::HandlePlayerEntered()
 {
+	if (!IsValid(EnvironmentSubsystem))
+	{
+		LOG_ERROR(LogTemp, TEXT("EnvironmentSubsystem is not valid"));
+		return;
+	}
+
+	for (const TPair<TEnumAsByte<EEnvironmentProfileType>, FInstancedStruct>& Profile : EnvironmentProfiles)
+	{
+		EnvironmentSubsystem->AddEnvironmentProfile(Profile.Key, Profile.Value);
+	}
+}
+
+void ARegionActor::HandlePlayerExited()
+{
+	if (!IsValid(EnvironmentSubsystem))
+	{
+		LOG_ERROR(LogTemp, TEXT("EnvironmentSubsystem is not valid"));
+		return;
+	}
+
+	for (const TPair<TEnumAsByte<EEnvironmentProfileType>, FInstancedStruct>& Profile : EnvironmentProfiles)
+	{
+		EnvironmentSubsystem->RemoveEnvironmentProfile(Profile.Key, Profile.Value);
+	}
 }
 

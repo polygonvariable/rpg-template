@@ -3,7 +3,7 @@
 // Parent Header
 #include "Actor/EnvironmentActor.h"
 
-// Engine Header
+// Engine Headers
 #include "Components/ExponentialHeightFogComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkyAtmosphereComponent.h"
@@ -91,6 +91,21 @@ AEnvironmentActor::AEnvironmentActor()
 }
 
 
+void AEnvironmentActor::InitializeEnvironment()
+{
+	//InitializeControllers();
+	//RegisterClock();
+	//StartDayCycle();
+}
+
+void AEnvironmentActor::CleanupEnvironment()
+{
+	//CleanupControllers();
+	//StopDayCycle();
+	//UnregisterClock();
+}
+
+
 void AEnvironmentActor::StartDayCycle()
 {
 	if (IsValid(DayCycleTimer) || !IsValid(GameClockSubsystem))
@@ -110,6 +125,13 @@ void AEnvironmentActor::StartDayCycle()
 	DayCycleTimer->StartTimer(0.1f, 0);
 }
 
+void AEnvironmentActor::StopDayCycle()
+{
+	if (IsValid(DayCycleTimer))
+	{
+		DayCycleTimer->StopTimer();
+	}
+}
 
 void AEnvironmentActor::HandleDayCycleTick(float CurrentTime)
 {
@@ -121,16 +143,34 @@ void AEnvironmentActor::HandleDayCycleTick(float CurrentTime)
 }
 
 
-void AEnvironmentActor::EndDayCycle()
+
+void AEnvironmentActor::RegisterClock()
 {
-	if (IsValid(DayCycleTimer))
-	{
-		DayCycleTimer->StopTimer();
-	}
+	if(!IsValid(GameClockSubsystem)) return;
+	GameClockSubsystem->OnClockStarted.AddDynamic(this, &AEnvironmentActor::HandleClockStarted);
+	GameClockSubsystem->OnClockStopped.AddDynamic(this, &AEnvironmentActor::HandleClockStopped);
+}
+
+void AEnvironmentActor::UnregisterClock()
+{
+	if (!IsValid(GameClockSubsystem)) return;
+	GameClockSubsystem->OnClockStarted.RemoveAll(this);
+	GameClockSubsystem->OnClockStopped.RemoveAll(this);
+}
+
+void AEnvironmentActor::HandleClockStarted()
+{
+	StartDayCycle();
+}
+
+void AEnvironmentActor::HandleClockStopped()
+{
+	StopDayCycle();
 }
 
 
-void AEnvironmentActor::InitializeEnvironmentControllers()
+
+void AEnvironmentActor::InitializeControllers()
 {
 	if(!IsValid(EnvironmentSubsystem)) return;
 
@@ -149,11 +189,22 @@ void AEnvironmentActor::InitializeEnvironmentControllers()
 	EnvironmentSubsystem->AddEnvironmentController(EEnvironmentProfileType::Atmosphere, UEnvironmentAtmosphereController::StaticClass(), AtmosphereComponents);
 }
 
+void AEnvironmentActor::CleanupControllers()
+{
+	if (!IsValid(EnvironmentSubsystem)) return;
+}
+
+
 
 void AEnvironmentActor::BeginPlay()
 {
-	GetSubsystemReference<UGameClockSubsystem>(GetWorld(), GameClockSubsystem);
-	GetSubsystemReference<UEnvironmentSubsystem>(GetWorld(), EnvironmentSubsystem);
+	//InitializeEnvironment();
 	Super::BeginPlay();
+}
+
+void AEnvironmentActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	//CleanupEnvironment();
+	Super::EndPlay(EndPlayReason);
 }
 
