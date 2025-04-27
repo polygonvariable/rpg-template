@@ -3,17 +3,18 @@
 // Parent Header
 #include "GameClockWidget.h"
 
-//
+// Engine Headers
+#include "Components/TextBlock.h"
+
+// Project Headers
 #include "GameClockSubsystem.h"
 #include "RenGlobal/Public/Library/MiscLibrary.h"
 
-// Engine Headers
-#include "Components/TextBlock.h"
 
 
 void UGameClockWidget::HandleClockTick(float Time)
 {
-	TimeTextBlock->SetText(FText::FromString(GameClockSubsystem->GetFormattedTimeOfDay()));
+	TimeTextBlock->SetText(FText::FromString(GameClockSubsystem->GetFormattedTimeOfDay(Format)));
 }
 
 void UGameClockWidget::NativeConstruct()
@@ -29,6 +30,11 @@ void UGameClockWidget::NativeConstruct()
 
 void UGameClockWidget::NativeDestruct()
 {
+	if (IsValid(GameClockSubsystem))
+	{
+		GameClockSubsystem->OnTimeChanged.RemoveAll(this);
+	}
+
 	Super::NativeDestruct();
 }
 

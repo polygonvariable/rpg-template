@@ -91,33 +91,64 @@ AEnvironmentActor::AEnvironmentActor()
 }
 
 
+
 void AEnvironmentActor::InitializeEnvironment()
 {
 	//InitializeControllers();
+	//InitializeDayCycle();
 	//RegisterClock();
-	//StartDayCycle();
 }
 
 void AEnvironmentActor::CleanupEnvironment()
 {
 	//CleanupControllers();
-	//StopDayCycle();
+	//CleanupDayCycle();
 	//UnregisterClock();
+}
+
+
+
+void AEnvironmentActor::InitializeDayCycle()
+{
+	if (IsValid(DayCycleTimer))
+	{
+		LOG_ERROR(LogTemp, "DayCycleTimer is already valid");
+		return;
+	}
+
+	DayCycleTimer = NewObject<UTimer>(this);
+	if (!IsValid(DayCycleTimer))
+	{
+		LOG_ERROR(LogTemp, "Failed to create DayCycleTimer");
+		return;
+	}
+
+	DayCycleTimer->OnTick.AddDynamic(this, &AEnvironmentActor::HandleDayCycleTick);
+
+	LOG_INFO(LogTemp, "DayCycleTimer created");
+}
+
+void AEnvironmentActor::CleanupDayCycle()
+{
+	if (!IsValid(DayCycleTimer))
+	{
+		LOG_ERROR(LogTemp, "DayCycleTimer is not valid");
+		return;
+	}
+
+	DayCycleTimer->StopTimer();
+	DayCycleTimer->OnTick.RemoveAll(this);
+	DayCycleTimer->MarkAsGarbage();
+	
+	LOG_INFO(LogTemp, "DayCycleTimer removed");
 }
 
 
 void AEnvironmentActor::StartDayCycle()
 {
-	if (IsValid(DayCycleTimer) || !IsValid(GameClockSubsystem))
+	if (!IsValid(DayCycleTimer) || !IsValid(GameClockSubsystem))
 	{
-		LOG_ERROR(LogTemp, "DayCycleTimer is already valid or GameClockSubsystem is not valid");
-		return;
-	}
-
-	DayCycleTimer = NewObject<UTimer>(this);
-	if(!IsValid(DayCycleTimer))
-	{
-		LOG_ERROR(LogTemp, "Failed to create DayCycleTimer");
+		LOG_ERROR(LogTemp, "DayCycleTimer or GameClockSubsystem is not valid");
 		return;
 	}
 
@@ -127,10 +158,13 @@ void AEnvironmentActor::StartDayCycle()
 
 void AEnvironmentActor::StopDayCycle()
 {
-	if (IsValid(DayCycleTimer))
+	if (!IsValid(DayCycleTimer))
 	{
-		DayCycleTimer->StopTimer();
+		LOG_ERROR(LogTemp, "DayCycleTimer is not valid");
+		return;
 	}
+
+	DayCycleTimer->StopTimer();
 }
 
 void AEnvironmentActor::HandleDayCycleTick(float CurrentTime)

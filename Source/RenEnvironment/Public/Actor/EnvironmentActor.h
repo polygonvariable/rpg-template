@@ -36,45 +36,40 @@ public:
 	AEnvironmentActor();
 
 
+
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
-
 
 	UPROPERTY()
 	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"), Category = "Environment|Time")
-	float Time = 0.0f;
-
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<USceneComponent> SceneComponent;
 
-
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<USkyLightComponent> SkyLight;
-
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<USkyAtmosphereComponent> SkyAtmosphere;
 
-
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFog;
-
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<UOrbitalLightComponent> Sun;
 
-
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<UOrbitalLightComponent> Moon;
-
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
 	TObjectPtr<UStaticMeshComponent> SkyMesh;
 
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
+	float Time = 0.0f;
 
 protected:
 
@@ -90,6 +85,12 @@ protected:
 	void CleanupEnvironment();
 
 
+
+	UFUNCTION()
+	void InitializeDayCycle();
+
+	UFUNCTION()
+	void CleanupDayCycle();
 
 	UFUNCTION()
 	void StartDayCycle();
@@ -121,7 +122,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void CleanupControllers();
-
 
 protected:
 

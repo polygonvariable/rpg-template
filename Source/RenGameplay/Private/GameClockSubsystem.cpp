@@ -50,14 +50,23 @@ float UGameClockSubsystem::GetTimeOfTheDay() const
 	return TimeOfTheDay;
 }
 
-FString UGameClockSubsystem::GetFormattedTimeOfDay() const
+FString UGameClockSubsystem::GetFormattedTimeOfDay(const FString& Format) const
 {
 	int32 TotalSeconds = FMath::FloorToInt(TimeOfTheDay);
 	int32 Hours = TotalSeconds / 3600;
 	int32 Minutes = (TotalSeconds % 3600) / 60;
 	int32 Seconds = TotalSeconds % 60;
+	
+	FString AmPm = IsDay() ? TEXT("AM") : TEXT("PM");
 
-	return FString::Printf(TEXT("%02d:%02d:%02d"), Hours, Minutes, Seconds);
+	FString Result = Format;
+	Result = Result.Replace(TEXT("hh"), *FString::Printf(TEXT("%02d"), Hours));
+	Result = Result.Replace(TEXT("mm"), *FString::Printf(TEXT("%02d"), Minutes));
+	Result = Result.Replace(TEXT("ss"), *FString::Printf(TEXT("%02d"), Seconds));
+	Result = Result.Replace(TEXT("dd"), *FString::Printf(TEXT("%02d"), DayCount));
+	Result = Result.Replace(TEXT("ap"), *AmPm);
+
+	return Result;
 }
 
 float UGameClockSubsystem::GetNormalizedTimeOfDay() const
@@ -76,7 +85,7 @@ float UGameClockSubsystem::GetSmoothNormalizedTimeOfDay() const
 	return FMath::Clamp(SmoothTime / TotalSecondsInADay, 0.0f, 1.0f);
 }
 
-float UGameClockSubsystem::GetRealTimeOfDay() const
+float UGameClockSubsystem::GetSimulatedRealTimeOfDay() const
 {
 	return FMath::GetMappedRangeValueClamped(TRange<float>(0.0f, TotalSecondsInADay), TRange<float>(0.0f, 24.0f), TimeOfTheDay);
 }
@@ -84,12 +93,12 @@ float UGameClockSubsystem::GetRealTimeOfDay() const
 
 int UGameClockSubsystem::GetDay() const
 {
-	return DayCounter;
+	return DayCount;
 }
 
 bool UGameClockSubsystem::IsDay() const
 {
-	float RealHour = GetRealTimeOfDay();
+	float RealHour = GetSimulatedRealTimeOfDay();
 	return RealHour >= 6.0f && RealHour < 18.0f;
 }
 
@@ -111,7 +120,7 @@ void UGameClockSubsystem::LoadWorldTime()
 	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
 	{
 		TimeOfTheDay = ClockRecord->Time;
-		DayCounter = ClockRecord->DayCount;
+		DayCount = ClockRecord->DayCount;
 
 		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time loaded"));
 	}
@@ -132,12 +141,12 @@ void UGameClockSubsystem::SaveWorldTime()
 	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
 	{
 		ClockRecord->Time = TimeOfTheDay;
-		ClockRecord->DayCount = DayCounter;
+		ClockRecord->DayCount = DayCount;
 
 		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time updated"));
 	}
 	else {
-		Records.Add("DEFAULT", FClockRecord(TimeOfTheDay, DayCounter));
+		Records.Add("DEFAULT", FClockRecord(TimeOfTheDay, DayCount));
 
 		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time added"));
 	}
@@ -150,8 +159,8 @@ void UGameClockSubsystem::HandleClockTick(float CurrentTime)
 	if (TimeOfTheDay >= TotalSecondsInADay)
 	{
 		TimeOfTheDay = 0.0f;
-		DayCounter++;
-		OnDayChanged.Broadcast(DayCounter);
+		DayCount++;
+		OnDayChanged.Broadcast(DayCount);
 	}
 
 	LastTickAt = GetWorld()->GetTimeSeconds();

@@ -25,11 +25,15 @@ class RENGAMEPLAY_API UGameClockWidget : public UUserWidget
 
 protected:
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Format = "mm:ss ap";
+
 	UPROPERTY()
 	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
 
 	UPROPERTY(Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> TimeTextBlock;
+
 
 	UFUNCTION()
 	void HandleClockTick(float Time);

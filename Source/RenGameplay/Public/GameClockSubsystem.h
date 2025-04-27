@@ -32,6 +32,7 @@ public:
 	float TotalSecondsInADay = 60.0f; // Total time of a day in game
 
 
+
 	UFUNCTION(BlueprintCallable)
 	void StartClock();
 
@@ -39,11 +40,12 @@ public:
 	void StopClock();
 
 
+
 	UFUNCTION(BlueprintCallable)
 	float GetTimeOfTheDay() const;
 
 	UFUNCTION(BlueprintPure)
-	FString GetFormattedTimeOfDay() const;
+	FString GetFormattedTimeOfDay(const FString& Format = TEXT("hh:mm:ss ap")) const;
 
 	UFUNCTION(BlueprintPure)
 	float GetNormalizedTimeOfDay() const;
@@ -52,7 +54,8 @@ public:
 	float GetSmoothNormalizedTimeOfDay() const;
 
 	UFUNCTION(BlueprintPure)
-	float GetRealTimeOfDay() const;
+	float GetSimulatedRealTimeOfDay() const;
+
 
 
 	UFUNCTION(BlueprintCallable)
@@ -69,6 +72,7 @@ protected:
 	FDelegateHandle OnWorldBeginTearDownHandle;
 
 
+
 	UPROPERTY()
 	TObjectPtr<UTimer> ClockTimer;
 
@@ -76,8 +80,9 @@ protected:
 	TWeakObjectPtr<UStorage> Storage;
 
 
+
 	UPROPERTY()
-	int DayCounter = 0;
+	int DayCount = 0;
 
 	UPROPERTY()
 	float TimeOfTheDay = 0.0f; // Clamped from 0 and TotalSecondsInADay
@@ -86,11 +91,13 @@ protected:
 	float LastTickAt = 0.0f;
 
 
+
 	UFUNCTION()
 	void LoadWorldTime();
 
 	UFUNCTION()
 	void SaveWorldTime();
+
 
 
 	UFUNCTION()

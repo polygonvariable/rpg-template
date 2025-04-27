@@ -2,10 +2,13 @@
 
 #pragma once
 
+// Engine Headers
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 
+// Generated Headers
 #include "GameClockAsset.generated.h"
+
 
 /**
  *
@@ -18,16 +21,19 @@ class RENCORE_API UGameClockAsset : public UPrimaryDataAsset
 	
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	bool bAutoStart = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	/*
+		* Total seconds taken to complete a day
+	*/
+	UPROPERTY(EditAnywhere)
 	int TotalSecondsInADay = 60;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	bool bSeparateTimePerLevel = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	TSet<FName> AllowedLevels;
 
 };
