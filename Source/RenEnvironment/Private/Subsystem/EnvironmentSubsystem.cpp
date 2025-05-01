@@ -82,3 +82,16 @@ void UEnvironmentSubsystem::RemoveEnvironmentProfile(const TEnumAsByte<EEnvironm
 	);
 }
 
+
+void UEnvironmentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem initialized"));
+}
+
+void UEnvironmentSubsystem::Deinitialize()
+{
+	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem deinitialized"));
+	Super::Deinitialize();
+}
+

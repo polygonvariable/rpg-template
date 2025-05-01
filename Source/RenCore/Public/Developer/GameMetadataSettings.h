@@ -44,5 +44,9 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Inventory")
 	TSoftObjectPtr<UDataTable> InventoryTable;
 
+
+	//UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Weather")
+	//TSoftObjectPtr<UMaterialParameterCollection> WeatherMaterialParameter;
+
 };
 

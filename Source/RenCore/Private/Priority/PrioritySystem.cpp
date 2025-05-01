@@ -9,7 +9,7 @@ void UPrioritySystem::AddItem(FInstancedStruct Item, int Priority)
 {
 	if (!Item.IsValid() || Priority < 0)
 	{
-		LOG_ERROR(LogTemp, TEXT("Item is not valid or Priority is less than 0"));
+		LOG_ERROR(LogTemp, TEXT("Item is not valid or priority is less than 0"));
 		return;
 	}
 
@@ -17,11 +17,13 @@ void UPrioritySystem::AddItem(FInstancedStruct Item, int Priority)
 
 	Items.Add(Priority, Item);
 	HandleItemAdded(Item);
+	OnItemAdded.Broadcast(Item);
 
 	if (Priority > HighestPriority)
 	{
 		ActiveItem = Item;
 		HandleItemChanged(ActiveItem);
+		OnItemChanged.Broadcast(ActiveItem);
 	}
 	else
 	{
@@ -34,22 +36,30 @@ void UPrioritySystem::RemoveItem(int Priority)
 	FInstancedStruct* Item = Items.Find(Priority);
 	if (!Item)
 	{
-		LOG_WARNING(LogTemp, TEXT("Priority not found"));
+		LOG_WARNING(LogTemp, TEXT("Item not found"));
 		return;
 	}
 
-	const int CurrentPriority = GetHighestPriority();
+	int HighestPriority = GetHighestPriority();
 	
 	Items.Remove(Priority);
 	HandleItemRemoved(*Item);
+	OnItemRemoved.Broadcast(*Item);
 
-	if (Priority != CurrentPriority) return;
+	if (Priority != HighestPriority)
+	{
+		return;
+	}
 
 	int NewPriority = GetHighestPriority();
 	if (FInstancedStruct* NewItem = Items.Find(NewPriority))
 	{
 		ActiveItem = *NewItem;
-		if (ActiveItem.IsValid()) HandleItemChanged(ActiveItem);
+		if (ActiveItem.IsValid())
+		{
+			HandleItemChanged(ActiveItem);
+			OnItemChanged.Broadcast(ActiveItem);
+		}
 	}
 }
 

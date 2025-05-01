@@ -7,7 +7,6 @@
 
 // Project Headers
 #include "RenCore/Public/Priority/PrioritySystem.h"
-#include "RenEnvironment/Public/Profile/WeatherProfile.h"
 
 // Generated Headers
 #include "WeatherController.generated.h"
@@ -20,22 +19,18 @@ class UMaterialParameterCollectionInstance;
  * 
  */
 UCLASS()
-class RENENVIRONMENT_API UWeatherController : public UPrioritySystem
+class UWeatherController : public UPrioritySystem
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterialParameterCollection* WeatherMaterialCollection;
-
-	UMaterialParameterCollectionInstance* MaterialCollectionInstance;
-
-
-	virtual void Initialize();
+	void SetMaterialCollection(UMaterialParameterCollection* MaterialCollection);
 
 protected:
+
+	UMaterialParameterCollectionInstance* MaterialCollectionInstance;
 
 	void HandleScalarTransition(FName ParameterName, float Target, float Alpha);
 	void HandleVectorTransition(FName ParameterName, const FLinearColor& Target, float Alpha);

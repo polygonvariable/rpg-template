@@ -4,6 +4,7 @@
 #include "Actor/WeatherActor.h"
 
 // Engine Headers
+#include "InstancedStruct.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
@@ -11,113 +12,36 @@
 #include "RenCore/Public/Priority/PrioritySystem.h"
 #include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenEnvironment/Public/Controller/WeatherController.h"
 
 
 
-void AWeatherActor::SetWeather()
+void AWeatherActor::SetWeather(FWeatherProfile Weather)
 {
-
-	HandleScalarTransition(TEXT("WeatherAlpha"), WeatherProfile.Alpha, 1.0f);
-	HandleScalarTransition(TEXT("WeatherSpecular"), WeatherProfile.Specular, 1.0f);
-	HandleScalarTransition(TEXT("WeatherRoughness"), WeatherProfile.Roughness, 1.0f);
-	HandleScalarTransition(TEXT("WeatherOpacity"), WeatherProfile.Opacity, 1.0f);
-	HandleVectorTransition(TEXT("WeatherColor"), WeatherProfile.Color, 1.0f);
-
-}
-
-void AWeatherActor::ResetWeather()
-{
-}
-
-
-void AWeatherActor::InitializeTimer()
-{
-	if (IsValid(TransitionTimer))
+	if (WeatherController)
 	{
-		LOG_ERROR(LogTemp, TEXT("TransitionTimer is already valid"));
-		return;
-	}
-
-	TransitionTimer = NewObject<UTimer>(this);
-	if (!IsValid(TransitionTimer))
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to create TransitionTimer"));
-		return;
-	}
-
-	TransitionTimer->OnTick.AddDynamic(this, &AWeatherActor::HandleTimerTick);
-}
-
-void AWeatherActor::CleanupTimer()
-{
-	if (!IsValid(TransitionTimer))
-	{
-		LOG_ERROR(LogTemp, TEXT("TransitionTimer is not valid"));
-		return;
-	}
-
-	TransitionTimer->StopTimer(true);
-	TransitionTimer->OnTick.RemoveAll(this);
-	TransitionTimer->MarkAsGarbage();
-}
-
-void AWeatherActor::StartTimer()
-{
-	if (!IsValid(TransitionTimer) || !IsValid(GetWorld()) || !MaterialCollectionInstance)
-	{
-		LOG_ERROR(LogTemp, TEXT("TransitionTimer, world or MaterialCollectionInstance is not valid"));
-		return;
-	}
-
-	TransitionTimer->StartTimer(0.1f, 10);
-}
-
-void AWeatherActor::HandleTimerTick(float CurrentTime)
-{
-	float Alpha = TransitionTimer->GetNormalizedAlpha();
-	if (UWorld* World = GetWorld())
-	{
-
-
-
-	}
-	else
-	{
-		TransitionTimer->StopTimer();
+		WeatherController->AddItem(FInstancedStruct::Make(Weather), Weather.Priority);
 	}
 }
 
-
-
-void AWeatherActor::HandleScalarTransition(FName ParameterName, float Target, float Alpha)
+void AWeatherActor::ResetWeather(FWeatherProfile Weather)
 {
-	if(!MaterialCollectionInstance) return;
-
-	float Current = 0.0f;
-	if (MaterialCollectionInstance->GetScalarParameterValue(ParameterName, Current))
+	if (WeatherController)
 	{
-		MaterialCollectionInstance->SetScalarParameterValue(ParameterName, FMath::Lerp(Current, Target, Alpha));
+		WeatherController->RemoveItem(Weather.Priority);
 	}
 }
-
-void AWeatherActor::HandleVectorTransition(FName ParameterName, FLinearColor Target, float Alpha)
-{
-	if (!MaterialCollectionInstance) return;
-
-	FLinearColor Current = FLinearColor::Transparent;
-	if (MaterialCollectionInstance->GetVectorParameterValue(ParameterName, Current))
-	{
-		MaterialCollectionInstance->SetVectorParameterValue(ParameterName, FMath::CInterpTo(Current, Target, Alpha, 1.0f));
-	}
-}
-
 
 
 void AWeatherActor::BeginPlay()
 {
 	if (WeatherMaterialCollection)
 	{
-		MaterialCollectionInstance = GetWorld()->GetParameterCollectionInstance(WeatherMaterialCollection);
+		WeatherController = NewObject<UWeatherController>(this);
+		if (WeatherController)
+		{
+			WeatherController->SetMaterialCollection(WeatherMaterialCollection);
+		}
 	}
 
 	Super::BeginPlay();

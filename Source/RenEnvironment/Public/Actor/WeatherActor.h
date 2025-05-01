@@ -16,13 +16,14 @@
 class UTimer;
 class UPrioritySystem;
 class UMaterialParameterCollectionInstance;
+class UWeatherController;
 
 
 /**
  *
  */
 UCLASS()
-class RENENVIRONMENT_API AWeatherActor : public AActor
+class AWeatherActor : public AActor
 {
 
 	GENERATED_BODY()
@@ -32,52 +33,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialParameterCollection* WeatherMaterialCollection;
 
-
-	UMaterialParameterCollectionInstance* MaterialCollectionInstance;
-
-
-	UPROPERTY()
-	TObjectPtr<UTimer> TransitionTimer;
-
-	UPROPERTY()
-	TObjectPtr<UPrioritySystem> WeatherPriority;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UWeatherController> WeatherController;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FWeatherProfile WeatherProfile;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FWeatherProfile PreviousWeatherProfile;
-
 
 
 	UFUNCTION(BlueprintCallable)
-	void SetWeather();
+	void SetWeather(FWeatherProfile Weather);
 
 	UFUNCTION(BlueprintCallable)
-	void ResetWeather();
-
-
-
-	UFUNCTION()
-	void InitializeTimer();
-
-	UFUNCTION()
-	void CleanupTimer();
-
-	UFUNCTION()
-	void StartTimer();
-
-	UFUNCTION()
-	void HandleTimerTick(float CurrentTime);
-
-
-
-	UFUNCTION()
-	void HandleScalarTransition(FName ParameterName, float Target, float Alpha);
-
-	UFUNCTION()
-	void HandleVectorTransition(FName ParameterName, FLinearColor Target, float Alpha);
-
+	void ResetWeather(FWeatherProfile Weather);
 
 protected:
 

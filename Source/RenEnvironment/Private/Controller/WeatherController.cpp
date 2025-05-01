@@ -8,22 +8,27 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
-#include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Timer/Timer.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
+
+#include "RenEnvironment/Public/Profile/WeatherProfile.h"
 
 
-void UWeatherController::Initialize()
+void UWeatherController::SetMaterialCollection(UMaterialParameterCollection* MaterialCollection)
 {
-	if (WeatherMaterialCollection)
+	if (!MaterialCollection)
 	{
-		MaterialCollectionInstance = GetWorld()->GetParameterCollectionInstance(WeatherMaterialCollection);
+		LOG_ERROR(LogTemp, TEXT("MaterialCollection is invalid"));
+		return;
 	}
+	MaterialCollectionInstance = GetWorld()->GetParameterCollectionInstance(MaterialCollection);
 }
 
 void UWeatherController::HandleItemChanged(const FInstancedStruct& Item)
 {
 	if (!Item.IsValid() || !MaterialCollectionInstance)
 	{
+		LOG_ERROR(LogTemp, TEXT("Item or MaterialCollection is invalid"));
 		return;
 	}
 

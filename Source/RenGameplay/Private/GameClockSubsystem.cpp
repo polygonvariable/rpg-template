@@ -200,12 +200,23 @@ void UGameClockSubsystem::HandleWorldBeginTearDown(UWorld* World)
 }
 
 
+
+bool UGameClockSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
+{
+	return WorldType == EWorldType::Game || WorldType == EWorldType::PIE;
+}
+
 void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem initialized"));
+}
 
-	if (!OnWorldBeginTearDownHandle.IsValid() && GetWorld()->IsGameWorld())
+void UGameClockSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem OnWorldBeginPlay"));
+
+	if (!OnWorldBeginTearDownHandle.IsValid())
 	{
 		FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UGameClockSubsystem::HandleWorldBeginTearDown);
 	}

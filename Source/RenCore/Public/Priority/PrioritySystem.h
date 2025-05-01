@@ -27,11 +27,13 @@ public:
 	UFUNCTION()
 	virtual void RemoveItem(int Priority);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	int GetHighestPriority() const;
 
 protected:
 
+	// TODO
+	// Will be removed
 	UPROPERTY(BlueprintReadOnly)
 	FInstancedStruct ActiveItem;
 
@@ -46,6 +48,20 @@ protected:
 
 	UFUNCTION()
 	virtual void HandleItemChanged(const FInstancedStruct& Item);
+
+public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemAdded, const FInstancedStruct&, Item);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnItemAdded OnItemAdded;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemoved, const FInstancedStruct&, Item);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnItemRemoved OnItemRemoved;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemChanged, const FInstancedStruct&, Item);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnItemChanged OnItemChanged;
 
 };
 
