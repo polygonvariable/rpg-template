@@ -92,22 +92,6 @@ AEnvironmentActor::AEnvironmentActor()
 
 
 
-void AEnvironmentActor::InitializeEnvironment()
-{
-	//InitializeControllers();
-	//InitializeDayCycle();
-	//RegisterClock();
-}
-
-void AEnvironmentActor::CleanupEnvironment()
-{
-	//CleanupControllers();
-	//CleanupDayCycle();
-	//UnregisterClock();
-}
-
-
-
 void AEnvironmentActor::InitializeDayCycle()
 {
 	if (IsValid(DayCycleTimer))
@@ -136,7 +120,7 @@ void AEnvironmentActor::CleanupDayCycle()
 		return;
 	}
 
-	DayCycleTimer->StopTimer();
+	DayCycleTimer->StopTimer(true);
 	DayCycleTimer->OnTick.RemoveAll(this);
 	DayCycleTimer->MarkAsGarbage();
 	
@@ -151,8 +135,7 @@ void AEnvironmentActor::StartDayCycle()
 		LOG_ERROR(LogTemp, "DayCycleTimer or GameClockSubsystem is not valid");
 		return;
 	}
-
-	DayCycleTimer->OnTick.AddDynamic(this, &AEnvironmentActor::HandleDayCycleTick);
+	
 	DayCycleTimer->StartTimer(0.1f, 0);
 }
 
@@ -232,13 +215,19 @@ void AEnvironmentActor::CleanupControllers()
 
 void AEnvironmentActor::BeginPlay()
 {
-	//InitializeEnvironment();
+	//InitializeControllers();
+	//InitializeDayCycle();
+	//RegisterClock();
+
 	Super::BeginPlay();
 }
 
 void AEnvironmentActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	//CleanupEnvironment();
+	//CleanupControllers();
+	//CleanupDayCycle();
+	//UnregisterClock();
+
 	Super::EndPlay(EndPlayReason);
 }
 

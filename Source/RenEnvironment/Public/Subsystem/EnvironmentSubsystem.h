@@ -5,7 +5,6 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "Blueprint/UserWidget.h"
 
 // Project Headers
 #include "RenEnvironment/Public/Profile/EnvironmentProfile.h"

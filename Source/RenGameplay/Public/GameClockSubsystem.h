@@ -33,10 +33,10 @@ public:
 
 
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void StartClock();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void StopClock();
 
 
@@ -89,6 +89,14 @@ protected:
 
 	UPROPERTY()
 	float LastTickAt = 0.0f;
+
+
+
+	UFUNCTION()
+	void InitializeClock();
+
+	UFUNCTION()
+	void CleanupClock();
 
 
 

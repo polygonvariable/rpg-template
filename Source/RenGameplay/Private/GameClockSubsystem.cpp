@@ -13,9 +13,9 @@
 #include "RenStorage/Public/StorageSubsystem.h"
 
 
-void UGameClockSubsystem::StartClock()
+void UGameClockSubsystem::InitializeClock()
 {
-	if(IsValid(ClockTimer))
+	if (IsValid(ClockTimer))
 	{
 		LOG_WARNING(LogClockSubsystem, TEXT("ClockTimer is already valid"));
 		return;
@@ -27,11 +27,37 @@ void UGameClockSubsystem::StartClock()
 		LOG_ERROR(LogClockSubsystem, TEXT("Failed to create ClockTimer"));
 		return;
 	}
+
 	ClockTimer->OnTick.AddDynamic(this, &UGameClockSubsystem::HandleClockTick);
+
+	LOG_INFO(LogClockSubsystem, TEXT("ClockTimer created"));
+}
+
+void UGameClockSubsystem::CleanupClock()
+{
+	if (!IsValid(ClockTimer))
+	{
+		LOG_ERROR(LogClockSubsystem, TEXT("ClockTimer is not valid"));
+		return;
+	}
+
+	ClockTimer->StopTimer(true);
+	ClockTimer->OnTick.RemoveAll(this);
+	ClockTimer->MarkAsGarbage();
+
+	LOG_INFO(LogClockSubsystem, TEXT("ClockTimer removed"));
+}
+
+void UGameClockSubsystem::StartClock()
+{
+	if(!IsValid(ClockTimer))
+	{
+		LOG_ERROR(LogClockSubsystem, TEXT("ClockTimer is not valid"));
+		return;
+	}
+
 	ClockTimer->StartTimer(1.0f, 0);
 	OnClockStarted.Broadcast();
-
-	LOG_INFO(LogClockSubsystem, TEXT("ClockTimer created & started"));
 }
 
 void UGameClockSubsystem::StopClock()
@@ -41,6 +67,7 @@ void UGameClockSubsystem::StopClock()
 		LOG_ERROR(LogClockSubsystem, TEXT("ClockTimer is not valid"));
 		return;
 	}
+
 	ClockTimer->StopTimer();
 	OnClockStopped.Broadcast();
 }
@@ -189,7 +216,11 @@ void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		LoadWorldTime();
 	}
 
-	if (bAutoStart) StartClock();
+	InitializeClock();
+
+	if (bAutoStart) {
+		StartClock();
+	}
 }
 
 void UGameClockSubsystem::Deinitialize()
@@ -199,12 +230,7 @@ void UGameClockSubsystem::Deinitialize()
 		FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
 	}
 
-	if (IsValid(ClockTimer))
-	{
-		ClockTimer->StopTimer();
-		ClockTimer->OnTick.RemoveAll(this);
-		ClockTimer->MarkAsGarbage();
-	}
+	CleanupClock();
 
 	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem deinitialized"));
 	Super::Deinitialize();

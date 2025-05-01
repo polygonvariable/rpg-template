@@ -20,25 +20,28 @@ class RENCORE_API UTimer : public UObject
 
 public:
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void StartTimer(const float InTickInterval = 1.0f, const int InTickLimit = 10, const bool bPreserveTime = false);
 	
-
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void StopTimer(bool bInvalidate = false);
-	
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
+	void PauseTimer();
+
+	UFUNCTION()
+	void UnPauseTimer();
+	
+	UFUNCTION()
 	void RestartTimer(const float InTickInterval = 1.0f, const int InTickLimit = 10);
+
 
 
 	UFUNCTION()
 	void SetTickInterval(const float InTickInterval = 1.0f);
 
-
 	UFUNCTION()
 	const bool bIsActive();
-
 
 	UFUNCTION()
 	const float GetNormalizedAlpha();
@@ -49,20 +52,19 @@ protected:
 	FTimerHandle TimerHandle;
 
 
+
 	UPROPERTY()
 	int TickLimit = 0;
-
 
 	UPROPERTY()
 	float TickInterval = 0.0f;
 
-
 	UPROPERTY()
 	int TickCount = 0;
 
-
 	UPROPERTY()
 	float Time = 0.0f;
+
 
 
 	UFUNCTION()
@@ -74,11 +76,9 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnStarted OnStarted;
 
-
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTick, float, CurrentTime);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnTick OnTick;
-
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCompleted);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)

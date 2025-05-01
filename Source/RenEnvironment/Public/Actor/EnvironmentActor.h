@@ -45,25 +45,25 @@ public:
 
 
 
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<USceneComponent> SceneComponent;
 
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<USkyLightComponent> SkyLight;
 
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<USkyAtmosphereComponent> SkyAtmosphere;
 
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFog;
 
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<UOrbitalLightComponent> Sun;
 
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<UOrbitalLightComponent> Moon;
 
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> SkyMesh;
 
 
@@ -75,14 +75,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UTimer> DayCycleTimer;
-
-
-
-	UFUNCTION(BlueprintCallable)
-	void InitializeEnvironment();
-
-	UFUNCTION(BlueprintCallable)
-	void CleanupEnvironment();
 
 
 

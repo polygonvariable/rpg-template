@@ -50,6 +50,30 @@ void UTimer::StopTimer(bool bInvalidate)
 	}
 }
 
+void UTimer::PauseTimer()
+{
+	if (UWorld* World = GetWorld())
+	{
+		FTimerManager& TimerManager = World->GetTimerManager();
+		if (TimerManager.IsTimerActive(TimerHandle))
+		{
+			TimerManager.PauseTimer(TimerHandle);
+		}
+	}
+}
+
+void UTimer::UnPauseTimer()
+{
+	if (UWorld* World = GetWorld())
+	{
+		FTimerManager& TimerManager = World->GetTimerManager();
+		if (TimerManager.IsTimerPaused(TimerHandle))
+		{
+			TimerManager.UnPauseTimer(TimerHandle);
+		}
+	}
+}
+
 
 void UTimer::RestartTimer(const float InTickInterval, const int InTickLimit)
 {
