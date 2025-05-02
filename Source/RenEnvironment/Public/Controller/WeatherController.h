@@ -19,7 +19,7 @@ class UMaterialParameterCollectionInstance;
  * 
  */
 UCLASS()
-class UWeatherController : public UPrioritySystem
+class UWeatherController : public UObjectPrioritySystem
 {
 
 	GENERATED_BODY()
@@ -30,6 +30,8 @@ public:
 
 protected:
 
+	FName CurrentWeather;
+
 	UMaterialParameterCollectionInstance* MaterialCollectionInstance;
 
 	void HandleScalarTransition(FName ParameterName, float Target, float Alpha);
@@ -37,7 +39,7 @@ protected:
 
 protected:
 
-	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
+	virtual void HandleItemChanged(UObject* Item) override;
 
 };
 

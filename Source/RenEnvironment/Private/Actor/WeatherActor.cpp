@@ -12,43 +12,85 @@
 #include "RenCore/Public/Priority/PrioritySystem.h"
 #include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Library/MiscLibrary.h"
 #include "RenEnvironment/Public/Controller/WeatherController.h"
+#include "RenEnvironment/Public/Subsystem/WeatherSubsystem.h"
+#include "RenEnvironment/Public/Asset/WeatherAsset.h"
 
 
 
-void AWeatherActor::SetWeather(FWeatherProfile Weather)
+void AWeatherActor::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
 {
-	if (WeatherController)
+	if (IsValid(WeatherSubsystem))
 	{
-		WeatherController->AddItem(FInstancedStruct::Make(Weather), Weather.Priority);
+		WeatherSubsystem->AddWeather(WeatherAsset, Priority);
 	}
 }
 
-void AWeatherActor::ResetWeather(FWeatherProfile Weather)
+void AWeatherActor::RemoveWeather(int Priority)
 {
-	if (WeatherController)
+	if (IsValid(WeatherSubsystem))
 	{
-		WeatherController->RemoveItem(Weather.Priority);
+		WeatherSubsystem->RemoveWeather(Priority);
 	}
+}
+
+
+
+FString AWeatherActor::Roll(const TMap<int, FString>& Items)
+{
+    TArray<TPair<int32, FString>> Entries;
+    int32 TotalWeight = 0;
+
+    for (const TPair<int32, FString>& Pair : Items)
+    {
+        Entries.Add(Pair);
+        TotalWeight += Pair.Key;
+    }
+
+    if (TotalWeight == 0 || Entries.Num() == 0)
+    {
+        return TEXT("");
+    }
+
+    int32 RandomWeight = FMath::RandRange(1, TotalWeight);
+    int32 Cumulative = 0;
+
+    for (const TPair<int32, FString>& Entry : Entries)
+    {
+        Cumulative += Entry.Key;
+        if (RandomWeight <= Cumulative)
+        {
+            return Entry.Value;
+        }
+    }
+
+    return TEXT("");
+}
+
+void AWeatherActor::HandleWeatherCanChange()
+{
+
 }
 
 
 void AWeatherActor::BeginPlay()
 {
-	if (WeatherMaterialCollection)
-	{
-		WeatherController = NewObject<UWeatherController>(this);
-		if (WeatherController)
-		{
-			WeatherController->SetMaterialCollection(WeatherMaterialCollection);
-		}
-	}
-
 	Super::BeginPlay();
+
+	WeatherSubsystem = GetWorld()->GetSubsystem<UWeatherSubsystem>();
+	if (IsValid(WeatherSubsystem))
+	{
+		WeatherSubsystem->OnWeatherCanChange.AddDynamic(this, &AWeatherActor::HandleWeatherCanChange);
+	}
 }
 
 void AWeatherActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	if (IsValid(WeatherSubsystem))
+	{
+		WeatherSubsystem->OnWeatherCanChange.RemoveAll(this);
+	}
 	Super::EndPlay(EndPlayReason);
 }
 

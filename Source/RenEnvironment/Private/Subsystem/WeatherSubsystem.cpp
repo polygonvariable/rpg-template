@@ -8,67 +8,64 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
+#include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Priority/PrioritySystem.h"
+#include "RenEnvironment/Public/Controller/WeatherController.h"
+#include "RenEnvironment/Public/Asset/WeatherAsset.h"
 
 
 
-void UWeatherSubsystem::AddWeather(FWeatherProfile WeatherProfile)
+void UWeatherSubsystem::SetMaterialCollection(UMaterialParameterCollection* MaterialCollection)
 {
-	if (IsValid(WeatherPriority))
+	if (!MaterialCollection || !IsValid(WeatherController))
 	{
-		WeatherPriority->AddItem(FInstancedStruct::Make(WeatherProfile), WeatherProfile.Priority);
-	}
-}
-
-void UWeatherSubsystem::RemoveWeather(FWeatherProfile WeatherProfile)
-{
-	if (IsValid(WeatherPriority))
-	{
-		WeatherPriority->RemoveItem(WeatherProfile.Priority);
-	}
-}
-
-
-
-void UWeatherSubsystem::HandleWeatherChanged(const FInstancedStruct& Item)
-{
-	if (!Item.IsValid() || !MaterialCollectionInstance)
-	{
-		LOG_ERROR(LogTemp, TEXT("Item or MaterialCollection is invalid"));
+		LOG_ERROR(LogTemp, TEXT("MaterialCollection or WeatherController is invalid"));
 		return;
 	}
+	WeatherController->SetMaterialCollection(MaterialCollection);
+}
 
-	if (const FWeatherProfile* WeatherProfile = Item.GetPtr<FWeatherProfile>())
+
+
+void UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
+{
+	if (IsValid(WeatherController))
 	{
-		HandleScalarTransition(TEXT("WeatherAlpha"), WeatherProfile->Alpha, 1.0f);
-		HandleScalarTransition(TEXT("WeatherSpecular"), WeatherProfile->Specular, 1.0f);
-		HandleScalarTransition(TEXT("WeatherRoughness"), WeatherProfile->Roughness, 1.0f);
-		HandleScalarTransition(TEXT("WeatherOpacity"), WeatherProfile->Opacity, 1.0f);
-		HandleColorTransition(TEXT("WeatherColor"), WeatherProfile->Color, 1.0f);
+		WeatherController->AddItem(WeatherAsset, Priority);
 	}
 }
 
-void UWeatherSubsystem::HandleScalarTransition(FName ParameterName, float Target, float Alpha)
+void UWeatherSubsystem::RemoveWeather(int Priority)
 {
-	if (!MaterialCollectionInstance) return;
-
-	float Current = 0.0f;
-	if (MaterialCollectionInstance->GetScalarParameterValue(ParameterName, Current))
+	if (IsValid(WeatherController))
 	{
-		MaterialCollectionInstance->SetScalarParameterValue(ParameterName, FMath::Lerp(Current, Target, Alpha));
+		WeatherController->RemoveItem(Priority);
 	}
 }
 
-void UWeatherSubsystem::HandleColorTransition(FName ParameterName, const FLinearColor& Target, float Alpha)
-{
-	if (!MaterialCollectionInstance) return;
 
-	FLinearColor Current = FLinearColor::Transparent;
-	if (MaterialCollectionInstance->GetVectorParameterValue(ParameterName, Current))
+
+void UWeatherSubsystem::InitializeWeatherTimer(bool bAutoStart)
+{
+	if (!IsValid(WeatherTimer))
 	{
-		MaterialCollectionInstance->SetVectorParameterValue(ParameterName, FMath::CInterpTo(Current, Target, Alpha, 1.0f));
+		WeatherTimer = NewObject<UTimer>(this);
+		if (!IsValid(WeatherTimer))
+		{
+			LOG_ERROR(LogTemp, "Failed to create weather timer");
+			return;
+		}
+		WeatherTimer->OnTick.AddDynamic(this, &UWeatherSubsystem::HandleWeatherTimer);
 	}
+
+	if (bAutoStart) WeatherTimer->StartTimer(5.0f, 0, false);
+}
+
+void UWeatherSubsystem::HandleWeatherTimer(float CurrentTime)
+{
+	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weather can change"));
+	OnWeatherCanChange.Broadcast();
 }
 
 
@@ -86,25 +83,31 @@ void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UWeatherSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
+	Super::OnWorldBeginPlay(InWorld);
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem begin play"));
 
-	WeatherPriority = NewObject<UPrioritySystem>(this);
-	if (!IsValid(WeatherPriority))
+	WeatherController = NewObject<UWeatherController>(this);
+	if (!IsValid(WeatherController))
 	{
 		LOG_ERROR(LogTemp, "Failed to create Weather Controller");
 		return;
 	}
-	WeatherPriority->OnItemChanged.AddDynamic(this, &UWeatherSubsystem::HandleWeatherChanged);
 
-	// MaterialCollectionInstance = GetWorld()->GetParameterCollectionInstance(MaterialCollection);
+	InitializeWeatherTimer(true);
 }
 
 void UWeatherSubsystem::Deinitialize()
 {
-	if(IsValid(WeatherPriority))
+	if (IsValid(WeatherController))
 	{
-		WeatherPriority->OnItemChanged.RemoveAll(this);
-		WeatherPriority->MarkAsGarbage();
+		WeatherController->MarkAsGarbage();
+	}
+
+	if (IsValid(WeatherTimer))
+	{
+		WeatherTimer->StopTimer(false);
+		WeatherTimer->OnTick.RemoveAll(this);
+		WeatherTimer->MarkAsGarbage();
 	}
 
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem deinitialized"));

@@ -49,19 +49,49 @@ protected:
 	UFUNCTION()
 	virtual void HandleItemChanged(const FInstancedStruct& Item);
 
+};
+
+
+/**
+ *
+ */
+UCLASS()
+class RENCORE_API UObjectPrioritySystem : public UObject
+{
+
+	GENERATED_BODY()
+
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemAdded, const FInstancedStruct&, Item);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnItemAdded OnItemAdded;
+	UFUNCTION()
+	virtual void AddItem(UObject* Item, int Priority);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemoved, const FInstancedStruct&, Item);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnItemRemoved OnItemRemoved;
+	UFUNCTION()
+	virtual void RemoveItem(int Priority);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemChanged, const FInstancedStruct&, Item);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnItemChanged OnItemChanged;
+
+
+	UFUNCTION()
+	int GetHighestPriority() const;
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	TMap<int, UObject*> Items;
+
+
+
+	UFUNCTION()
+	virtual void HandleItemAdded(UObject* Item);
+
+	UFUNCTION()
+	virtual void HandleItemRemoved(UObject* Item);
+
+	UFUNCTION()
+	virtual void HandleItemChanged(UObject* Item);
+
+	UFUNCTION()
+	virtual void HandleNoItemsLeft();
 
 };
 

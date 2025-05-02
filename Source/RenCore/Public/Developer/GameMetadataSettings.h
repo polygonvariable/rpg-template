@@ -5,6 +5,7 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
+#include "Engine/DataAsset.h"
 
 // Project Headers
 #include "Common/RenSaveGame.h"
@@ -43,6 +44,10 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Inventory")
 	TSoftObjectPtr<UDataTable> InventoryTable;
+
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Default")
+	TSoftObjectPtr<UDataAsset> EnvironmentAsset;
 
 
 	//UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Weather")

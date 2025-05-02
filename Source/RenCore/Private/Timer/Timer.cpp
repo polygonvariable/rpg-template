@@ -28,8 +28,7 @@ void UTimer::StartTimer(const float InTickInterval, const int InTickLimit, const
 		TimerManager.ClearTimer(TimerHandle);
 
 		//bool bShouldLoop = TickLimit <= 0;
-		bool bShouldLoop = true;
-		TimerManager.SetTimer(TimerHandle, this, &UTimer::HandleTick, TickInterval, FTimerManagerTimerParameters{ .bLoop = bShouldLoop, .bMaxOncePerFrame = true });
+		TimerManager.SetTimer(TimerHandle, this, &UTimer::HandleTick, TickInterval, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
 		
 		OnStarted.Broadcast();
 	}

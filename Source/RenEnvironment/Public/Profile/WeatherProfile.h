@@ -36,8 +36,5 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FColor Color = FColor::White;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Priority = -1;
-
 };
 

@@ -12,7 +12,10 @@
 
 void ARegionActor::BeginPlay()
 {
-	GetSubsystemReference<UEnvironmentSubsystem>(GetWorld(), EnvironmentSubsystem);
+	if (UWorld* World = GetWorld())
+	{
+		EnvironmentSubsystem = World->GetSubsystem<UEnvironmentSubsystem>();
+	}
 	Super::BeginPlay();
 }
 

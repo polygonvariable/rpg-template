@@ -17,6 +17,8 @@ class UTimer;
 class UPrioritySystem;
 class UMaterialParameterCollectionInstance;
 class UWeatherController;
+class UWeatherSubsystem;
+class UWeatherAsset;
 
 
 /**
@@ -30,22 +32,33 @@ class AWeatherActor : public AActor
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterialParameterCollection* WeatherMaterialCollection;
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UWeatherSubsystem> WeatherSubsystem;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UWeatherController> WeatherController;
+	/**
+	* TMap of weights to weather profiles
+	* TMap<int = Weight, FWeatherProfile = Weather Profile>
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, FString> WeatherCollection;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FWeatherProfile WeatherProfile;
+
+
+	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
+	void AddWeather(UWeatherAsset* WeatherAsset, int Priority);
+
+	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
+	void RemoveWeather(int Priority);
+
+
+
+	UFUNCTION()
+	void HandleWeatherCanChange();
 
 
 
 	UFUNCTION(BlueprintCallable)
-	void SetWeather(FWeatherProfile Weather);
-
-	UFUNCTION(BlueprintCallable)
-	void ResetWeather(FWeatherProfile Weather);
+	FString Roll(const TMap<int, FString>& Items);
 
 protected:
 

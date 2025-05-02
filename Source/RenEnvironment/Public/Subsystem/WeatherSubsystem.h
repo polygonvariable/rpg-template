@@ -14,7 +14,9 @@
 #include "WeatherSubsystem.generated.h"
 
 // Forward Declarations
+class UTimer;
 class UPrioritySystem;
+class UWeatherController;
 class UMaterialParameterCollectionInstance;
 
 
@@ -29,12 +31,17 @@ class UWeatherSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 public:
-	
-	UFUNCTION(BlueprintCallable)
-	void AddWeather(FWeatherProfile WeatherProfile);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveWeather(FWeatherProfile WeatherProfile);
+	void SetMaterialCollection(UMaterialParameterCollection* MaterialCollection);
+
+
+
+	UFUNCTION(BlueprintCallable)
+	void AddWeather(UWeatherAsset* WeatherAsset, int Priority);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveWeather(int Priority);
 
 protected:
 
@@ -43,16 +50,18 @@ protected:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UPrioritySystem> WeatherPriority;
+	TObjectPtr<UTimer> WeatherTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UWeatherController> WeatherController;
 
 
 
 	UFUNCTION()
-	void HandleWeatherChanged(const FInstancedStruct& Item);
+	void InitializeWeatherTimer(bool bAutoStart = false);
 
-	void HandleScalarTransition(FName ParameterName, float Target, float Alpha);
-
-	void HandleColorTransition(FName ParameterName, const FLinearColor& Target, float Alpha);
+	UFUNCTION()
+	void HandleWeatherTimer(float CurrentTime);
 
 protected:
 
@@ -60,6 +69,12 @@ protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
+
+public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeatherCanChange);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnWeatherCanChange OnWeatherCanChange;
 
 };
 
