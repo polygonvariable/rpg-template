@@ -12,6 +12,7 @@
 // Forward Declarations
 class UTimer;
 class UStorage;
+class UGameClockAsset;
 
 
 /**
@@ -28,8 +29,13 @@ public:
 	UPROPERTY()
 	bool bAutoStart = true;
 
+
+
 	UPROPERTY()
 	float TotalSecondsInADay = 60.0f; // Total time of a day in game
+
+	UPROPERTY()
+	int TotalDaysInAYear = 30; // Total days in game to complete a year
 
 
 
@@ -42,24 +48,24 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	float GetTimeOfTheDay() const;
+	float GetCurrentTime() const;
 
 	UFUNCTION(BlueprintPure)
-	FString GetFormattedTimeOfDay(const FString& Format = TEXT("hh:mm:ss ap")) const;
+	FString GetFormattedTime(const FString& Format = TEXT("hh:mm:ss ap")) const;
 
 	UFUNCTION(BlueprintPure)
-	float GetNormalizedTimeOfDay() const;
+	float GetNormalizedTime() const;
 
 	UFUNCTION(BlueprintCallable)
-	float GetSmoothNormalizedTimeOfDay() const;
+	float GetSmoothNormalizedTime() const;
 
 	UFUNCTION(BlueprintPure)
-	float GetSimulatedRealTimeOfDay() const;
+	float GetSimulatedRealTime() const;
 
 
 
 	UFUNCTION(BlueprintCallable)
-	int GetDay() const;
+	int GetCurrentDay() const;
 
 	UFUNCTION(BlueprintPure)
 	bool IsDay() const;
@@ -82,10 +88,10 @@ protected:
 
 
 	UPROPERTY()
-	int DayCount = 0;
+	int CurrentDay = 0;
 
 	UPROPERTY()
-	float TimeOfTheDay = 0.0f; // Clamped from 0 and TotalSecondsInADay
+	float CurrentTime = 0.0f; // Clamped from 0 and TotalSecondsInADay
 
 	UPROPERTY()
 	float LastTickAt = 0.0f;
@@ -109,7 +115,7 @@ protected:
 
 
 	UFUNCTION()
-	void HandleClockTick(float CurrentTime);
+	void HandleClockTick(float ElapsedTime);
 
 	UFUNCTION()
 	void HandleWorldBeginTearDown(UWorld* World);
@@ -130,6 +136,8 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTimeChanged, float, Time);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnTimeChanged OnTimeChanged;
+
+
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClockStarted);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)

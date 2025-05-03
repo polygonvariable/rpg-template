@@ -24,17 +24,25 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool bAutoStart = false;
 
-	/*
-		* Total seconds taken to complete a day
-	*/
-	UPROPERTY(EditAnywhere)
-	int TotalSecondsInADay = 60;
-
 	UPROPERTY(EditAnywhere)
 	bool bSeparateTimePerLevel = false;
 
 	UPROPERTY(EditAnywhere)
 	TSet<FName> AllowedLevels;
+
+
+
+	/**
+	* Total seconds taken to complete a day
+	*/
+	UPROPERTY(EditAnywhere, Meta = (UIMin = "0", ClampMin = "0"))
+	int TotalSecondsInADay = 60;
+
+	/**
+	* Total days in game to complete a year
+	*/
+	UPROPERTY(EditAnywhere, Meta = (UIMin = "1", ClampMin = "1"))
+	int TotalDaysInAYear = 30;
 
 };
 

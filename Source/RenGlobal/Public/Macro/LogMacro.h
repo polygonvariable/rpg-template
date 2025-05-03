@@ -29,8 +29,9 @@ RENGLOBAL_API DECLARE_LOG_CATEGORY_EXTERN(LogInventoryWidget, Log, All);
     { \
         const FString __InternalName__ = this->GetClass()->GetName(); \
         const FString __InternalMessage__ = FString::Printf(TEXT("[%s::%s] " Text), *__InternalName__, *FString(__FUNCTION__), ##__VA_ARGS__); \
+        const FString __PrintMessage__ = FString::Printf(Text, ##__VA_ARGS__); \
         UE_LOG(Category, Verbosity, TEXT("%s"), *__InternalMessage__) \
-        REN_PRINT(Text, Time, Color) \
+        REN_PRINT(__PrintMessage__, Time, Color) \
     }
 
 

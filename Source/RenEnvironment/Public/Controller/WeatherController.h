@@ -13,7 +13,7 @@
 
 // Forward Declarations
 class UMaterialParameterCollectionInstance;
-
+class UWeatherAsset;
 
 /**
  * 
@@ -30,9 +30,18 @@ public:
 
 protected:
 
-	FName CurrentWeather;
-
 	UMaterialParameterCollectionInstance* MaterialCollectionInstance;
+
+
+
+	UPROPERTY(BlueprintReadOnly)
+	FName CurrentWeatherName = NAME_None;
+
+
+	UPROPERTY(BlueprintReadOnly)
+	UWeatherAsset* CurrentWeatherAsset;
+
+
 
 	void HandleScalarTransition(FName ParameterName, float Target, float Alpha);
 	void HandleVectorTransition(FName ParameterName, const FLinearColor& Target, float Alpha);
@@ -40,6 +49,7 @@ protected:
 protected:
 
 	virtual void HandleItemChanged(UObject* Item) override;
+	virtual void HandleNoItemsLeft() override;
 
 };
 

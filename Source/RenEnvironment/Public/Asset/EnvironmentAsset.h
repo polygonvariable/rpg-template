@@ -11,6 +11,8 @@
 
 // Forward Declarations
 class UWeatherAsset;
+class USeasonAsset;
+
 
 
 /**
@@ -25,10 +27,24 @@ class UEnvironmentAsset : public UPrimaryDataAsset
 public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    bool bEnableWeather = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
     UWeatherAsset* DefaultWeather;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSet<UWeatherAsset*> WeatherAssets;
+    TObjectPtr<UMaterialParameterCollection> WeatherMaterialParameter;
+
+
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    bool bEnableSeason = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TArray<USeasonAsset*> DefaultSeasons;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<UMaterialParameterCollection> SeasonMaterialParameter;
 
 };
 

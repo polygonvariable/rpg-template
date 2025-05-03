@@ -152,7 +152,7 @@ void AEnvironmentActor::StopDayCycle()
 
 void AEnvironmentActor::HandleDayCycleTick(float CurrentTime)
 {
-	float NormalizedTime = GameClockSubsystem->GetSmoothNormalizedTimeOfDay();
+	float NormalizedTime = GameClockSubsystem->GetSmoothNormalizedTime();
 	float RealTime = NormalizedTime * 24.0f;
 
 	if (IsValid(Sun)) Sun->SetTime(RealTime);

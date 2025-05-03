@@ -11,22 +11,24 @@
 #include "RenEnvironment/Public/Profile/WeatherProfile.h"
 
 // Generated Headers
-#include "WeatherSubsystem.generated.h"
+#include "SeasonSubsystem.generated.h"
 
 // Forward Declarations
 class UTimer;
 class UPrioritySystem;
 class UWeatherController;
 class UMaterialParameterCollectionInstance;
+class USeasonAsset;
+class UGameClockSubsystem;
+class UGameClockAsset;
 class UEnvironmentAsset;
-
 
 
 /**
  *
  */
 UCLASS(Blueprintable)
-class UWeatherSubsystem : public UWorldSubsystem
+class USeasonSubsystem : public UWorldSubsystem
 {
 
 	GENERATED_BODY()
@@ -34,40 +36,39 @@ class UWeatherSubsystem : public UWorldSubsystem
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void AddWeather(UWeatherAsset* WeatherAsset, int Priority);
+	void InitializeSeason();
+
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveWeather(int Priority);
+	void UpdateDay(int CurrentDay);
+
+
+	UFUNCTION()
+	USeasonAsset* GetSeasonAlpha(int CurrentDay, int TotalDays, float& Alpha, float& CurveAlpha) const;
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UTimer> WeatherTimer;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UWeatherController> WeatherController;
+	UMaterialParameterCollectionInstance* SeasonCollectionInstance;
 
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
+	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UGameClockAsset> GameClockAsset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UEnvironmentAsset> EnvironmentAsset;
 
 
 
 	UFUNCTION()
-	void CreateWeatherTimer();
+	bool IsSeasonsValid() const;
 
 	UFUNCTION()
-	void HandleWeatherTimer(float ElapsedTime);
-
-
-
-	UFUNCTION()
-	bool CreateWeatherController();
-
-	UFUNCTION()
-	void CreateWeatherMaterialCollection();
-
+	void HandleDayChange(int CurrentDay);
 
 protected:
 
@@ -75,12 +76,7 @@ protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
-
-public:
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeatherCanChange);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnWeatherCanChange OnWeatherCanChange;
+	virtual void PostInitialize() override;
 
 };
 

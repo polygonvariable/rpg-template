@@ -18,7 +18,7 @@ void UTimer::StartTimer(const float InTickInterval, const int InTickLimit, const
 
 	if (!bPreserveTime)
 	{
-		Time = 0.0f;
+		ElapsedTime = 0.0f;
 		TickCount = 0;
 	}
 
@@ -42,7 +42,7 @@ void UTimer::StopTimer(bool bInvalidate)
 		World->GetTimerManager().ClearTimer(TimerHandle);
 		if (bInvalidate) TimerHandle.Invalidate();
 
-		Time = 0.0f;
+		ElapsedTime = 0.0f;
 		TickCount = 0;
 
 		OnCompleted.Broadcast();
@@ -105,15 +105,15 @@ const float UTimer::GetNormalizedAlpha()
 		return 0.0f;
 	}
 	const float TotalTime = TickLimit * TickInterval;
-	return FMath::Clamp(Time / TotalTime, 0.0f, 1.0f);
+	return FMath::Clamp(ElapsedTime / TotalTime, 0.0f, 1.0f);
 }
 
 void UTimer::HandleTick()
 {
-	Time += TickInterval;
+	ElapsedTime += TickInterval;
 	TickCount++;
 
-	OnTick.Broadcast(Time);
+	OnTick.Broadcast(ElapsedTime);
 
 	if (TickLimit > 0 && TickCount >= TickLimit)
 	{

@@ -63,7 +63,7 @@ protected:
 	int TickCount = 0;
 
 	UPROPERTY()
-	float Time = 0.0f;
+	float ElapsedTime = 0.0f;
 
 
 
@@ -76,7 +76,7 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnStarted OnStarted;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTick, float, CurrentTime);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTick, float, ElapsedTime);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnTick OnTick;
 

@@ -4,13 +4,16 @@
 #include "GameClockSubsystem.h"
 
 // Project Headers
+#include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Timer/Timer.h"
+#include "RenCore/Public/Asset/GameClockAsset.h"
 #include "RenGlobal/Public/Library/MiscLibrary.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenGlobal/Public/Record/ClockRecord.h"
 
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
+
 
 
 void UGameClockSubsystem::InitializeClock()
@@ -48,6 +51,8 @@ void UGameClockSubsystem::CleanupClock()
 	LOG_INFO(LogClockSubsystem, TEXT("ClockTimer removed"));
 }
 
+
+
 void UGameClockSubsystem::StartClock()
 {
 	if(!IsValid(ClockTimer))
@@ -72,14 +77,16 @@ void UGameClockSubsystem::StopClock()
 	OnClockStopped.Broadcast();
 }
 
-float UGameClockSubsystem::GetTimeOfTheDay() const
+
+
+float UGameClockSubsystem::GetCurrentTime() const
 {
-	return TimeOfTheDay;
+	return FMath::Clamp(CurrentTime, 0.0f, TotalSecondsInADay);
 }
 
-FString UGameClockSubsystem::GetFormattedTimeOfDay(const FString& Format) const
+FString UGameClockSubsystem::GetFormattedTime(const FString& Format) const
 {
-	int32 TotalSeconds = FMath::FloorToInt(TimeOfTheDay);
+	int32 TotalSeconds = FMath::FloorToInt(GetCurrentTime());
 	int32 Hours = TotalSeconds / 3600;
 	int32 Minutes = (TotalSeconds % 3600) / 60;
 	int32 Seconds = TotalSeconds % 60;
@@ -90,42 +97,42 @@ FString UGameClockSubsystem::GetFormattedTimeOfDay(const FString& Format) const
 	Result = Result.Replace(TEXT("hh"), *FString::Printf(TEXT("%02d"), Hours));
 	Result = Result.Replace(TEXT("mm"), *FString::Printf(TEXT("%02d"), Minutes));
 	Result = Result.Replace(TEXT("ss"), *FString::Printf(TEXT("%02d"), Seconds));
-	Result = Result.Replace(TEXT("dd"), *FString::Printf(TEXT("%02d"), DayCount));
+	Result = Result.Replace(TEXT("dd"), *FString::Printf(TEXT("%02d"), GetCurrentDay()));
 	Result = Result.Replace(TEXT("ap"), *AmPm);
 
 	return Result;
 }
 
-float UGameClockSubsystem::GetNormalizedTimeOfDay() const
+float UGameClockSubsystem::GetNormalizedTime() const
 {
-	return FMath::Clamp(TimeOfTheDay / TotalSecondsInADay, 0.0f, 1.0f);
+	return FMath::Clamp(GetCurrentTime() / TotalSecondsInADay, 0.0f, 1.0f);
 }
 
-float UGameClockSubsystem::GetSmoothNormalizedTimeOfDay() const
+float UGameClockSubsystem::GetSmoothNormalizedTime() const
 {
 	float CurrentSeconds = GetWorld()->GetTimeSeconds();
 	float ElapsedSinceTick = CurrentSeconds - LastTickAt;
-	float SmoothTime = TimeOfTheDay + ElapsedSinceTick;
+	float SmoothTime = GetCurrentTime() + ElapsedSinceTick;
 
 	if (SmoothTime >= TotalSecondsInADay) SmoothTime -= TotalSecondsInADay;
 
 	return FMath::Clamp(SmoothTime / TotalSecondsInADay, 0.0f, 1.0f);
 }
 
-float UGameClockSubsystem::GetSimulatedRealTimeOfDay() const
+float UGameClockSubsystem::GetSimulatedRealTime() const
 {
-	return FMath::GetMappedRangeValueClamped(TRange<float>(0.0f, TotalSecondsInADay), TRange<float>(0.0f, 24.0f), TimeOfTheDay);
+	return FMath::GetMappedRangeValueClamped(TRange<float>(0.0f, TotalSecondsInADay), TRange<float>(0.0f, 24.0f), GetCurrentTime());
 }
 
 
-int UGameClockSubsystem::GetDay() const
+int UGameClockSubsystem::GetCurrentDay() const
 {
-	return DayCount;
+	return FMath::Clamp(CurrentDay, 1, TotalDaysInAYear);
 }
 
 bool UGameClockSubsystem::IsDay() const
 {
-	float RealHour = GetSimulatedRealTimeOfDay();
+	float RealHour = GetSimulatedRealTime();
 	return RealHour >= 6.0f && RealHour < 18.0f;
 }
 
@@ -146,8 +153,11 @@ void UGameClockSubsystem::LoadWorldTime()
 	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
 	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
 	{
-		TimeOfTheDay = ClockRecord->Time;
-		DayCount = ClockRecord->DayCount;
+		CurrentTime = FMath::Clamp(ClockRecord->Time, 0.0f, TotalSecondsInADay);
+		CurrentDay = FMath::Clamp(ClockRecord->DayCount, 1, TotalDaysInAYear);
+
+		OnDayChanged.Broadcast(CurrentDay);
+		OnTimeChanged.Broadcast(CurrentTime);
 
 		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time loaded"));
 	}
@@ -167,31 +177,36 @@ void UGameClockSubsystem::SaveWorldTime()
 	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
 	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
 	{
-		ClockRecord->Time = TimeOfTheDay;
-		ClockRecord->DayCount = DayCount;
+		ClockRecord->Time = GetCurrentTime();
+		ClockRecord->DayCount = GetCurrentDay();
 
 		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time updated"));
 	}
 	else {
-		Records.Add("DEFAULT", FClockRecord(TimeOfTheDay, DayCount));
+		Records.Add("DEFAULT", FClockRecord(GetCurrentTime(), GetCurrentDay()));
 
 		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time added"));
 	}
 }
 
 
-void UGameClockSubsystem::HandleClockTick(float CurrentTime)
+void UGameClockSubsystem::HandleClockTick(float ElapsedTime)
 {
-	TimeOfTheDay += 1.0f;
-	if (TimeOfTheDay >= TotalSecondsInADay)
+	CurrentTime += 1.0f;
+	if (CurrentTime >= TotalSecondsInADay)
 	{
-		TimeOfTheDay = 0.0f;
-		DayCount++;
-		OnDayChanged.Broadcast(DayCount);
+		CurrentTime = 0.0f;
+
+		CurrentDay++;
+		if (CurrentDay > TotalDaysInAYear)
+		{
+			CurrentDay = 1;
+		}
+		OnDayChanged.Broadcast(CurrentDay);
 	}
 
 	LastTickAt = GetWorld()->GetTimeSeconds();
-	OnTimeChanged.Broadcast(TimeOfTheDay);
+	OnTimeChanged.Broadcast(CurrentTime);
 }
 
 void UGameClockSubsystem::HandleWorldBeginTearDown(UWorld* World)
@@ -210,11 +225,33 @@ void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem initialized"));
+
+
+	if (const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>())
+	{
+		if (GameMetadata->ClockAsset.IsNull())
+		{
+			PRINT_ERROR(LogClockSubsystem, 5.0f, TEXT("ClockAsset is not valid"));
+			return;
+		}
+
+		UGameClockAsset* ClockAsset = Cast<UGameClockAsset>(GameMetadata->ClockAsset.LoadSynchronous());
+		if (!IsValid(ClockAsset))
+		{
+			PRINT_ERROR(LogClockSubsystem, 5.0f, TEXT("ClockAsset cast failed or is not valid"));
+			return;
+		}
+
+		TotalSecondsInADay = ClockAsset->TotalSecondsInADay;
+		TotalDaysInAYear = ClockAsset->TotalDaysInAYear;
+	}
 }
 
 void UGameClockSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
+	Super::OnWorldBeginPlay(InWorld);
 	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem OnWorldBeginPlay"));
+
 
 	if (!OnWorldBeginTearDownHandle.IsValid())
 	{

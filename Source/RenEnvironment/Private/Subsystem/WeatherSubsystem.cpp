@@ -8,29 +8,20 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
+#include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Priority/PrioritySystem.h"
+
 #include "RenEnvironment/Public/Controller/WeatherController.h"
 #include "RenEnvironment/Public/Asset/WeatherAsset.h"
-
-
-
-void UWeatherSubsystem::SetMaterialCollection(UMaterialParameterCollection* MaterialCollection)
-{
-	if (!MaterialCollection || !IsValid(WeatherController))
-	{
-		LOG_ERROR(LogTemp, TEXT("MaterialCollection or WeatherController is invalid"));
-		return;
-	}
-	WeatherController->SetMaterialCollection(MaterialCollection);
-}
+#include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 
 
 
 void UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
 {
-	if (IsValid(WeatherController))
+	if (IsValid(WeatherController) && IsValid(WeatherAsset))
 	{
 		WeatherController->AddItem(WeatherAsset, Priority);
 	}
@@ -46,7 +37,7 @@ void UWeatherSubsystem::RemoveWeather(int Priority)
 
 
 
-void UWeatherSubsystem::InitializeWeatherTimer(bool bAutoStart)
+void UWeatherSubsystem::CreateWeatherTimer()
 {
 	if (!IsValid(WeatherTimer))
 	{
@@ -59,14 +50,43 @@ void UWeatherSubsystem::InitializeWeatherTimer(bool bAutoStart)
 		WeatherTimer->OnTick.AddDynamic(this, &UWeatherSubsystem::HandleWeatherTimer);
 	}
 
-	if (bAutoStart) WeatherTimer->StartTimer(5.0f, 0, false);
+	WeatherTimer->StartTimer(5.0f, 0, false);
 }
 
-void UWeatherSubsystem::HandleWeatherTimer(float CurrentTime)
+void UWeatherSubsystem::HandleWeatherTimer(float ElapsedTime)
 {
 	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weather can change"));
 	OnWeatherCanChange.Broadcast();
 }
+
+bool UWeatherSubsystem::CreateWeatherController()
+{
+	if (IsValid(WeatherController))
+	{
+		LOG_WARNING(LogTemp, "Weather Controller is already valid");
+		return false;
+	}
+
+	WeatherController = NewObject<UWeatherController>(this);
+	if (!IsValid(WeatherController))
+	{
+		LOG_ERROR(LogTemp, "Failed to create Weather Controller");
+		return false;
+	}
+
+	return true;
+}
+
+void UWeatherSubsystem::CreateWeatherMaterialCollection()
+{
+	if (!IsValid(EnvironmentAsset) || !IsValid(WeatherController))
+	{
+		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset or WeatherController is invalid"));
+		return;
+	}
+	WeatherController->SetMaterialCollection(EnvironmentAsset->WeatherMaterialParameter);
+}
+
 
 
 
@@ -79,6 +99,23 @@ void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem initialized"));
+
+
+	if (const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>())
+	{
+		if (GameMetadata->EnvironmentAsset.IsNull())
+		{
+			PRINT_ERROR(LogTemp, 5.0f, TEXT("ClockAsset or EnvironmentAsset is not valid"));
+			return;
+		}
+
+		EnvironmentAsset = Cast<UEnvironmentAsset>(GameMetadata->EnvironmentAsset.LoadSynchronous());
+		if (!IsValid(EnvironmentAsset))
+		{
+			PRINT_ERROR(LogTemp, 5.0f, TEXT("Environment cast failed or is not valid"));
+			return;
+		}
+	}
 }
 
 void UWeatherSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -86,14 +123,11 @@ void UWeatherSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	Super::OnWorldBeginPlay(InWorld);
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem begin play"));
 
-	WeatherController = NewObject<UWeatherController>(this);
-	if (!IsValid(WeatherController))
+	if (CreateWeatherController())
 	{
-		LOG_ERROR(LogTemp, "Failed to create Weather Controller");
-		return;
+		CreateWeatherTimer();
+		CreateWeatherMaterialCollection();
 	}
-
-	InitializeWeatherTimer(true);
 }
 
 void UWeatherSubsystem::Deinitialize()

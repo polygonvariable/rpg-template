@@ -14,7 +14,7 @@
 
 void UGameClockWidget::HandleClockTick(float Time)
 {
-	TimeTextBlock->SetText(FText::FromString(GameClockSubsystem->GetFormattedTimeOfDay(Format)));
+	TimeTextBlock->SetText(FText::FromString(GameClockSubsystem->GetFormattedTime(Format)));
 }
 
 void UGameClockWidget::NativeConstruct()

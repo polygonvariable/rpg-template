@@ -15,6 +15,7 @@
 #include "RenEnvironment/Public/Profile/WeatherProfile.h"
 
 
+
 void UWeatherController::SetMaterialCollection(UMaterialParameterCollection* MaterialCollection)
 {
 	if (!MaterialCollection)
@@ -60,8 +61,10 @@ void UWeatherController::HandleItemChanged(UObject* Item)
 
 	if (UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item))
 	{
-		if(WeatherAsset->WeatherName == CurrentWeather) return;
-		CurrentWeather = WeatherAsset->WeatherName;
+		if(WeatherAsset->WeatherName == CurrentWeatherName) return;
+
+		CurrentWeatherName = WeatherAsset->WeatherName;
+		CurrentWeatherAsset = WeatherAsset;
 
 		HandleScalarTransition(TEXT("WeatherAlpha"), WeatherAsset->MaterialAlpha, 1.0f);
 		HandleScalarTransition(TEXT("WeatherSpecular"), WeatherAsset->MaterialSpecular, 1.0f);
@@ -69,5 +72,11 @@ void UWeatherController::HandleItemChanged(UObject* Item)
 		HandleScalarTransition(TEXT("WeatherOpacity"), WeatherAsset->MaterialOpacity, 1.0f);
 		HandleVectorTransition(TEXT("WeatherColor"), WeatherAsset->MaterialColor, 1.0f);
 	}
+}
+
+void UWeatherController::HandleNoItemsLeft()
+{
+	CurrentWeatherName = NAME_None;
+	CurrentWeatherAsset = nullptr;
 }
 

@@ -46,7 +46,10 @@ public:
 	TSoftObjectPtr<UDataTable> InventoryTable;
 
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Default")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Assets")
+	TSoftObjectPtr<UDataAsset> ClockAsset;
+
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Assets")
 	TSoftObjectPtr<UDataAsset> EnvironmentAsset;
 
 
