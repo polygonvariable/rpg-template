@@ -25,40 +25,39 @@ class USeasonAsset : public UPrimaryDataAsset
 
 public:
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     FName SeasonName = NAME_None;
 
 
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "1", ClampMin = "1"))
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "1", ClampMin = "1"))
     int SeasonStartDay = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "1", ClampMin = "1"))
+	UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "1", ClampMin = "1"))
 	int SeasonEndDay = 10;
 
 
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     UCurveFloat* SeasonCurve = nullptr;
 
 
 
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float MaterialSpecular = 0.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float MaterialRoughness = 0.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float MaterialOpacity = 0.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     FColor MaterialColor = FColor::White;
 
 
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     TArray<FWeatherWeight> WeatherWeights;
 
 };

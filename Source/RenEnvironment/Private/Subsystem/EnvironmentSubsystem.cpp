@@ -4,6 +4,8 @@
 #include "Subsystem/EnvironmentSubsystem.h"
 
 // Engine Header
+#include "EngineUtils.h"
+#include "GameFramework/Actor.h"
 #include "Components/SceneComponent.h"
 
 // Project Header
@@ -93,5 +95,23 @@ void UEnvironmentSubsystem::Deinitialize()
 {
 	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem deinitialized"));
 	Super::Deinitialize();
+}
+
+void UEnvironmentSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem OnWorldBeginPlay"));
+
+
+	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		if(ActorItr->Tags.Contains(TEXT("EnvironmentController")))
+		{
+			LOG_WARNING(LogTemp, TEXT("EnvironmentController found"));
+			ActorItr->GetComponentByClass(USceneComponent::StaticClass());
+			break;
+		}
+	}
+
 }
 

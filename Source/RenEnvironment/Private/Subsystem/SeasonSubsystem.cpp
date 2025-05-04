@@ -10,60 +10,11 @@
 // Project Header
 #include "RenCore/Public/Asset/GameClockAsset.h"
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenCore/Public/Timer/Timer.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Priority/PrioritySystem.h"
-#include "RenEnvironment/Public/Controller/WeatherController.h"
-#include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
-#include "RenEnvironment/Public/Asset/WeatherAsset.h"
-#include "RenEnvironment/Public/Asset/SeasonAsset.h"
 #include "RenGameplay/Public/GameClockSubsystem.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
-
-
-
-void USeasonSubsystem::InitializeSeason()
-{
-	if (!IsValid(EnvironmentAsset))
-	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is invalid"));
-		return;
-	}
-
-	if (!EnvironmentAsset->SeasonMaterialParameter)
-	{
-		LOG_ERROR(LogTemp, TEXT("Season MaterialParameters is invalid"));
-		return;
-	}
-
-	SeasonCollectionInstance = GetWorld()->GetParameterCollectionInstance(EnvironmentAsset->SeasonMaterialParameter);
-	if (!IsValid(SeasonCollectionInstance))
-	{
-		LOG_ERROR(LogTemp, TEXT("Season PrameterCollection is invalid"));
-		return;
-	}
-
-}
-
-void USeasonSubsystem::UpdateDay(int CurrentDay)
-{
-	if (!SeasonCollectionInstance || !IsValid(GameClockAsset))
-	{
-		PRINT_ERROR(LogTemp, 2.0f, TEXT("Season ParameterCollection or GameClockAsset is invalid"));
-		return;
-	}
-
-	float Alpha = 0.0f, CurveAlpha = 0.0f;
-	if (USeasonAsset* Season = GetSeasonAlpha(CurrentDay, GameClockAsset->TotalDaysInAYear, Alpha, CurveAlpha))
-	{
-		PRINT_WARNING(LogTemp, 1.0f, TEXT("Season: %s, Alpha: %f, CurveAlpha: %f"), *Season->SeasonName.ToString(), Alpha, CurveAlpha);
-
-		SeasonCollectionInstance->SetScalarParameterValue("SeasonSpecular", FMath::Lerp(0.0f, Season->MaterialSpecular, CurveAlpha));
-		SeasonCollectionInstance->SetScalarParameterValue("SeasonRoughness", FMath::Lerp(0.0f, Season->MaterialRoughness, CurveAlpha));
-		SeasonCollectionInstance->SetScalarParameterValue("SeasonOpacity", FMath::Lerp(0.0f, Season->MaterialOpacity, CurveAlpha));
-		SeasonCollectionInstance->SetVectorParameterValue("SeasonColor", FMath::CInterpTo(FLinearColor::Transparent, Season->MaterialColor, CurveAlpha, 1.0f));
-	}
-}
+#include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
+#include "RenEnvironment/Public/Asset/SeasonAsset.h"
 
 
 
@@ -80,7 +31,6 @@ USeasonAsset* USeasonSubsystem::GetSeasonAlpha(int CurrentDay, int TotalDays, fl
 
 		if (ClampedDay >= Season->SeasonStartDay && ClampedDay <= Season->SeasonEndDay)
 		{
-
 			int DaySpan = Season->SeasonEndDay - Season->SeasonStartDay;
 			if (DaySpan <= 0)
 			{
@@ -172,7 +122,22 @@ bool USeasonSubsystem::IsSeasonsValid() const
 
 void USeasonSubsystem::HandleDayChange(int CurrentDay)
 {
-	UpdateDay(CurrentDay);
+	if (!SeasonPrameterInstance || !IsValid(GameClockAsset))
+	{
+		PRINT_ERROR(LogTemp, 2.0f, TEXT("Season ParameterCollection or GameClockAsset is invalid"));
+		return;
+	}
+
+	float Alpha = 0.0f, CurveAlpha = 0.0f;
+	if (USeasonAsset* Season = GetSeasonAlpha(CurrentDay, GameClockAsset->TotalDaysInAYear, Alpha, CurveAlpha))
+	{
+		PRINT_WARNING(LogTemp, 1.0f, TEXT("Season: %s, Alpha: %f, CurveAlpha: %f"), *Season->SeasonName.ToString(), Alpha, CurveAlpha);
+
+		SeasonPrameterInstance->SetScalarParameterValue("SeasonSpecular", FMath::Lerp(0.0f, Season->MaterialSpecular, CurveAlpha));
+		SeasonPrameterInstance->SetScalarParameterValue("SeasonRoughness", FMath::Lerp(0.0f, Season->MaterialRoughness, CurveAlpha));
+		SeasonPrameterInstance->SetScalarParameterValue("SeasonOpacity", FMath::Lerp(0.0f, Season->MaterialOpacity, CurveAlpha));
+		SeasonPrameterInstance->SetVectorParameterValue("SeasonColor", FMath::CInterpTo(FLinearColor::Transparent, Season->MaterialColor, CurveAlpha, 1.0f));
+	}
 }
 
 
@@ -206,7 +171,7 @@ void USeasonSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		EnvironmentAsset = Cast<UEnvironmentAsset>(GameMetadata->EnvironmentAsset.LoadSynchronous());
 		if (!IsValid(EnvironmentAsset))
 		{
-			PRINT_ERROR(LogTemp, 5.0f, TEXT("Environment cast failed or is not valid"));
+			PRINT_ERROR(LogTemp, 5.0f, TEXT("Environment cast failed or Season MaterialParameters is not valid"));
 			return;
 		}
 	}
@@ -232,8 +197,21 @@ void USeasonSubsystem::Deinitialize()
 void USeasonSubsystem::PostInitialize()
 {
 	Super::PostInitialize();
+	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem post initialized"));
+
+
 	if (UWorld* World = GetWorld())
 	{
+		if (IsValid(EnvironmentAsset) && EnvironmentAsset->SeasonMaterialParameter)
+		{
+			SeasonPrameterInstance = World->GetParameterCollectionInstance(EnvironmentAsset->SeasonMaterialParameter);
+			if (!IsValid(SeasonPrameterInstance))
+			{
+				LOG_ERROR(LogTemp, TEXT("Season MaterialPrameterCollectionInstance is invalid"));
+				return;
+			}
+		}
+
 		if (GameClockSubsystem = World->GetSubsystem<UGameClockSubsystem>())
 		{
 			GameClockSubsystem->OnDayChanged.AddDynamic(this, &USeasonSubsystem::HandleDayChange);

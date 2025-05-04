@@ -22,22 +22,22 @@ class UWeatherAsset : public UPrimaryDataAsset
 
 public:
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     FName WeatherName = NAME_None;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
     float MaterialAlpha = 0.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float MaterialSpecular = 0.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float MaterialRoughness = 0.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float MaterialOpacity = 0.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     FColor MaterialColor = FColor::White;
 
 };

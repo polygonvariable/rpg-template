@@ -4,18 +4,15 @@
 #include "Subsystem/WeatherSubsystem.h"
 
 // Engine Header
-#include "Kismet/KismetMaterialLibrary.h"
-#include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Priority/PrioritySystem.h"
 
-#include "RenEnvironment/Public/Controller/WeatherController.h"
-#include "RenEnvironment/Public/Asset/WeatherAsset.h"
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
+#include "RenEnvironment/Public/Asset/WeatherAsset.h"
+#include "RenEnvironment/Public/Controller/WeatherController.h"
 
 
 
@@ -50,7 +47,7 @@ void UWeatherSubsystem::CreateWeatherTimer()
 		WeatherTimer->OnTick.AddDynamic(this, &UWeatherSubsystem::HandleWeatherTimer);
 	}
 
-	WeatherTimer->StartTimer(5.0f, 0, false);
+	WeatherTimer->StartTimer(10.0f, 0, false);
 }
 
 void UWeatherSubsystem::HandleWeatherTimer(float ElapsedTime)
@@ -58,6 +55,8 @@ void UWeatherSubsystem::HandleWeatherTimer(float ElapsedTime)
 	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weather can change"));
 	OnWeatherCanChange.Broadcast();
 }
+
+
 
 bool UWeatherSubsystem::CreateWeatherController()
 {
@@ -77,6 +76,8 @@ bool UWeatherSubsystem::CreateWeatherController()
 	return true;
 }
 
+
+
 void UWeatherSubsystem::CreateWeatherMaterialCollection()
 {
 	if (!IsValid(EnvironmentAsset) || !IsValid(WeatherController))
@@ -86,7 +87,6 @@ void UWeatherSubsystem::CreateWeatherMaterialCollection()
 	}
 	WeatherController->SetMaterialCollection(EnvironmentAsset->WeatherMaterialParameter);
 }
-
 
 
 
@@ -105,7 +105,7 @@ void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		if (GameMetadata->EnvironmentAsset.IsNull())
 		{
-			PRINT_ERROR(LogTemp, 5.0f, TEXT("ClockAsset or EnvironmentAsset is not valid"));
+			PRINT_ERROR(LogTemp, 5.0f, TEXT("EnvironmentAsset is not valid"));
 			return;
 		}
 

@@ -15,9 +15,7 @@
 
 // Forward Declarations
 class UTimer;
-class UPrioritySystem;
 class UWeatherController;
-class UMaterialParameterCollectionInstance;
 class UEnvironmentAsset;
 
 
@@ -41,15 +39,15 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UTimer> WeatherTimer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWeatherController> WeatherController;
 
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UEnvironmentAsset> EnvironmentAsset;
 
 

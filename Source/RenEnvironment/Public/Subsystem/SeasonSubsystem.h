@@ -15,8 +15,6 @@
 
 // Forward Declarations
 class UTimer;
-class UPrioritySystem;
-class UWeatherController;
 class UMaterialParameterCollectionInstance;
 class USeasonAsset;
 class UGameClockSubsystem;
@@ -35,25 +33,18 @@ class USeasonSubsystem : public UWorldSubsystem
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	void InitializeSeason();
-
-
-	UFUNCTION(BlueprintCallable)
-	void UpdateDay(int CurrentDay);
-
-
 	UFUNCTION()
 	USeasonAsset* GetSeasonAlpha(int CurrentDay, int TotalDays, float& Alpha, float& CurveAlpha) const;
 
 protected:
 
-	UMaterialParameterCollectionInstance* SeasonCollectionInstance;
+	UMaterialParameterCollectionInstance* SeasonPrameterInstance;
 
 
 
 	UPROPERTY()
 	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
+
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

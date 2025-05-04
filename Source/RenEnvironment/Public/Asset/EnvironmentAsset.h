@@ -26,24 +26,24 @@ class UEnvironmentAsset : public UPrimaryDataAsset
 
 public:
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     bool bEnableWeather = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     UWeatherAsset* DefaultWeather;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     TObjectPtr<UMaterialParameterCollection> WeatherMaterialParameter;
 
 
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     bool bEnableSeason = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     TArray<USeasonAsset*> DefaultSeasons;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditDefaultsOnly)
     TObjectPtr<UMaterialParameterCollection> SeasonMaterialParameter;
 
 };
