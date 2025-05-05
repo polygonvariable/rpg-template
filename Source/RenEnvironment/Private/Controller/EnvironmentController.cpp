@@ -46,3 +46,10 @@ void UEnvironmentController::BeginDestroy()
 	Super::BeginDestroy();
 }
 
+
+
+void UEnvironmentController2::InitializeController()
+{
+}
+
+

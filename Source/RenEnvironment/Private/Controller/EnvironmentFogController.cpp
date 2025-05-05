@@ -8,6 +8,11 @@
 
 // Project Headers
 #include "RenCore/Public/Timer/Timer.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
+
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
+#include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
+
 
 
 void UEnvironmentFogController::SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components)
@@ -44,3 +49,39 @@ void UEnvironmentFogController::HandleTransitionTick(float CurrentTime)
 	ExponentialHeightFog->SetFogDensity(FMath::Lerp(ADensity, BDensity, Alpha));
 }
 
+
+
+UEnvironmentFogController2::UEnvironmentFogController2()
+{
+	ProfileType = EEnvironmentProfileType::Fog;
+}
+
+void UEnvironmentFogController2::InitializeController()
+{
+	for (TObjectIterator<UExponentialHeightFogComponent> Itr; Itr; ++Itr)
+	{
+		if (Itr->ComponentHasTag(ComponentName) && IsValid(*Itr))
+		{
+			FogComponent = *Itr;
+			break;
+		}
+	}
+}
+
+void UEnvironmentFogController2::HandleItemChanged(UObject* Item)
+{
+	if (!FogComponent.IsValid())
+	{
+		LOG_ERROR(LogTemp, TEXT("FogComponent not found"));
+		return;
+	}
+
+	UEnvironmentFogProfileAsset* FogProfile = Cast<UEnvironmentFogProfileAsset>(Item);
+	if (!IsValid(FogProfile))
+	{
+		PRINT_ERROR(LogTemp, 2.0f, TEXT("FogProfile asset is invalid"));
+		return;
+	}
+
+	FogComponent->SetFogDensity(FogProfile->FogDensity);
+}

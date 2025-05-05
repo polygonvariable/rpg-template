@@ -47,3 +47,36 @@ protected:
 
 };
 
+
+/**
+ *
+ */
+UCLASS()
+class RENENVIRONMENT_API UEnvironmentAtmosphereController2 : public UEnvironmentController2
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UEnvironmentAtmosphereController2();
+
+
+	UPROPERTY()
+	FName ComponentName = TEXT("Environment.Atmosphere");
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	TWeakObjectPtr<USkyAtmosphereComponent> AtmosphereComponent;
+
+public:
+
+	virtual void InitializeController() override;
+
+protected:
+
+	virtual void HandleItemChanged(UObject* Item) override;
+
+};
+

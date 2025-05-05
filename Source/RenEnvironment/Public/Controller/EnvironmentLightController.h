@@ -50,3 +50,43 @@ protected:
 
 };
 
+
+/**
+ *
+ */
+UCLASS()
+class RENENVIRONMENT_API UEnvironmentLightController2 : public UEnvironmentController2
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UEnvironmentLightController2();
+
+
+
+	UPROPERTY()
+	FName SunComponentName = TEXT("Environment.Sun");
+
+	UPROPERTY()
+	FName MoonComponentName = TEXT("Environment.Moon");
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	TWeakObjectPtr<UDirectionalLightComponent> SunComponent;
+
+	UPROPERTY(BlueprintReadOnly)
+	TWeakObjectPtr<UDirectionalLightComponent> MoonComponent;
+
+public:
+
+	virtual void InitializeController() override;
+
+protected:
+
+	virtual void HandleItemChanged(UObject* Item) override;
+
+};
+

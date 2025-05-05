@@ -8,6 +8,11 @@
 
 // Project Headers
 #include "RenCore/Public/Timer/Timer.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
+
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
+#include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
+
 
 
 void UEnvironmentLightController::SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components)
@@ -54,5 +59,57 @@ void UEnvironmentLightController::HandleTransitionTick(float CurrentTime)
 
 	Moon->SetIntensity(FMath::Lerp(AMoonIntensity, BMoonIntensity, Alpha));
 	Moon->SetLightColor(FMath::CInterpTo(AMoonColor, BMoonColor, Alpha, 1.0f).ToFColor(false));
+}
+
+
+
+UEnvironmentLightController2::UEnvironmentLightController2()
+{
+	ProfileType = EEnvironmentProfileType::Light;
+}
+
+void UEnvironmentLightController2::InitializeController()
+{
+	bool bSunFound = false;
+	bool bMoonFound = false;
+
+	for (TObjectIterator<UDirectionalLightComponent> Itr; Itr; ++Itr)
+	{
+		if (Itr->ComponentHasTag(SunComponentName) && IsValid(*Itr))
+		{
+			SunComponent = *Itr;
+			bSunFound = true;
+		}
+		if (Itr->ComponentHasTag(MoonComponentName) && IsValid(*Itr))
+		{
+			MoonComponent = *Itr;
+			bMoonFound = true;
+		}
+		if(bSunFound && bMoonFound) break;
+	}
+
+	if (!bSunFound) PRINT_ERROR(LogTemp, 2.0f, TEXT("Sun not found"));
+	if (!bMoonFound) PRINT_ERROR(LogTemp, 2.0f, TEXT("Moon not found"));
+}
+
+void UEnvironmentLightController2::HandleItemChanged(UObject* Item)
+{
+	if (!SunComponent.IsValid() || !MoonComponent.IsValid())
+	{
+		LOG_ERROR(LogTemp, TEXT("Sun or Moon not found"));
+		return;
+	}
+
+	UEnvironmentLightProfileAsset* LightProfile = Cast<UEnvironmentLightProfileAsset>(Item);
+	if (!IsValid(LightProfile))
+	{
+		PRINT_ERROR(LogTemp, 2.0f, TEXT("LightProfile asset is invalid"));
+		return;
+	}
+
+	SunComponent->SetIntensity(LightProfile->SunIntensity);
+	SunComponent->SetLightColor(LightProfile->SunColor);
+	MoonComponent->SetIntensity(LightProfile->MoonIntensity);
+	MoonComponent->SetLightColor(LightProfile->MoonColor);
 }
 

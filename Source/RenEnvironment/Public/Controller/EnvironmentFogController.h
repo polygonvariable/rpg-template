@@ -47,3 +47,36 @@ protected:
 
 };
 
+
+/**
+ *
+ */
+UCLASS()
+class RENENVIRONMENT_API UEnvironmentFogController2 : public UEnvironmentController2
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UEnvironmentFogController2();
+
+
+	UPROPERTY()
+	FName ComponentName = TEXT("Environment.ExponentialHeightFog");
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	TWeakObjectPtr<UExponentialHeightFogComponent> FogComponent;
+
+public:
+
+	virtual void InitializeController() override;
+
+protected:
+
+	virtual void HandleItemChanged(UObject* Item) override;
+
+};
+

@@ -8,6 +8,10 @@
 
 // Project Headers
 #include "RenCore/Public/Timer/Timer.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
+#include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
+
 
 
 void UEnvironmentAtmosphereController::SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components)
@@ -40,5 +44,42 @@ void UEnvironmentAtmosphereController::HandleTransitionTick(float CurrentTime)
 	float AScatter = Atmosphere->MieScatteringScale;
 	float BScatter = ActiveProfile->MieScatteringScale;
 	Atmosphere->SetMieScatteringScale(FMath::Lerp(AScatter, BScatter, Alpha));
+}
+
+
+
+UEnvironmentAtmosphereController2::UEnvironmentAtmosphereController2()
+{
+	ProfileType = EEnvironmentProfileType::Atmosphere;
+}
+
+void UEnvironmentAtmosphereController2::InitializeController()
+{
+	for (TObjectIterator<USkyAtmosphereComponent> Itr; Itr; ++Itr)
+	{
+		if (Itr->ComponentHasTag(ComponentName) && IsValid(*Itr))
+		{
+			AtmosphereComponent = *Itr;
+			break;
+		}
+	}
+}
+
+void UEnvironmentAtmosphereController2::HandleItemChanged(UObject* Item)
+{
+	if (!AtmosphereComponent.IsValid())
+	{
+		LOG_ERROR(LogTemp, TEXT("AtmosphereComponent not found"));
+		return;
+	}
+
+	UEnvironmentAtmosphereProfileAsset* AtmosphereProfile = Cast<UEnvironmentAtmosphereProfileAsset>(Item);
+	if (!IsValid(AtmosphereProfile))
+	{
+		PRINT_ERROR(LogTemp, 2.0f, TEXT("AtmosphereProfile asset is invalid"));
+		return;
+	}
+
+	AtmosphereComponent->SetMieScatteringScale(AtmosphereProfile->MieScatteringScale);
 }
 

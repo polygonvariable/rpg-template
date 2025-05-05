@@ -46,6 +46,7 @@ AEnvironmentActor::AEnvironmentActor()
 		if (IsValid(SkyAtmosphere))
 		{
 			SkyAtmosphere->SetupAttachment(SceneComponent);
+			SkyAtmosphere->ComponentTags.Push(TEXT("Environment.Atmosphere"));
 		}
 
 		ExponentialHeightFog = CreateDefaultSubobject<UExponentialHeightFogComponent>(TEXT("ExponentialHeightFog"));
@@ -53,6 +54,7 @@ AEnvironmentActor::AEnvironmentActor()
 		{
 			ExponentialHeightFog->SetupAttachment(SceneComponent);
 			ExponentialHeightFog->FogDensity = 0.025f;
+			ExponentialHeightFog->ComponentTags.Push(TEXT("Environment.ExponentialHeightFog"));
 		}
 
 		Sun = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("Sun"));
@@ -61,6 +63,7 @@ AEnvironmentActor::AEnvironmentActor()
 			Sun->SetupAttachment(SceneComponent);
 			Sun->ForwardShadingPriority = 1;
 			Sun->AtmosphereSunLightIndex = 0;
+			Sun->ComponentTags.Push(TEXT("Environment.Sun"));
 		}
 
 		Moon = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("Moon"));
@@ -75,6 +78,7 @@ AEnvironmentActor::AEnvironmentActor()
 			Moon->AtmosphereSunLightIndex = 1;
 			Moon->DynamicShadowCascades = 1;
 			Moon->LightColor = FColor::FromHex("#4B6F91");
+			Moon->ComponentTags.Push(TEXT("Environment.Moon"));
 		}
 
 		SkyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SkyMesh"));

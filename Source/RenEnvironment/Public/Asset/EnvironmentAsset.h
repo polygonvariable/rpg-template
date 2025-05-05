@@ -6,12 +6,17 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 
+// Project Headers
+#include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
+
 // Generated Headers
 #include "EnvironmentAsset.generated.h"
+
 
 // Forward Declarations
 class UWeatherAsset;
 class USeasonAsset;
+class UEnvironmentController2;
 
 
 
@@ -25,6 +30,11 @@ class UEnvironmentAsset : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
+
+    UPROPERTY(EditDefaultsOnly)
+    TMap<TEnumAsByte<EEnvironmentProfileType>, TSubclassOf<UEnvironmentController2>> EnvironmentControllers;
+
+
 
     UPROPERTY(EditDefaultsOnly)
     bool bEnableWeather = true;

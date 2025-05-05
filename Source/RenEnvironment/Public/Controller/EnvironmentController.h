@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "RenCore/Public/Priority/PrioritySystem.h"
+#include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 // Generated Headers
 #include "EnvironmentController.generated.h"
@@ -58,4 +59,48 @@ protected:
 	virtual void BeginDestroy();
 
 };
+
+
+// TODO:
+// - Remove old controller
+// - Add new controller, UEnvironmentDiscreteController to manage things like day/night cycle
+// - Rename UEnvironmentController2 to UEnvironmentStackedController
+
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class UEnvironmentDiscreteController : public UObject
+{
+
+	GENERATED_BODY()
+
+public:
+
+	virtual void InitializeController();
+
+};
+
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class RENENVIRONMENT_API UEnvironmentController2 : public UObjectPrioritySystem
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TEnumAsByte<EEnvironmentProfileType> ProfileType;
+
+
+
+	virtual void InitializeController();
+
+};
+
 
