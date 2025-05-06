@@ -193,26 +193,12 @@ void AEnvironmentActor::HandleClockStopped()
 
 void AEnvironmentActor::InitializeControllers()
 {
-	if(!IsValid(EnvironmentSubsystem)) return;
 
-	TMap<uint8, TWeakObjectPtr<USceneComponent>> FogComponents;
-	FogComponents.Add(0, ExponentialHeightFog);
-
-	TMap<uint8, TWeakObjectPtr<USceneComponent>> LightComponents;
-	LightComponents.Add(0, Sun);
-	LightComponents.Add(1, Moon);
-
-	TMap<uint8, TWeakObjectPtr<USceneComponent>> AtmosphereComponents;
-	AtmosphereComponents.Add(0, SkyAtmosphere);
-
-	EnvironmentSubsystem->AddEnvironmentController(EEnvironmentProfileType::Fog, UEnvironmentFogController::StaticClass(), FogComponents);
-	EnvironmentSubsystem->AddEnvironmentController(EEnvironmentProfileType::Light, UEnvironmentLightController::StaticClass(), LightComponents);
-	EnvironmentSubsystem->AddEnvironmentController(EEnvironmentProfileType::Atmosphere, UEnvironmentAtmosphereController::StaticClass(), AtmosphereComponents);
 }
 
 void AEnvironmentActor::CleanupControllers()
 {
-	if (!IsValid(EnvironmentSubsystem)) return;
+
 }
 
 

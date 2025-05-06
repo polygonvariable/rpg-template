@@ -5,6 +5,11 @@
 // Engine Headers
 #include "CoreMinimal.h"
 
+
+#include "MiscLibrary.generated.h"
+
+
+
 template <typename TSubsystemType, typename TContextType>
 bool GetSubsystemReference(TContextType* Context, TObjectPtr<TSubsystemType>& OutSubsystem)
 {
@@ -35,4 +40,25 @@ TSubsystem* GetGameInstanceSubsystem(UWorld* WorldContext)
 
 	return GameInstance->GetSubsystem<TSubsystem>();
 }
+
+UCLASS()
+class RENGLOBAL_API UMiscLibrary : public UObject
+{
+
+	GENERATED_BODY()
+
+public:
+
+	static bool IsInGameWorld(UWorld* World)
+	{
+		return World &&
+		(
+			World->WorldType == EWorldType::Game ||
+			World->WorldType == EWorldType::GamePreview ||
+			World->WorldType == EWorldType::GameRPC ||
+			World->WorldType == EWorldType::PIE
+		);
+	}
+
+};
 

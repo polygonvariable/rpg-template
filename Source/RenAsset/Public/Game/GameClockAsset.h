@@ -14,7 +14,7 @@
  *
  */
 UCLASS()
-class RENCORE_API UGameClockAsset : public UPrimaryDataAsset
+class RENASSET_API UGameClockAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()

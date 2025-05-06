@@ -18,49 +18,17 @@
 class UExponentialHeightFogComponent;
 
 
-/**
- *
- */
-UCLASS()
-class RENENVIRONMENT_API UEnvironmentFogController : public UEnvironmentController
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY()
-	TWeakObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFog;
-
-protected:
-
-	const FEnvironmentFogProfile* ActiveProfile;
-
-public:
-
-	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
-
-protected:
-
-	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
-	virtual void HandleTransitionTick(float CurrentTime) override;
-
-};
-
 
 /**
  *
  */
 UCLASS()
-class RENENVIRONMENT_API UEnvironmentFogController2 : public UEnvironmentController2
+class UEnvironmentFogController : public UEnvironmentStackedController
 {
 
 	GENERATED_BODY()
 
 public:
-
-	UEnvironmentFogController2();
-
 
 	UPROPERTY()
 	FName ComponentName = TEXT("Environment.ExponentialHeightFog");

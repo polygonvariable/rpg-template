@@ -14,8 +14,8 @@
 #include "EnvironmentSubsystem.generated.h"
 
 // Forward Declarations
-class UEnvironmentController;
-class UEnvironmentController2;
+class UEnvironmentDiscreteController;
+class UEnvironmentStackedController;
 class UEnvironmentProfileAsset;
 
 
@@ -30,49 +30,34 @@ class RENENVIRONMENT_API UEnvironmentSubsystem : public UWorldSubsystem
 
 public:
 
-	UFUNCTION()
-	bool CreateController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentController2> ControllerClass);
-
-
-	UFUNCTION()
-	bool AddEnvironmentController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentController> ControllerClass, const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components);
-
-	UFUNCTION()
-	bool RemoveEnvironmentController(const TEnumAsByte<EEnvironmentProfileType> ProfileType);
-
+	UFUNCTION(BlueprintCallable)
+	void AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 
 	UFUNCTION(BlueprintCallable)
-	void AddEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
-
-
-	UFUNCTION(BlueprintCallable)
-	void RemoveEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, FInstancedStruct Profile);
-
-
-
-	UFUNCTION(BlueprintCallable)
-	void AddEnvironmentProfile2(UEnvironmentProfileAsset* ProfileAsset, int Priority);
-
-	UFUNCTION(BlueprintCallable)
-	void RemoveEnvironmentProfile2(TEnumAsByte<EEnvironmentProfileType> ProfileType, int Priority);
+	void RemoveStackedProfile(TEnumAsByte<EEnvironmentProfileType> ProfileType, int Priority);
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly)
-	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentController>> EnvironmentControllers;
+	UFUNCTION()
+	bool CreateStackedController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentStackedController> ControllerClass);
+
+	UFUNCTION()
+	bool CreateDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass);
+
 
 	UPROPERTY(BlueprintReadOnly)
-	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentController2>> EnvironmentControllers2;
+	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentStackedController>> EnvironmentStackedControllers;
 
 
-	void ValidateEnvironmentProfile(const TEnumAsByte<EEnvironmentProfileType> ProfileType, const FInstancedStruct Profile, TFunctionRef<void(UEnvironmentController* Controller, const FEnvironmentProfile* Profile)> Callback, const FString& LogMessage);
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TObjectPtr<UEnvironmentDiscreteController>> EnvironmentDiscreateControllers;
 
 protected:
 
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	virtual void Deinitialize() override;
 
 };
 

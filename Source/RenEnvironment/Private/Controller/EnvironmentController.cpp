@@ -8,48 +8,20 @@
 #include "RenCore/Public/Timer/Timer.h"
 
 
-void UEnvironmentController::SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components)
+
+void UEnvironmentDiscreteController::InitializeController()
 {
 }
 
-void UEnvironmentController::StartTransition()
-{
-	if (!IsValid(TransitionTimer))
-	{
-		TransitionTimer = NewObject<UTimer>(this);
-		if (!IsValid(TransitionTimer))
-		{
-			LOG_ERROR(LogTemp, "Failed to create timer");
-			return;
-		}
-		TransitionTimer->OnTick.AddDynamic(this, &UEnvironmentController::HandleTransitionTick);
-	}
-	TransitionTimer->StartTimer(1.0f, 5, false);
-}
-
-void UEnvironmentController::StopTransition()
-{
-	if (IsValid(TransitionTimer)) TransitionTimer->StopTimer();
-}
-
-void UEnvironmentController::HandleTransitionTick(float CurrentTime)
+void UEnvironmentDiscreteController::CleanupController()
 {
 }
 
-void UEnvironmentController::BeginDestroy()
-{
-	if (IsValid(TransitionTimer))
-	{
-		TransitionTimer->StopTimer(true);
-		TransitionTimer->MarkAsGarbage();
-	}
-	Super::BeginDestroy();
-}
-
-
-
-void UEnvironmentController2::InitializeController()
+void UEnvironmentStackedController::InitializeController()
 {
 }
 
+void UEnvironmentStackedController::CleanupController()
+{
+}
 

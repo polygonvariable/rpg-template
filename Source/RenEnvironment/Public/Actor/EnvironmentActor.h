@@ -26,7 +26,7 @@ class UGameClockSubsystem;
  *
  */
 UCLASS()
-class RENENVIRONMENT_API AEnvironmentActor : public AActor
+class AEnvironmentActor : public AActor
 {
 
 	GENERATED_BODY()

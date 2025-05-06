@@ -24,6 +24,7 @@ public class RenEnvironment : ModuleRules
             {
                 "RenGlobal",
                 "RenCore",
+                "RenAsset",
                 "RenStorage",
                 "RenGameplay",
             }

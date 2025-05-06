@@ -7,7 +7,9 @@
 #include "RenGlobal/Public/Library/MiscLibrary.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
-#include "Subsystem/EnvironmentSubsystem.h"
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
+#include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
+
 
 
 void ARegionActor::BeginPlay()
@@ -21,15 +23,15 @@ void ARegionActor::BeginPlay()
 
 void ARegionActor::HandlePlayerEntered()
 {
-	if (!IsValid(EnvironmentSubsystem))
+	if(!IsValid(EnvironmentSubsystem))
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentSubsystem is not valid"));
+		LOG_ERROR(LogTemp, TEXT("Invalid Environment Subsystem"));
 		return;
 	}
 
-	for (const TPair<TEnumAsByte<EEnvironmentProfileType>, FInstancedStruct>& Profile : EnvironmentProfiles)
+	for (auto& Kvp : ProfileAssets)
 	{
-		EnvironmentSubsystem->AddEnvironmentProfile(Profile.Key, Profile.Value);
+		EnvironmentSubsystem->AddStackedProfile(Kvp.Value, Kvp.Key);
 	}
 }
 
@@ -37,13 +39,17 @@ void ARegionActor::HandlePlayerExited()
 {
 	if (!IsValid(EnvironmentSubsystem))
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentSubsystem is not valid"));
+		LOG_ERROR(LogTemp, TEXT("Invalid Environment Subsystem"));
 		return;
 	}
 
-	for (const TPair<TEnumAsByte<EEnvironmentProfileType>, FInstancedStruct>& Profile : EnvironmentProfiles)
+	for (auto& Kvp : ProfileAssets)
 	{
-		EnvironmentSubsystem->RemoveEnvironmentProfile(Profile.Key, Profile.Value);
+		if (!IsValid(Kvp.Value))
+		{
+			continue;
+		}
+		EnvironmentSubsystem->RemoveStackedProfile(Kvp.Value->ProfileType, Kvp.Key);
 	}
 }
 

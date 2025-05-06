@@ -16,56 +16,6 @@
 class UTimer;
 
 
-/**
- * 
- */
-UCLASS(Abstract)
-class RENENVIRONMENT_API UEnvironmentController : public UPrioritySystem
-{
-
-	GENERATED_BODY()
-
-
-public:
-
-	UFUNCTION()
-	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components);
-
-	//UFUNCTION()
-	//virtual void Initialize(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components);
-
-	//UFUNCTION()
-	//virtual void Cleanup();
-
-protected:
-	
-	UPROPERTY()
-	TObjectPtr<UTimer> TransitionTimer;
-
-
-	UFUNCTION()
-	void StartTransition();
-
-
-	UFUNCTION()
-	void StopTransition();
-
-
-	UFUNCTION()
-	virtual void HandleTransitionTick(float CurrentTime);
-
-protected:
-
-	virtual void BeginDestroy();
-
-};
-
-
-// TODO:
-// - Remove old controller
-// - Add new controller, UEnvironmentDiscreteController to manage things like day/night cycle
-// - Rename UEnvironmentController2 to UEnvironmentStackedController
-
 
 /**
  *
@@ -79,6 +29,7 @@ class UEnvironmentDiscreteController : public UObject
 public:
 
 	virtual void InitializeController();
+	virtual void CleanupController();
 
 };
 
@@ -87,19 +38,15 @@ public:
  *
  */
 UCLASS(Abstract)
-class RENENVIRONMENT_API UEnvironmentController2 : public UObjectPrioritySystem
+class UEnvironmentStackedController : public UObjectPrioritySystem
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY()
-	TEnumAsByte<EEnvironmentProfileType> ProfileType;
-
-
-
 	virtual void InitializeController();
+	virtual void CleanupController();
 
 };
 

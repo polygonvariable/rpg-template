@@ -16,6 +16,9 @@
 
 // Forward Declarations
 class UEnvironmentSubsystem;
+class UEnvironmentProfileAsset;
+
+
 
 /**
  *
@@ -32,13 +35,15 @@ protected:
 	
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (BaseStruct = "/Script/RenEnvironment.EnvironmentProfile"))
-	TMap<TEnumAsByte<EEnvironmentProfileType>,FInstancedStruct> EnvironmentProfiles;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<int, TObjectPtr<UEnvironmentProfileAsset>> ProfileAssets;
 
 protected:
 
 	UPROPERTY()
 	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
+
+
 
 	UFUNCTION(BlueprintCallable)
 	void HandlePlayerEntered();

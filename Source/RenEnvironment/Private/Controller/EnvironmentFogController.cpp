@@ -9,57 +9,19 @@
 // Project Headers
 #include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Library/MiscLibrary.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 
 
-void UEnvironmentFogController::SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components)
-{
-	if(Components.Num() == 0) return;
-	if(!Components.FindRef(0).IsValid()) return;
-
-	ExponentialHeightFog = Cast<UExponentialHeightFogComponent>(Components.FindRef(0).Get());
-}
-
-void UEnvironmentFogController::HandleItemChanged(const FInstancedStruct& Item)
-{
-	if (!ExponentialHeightFog.IsValid() || !ActiveItem.IsValid()) return;
-
-	if (const FEnvironmentFogProfile* ResolvedProfile = ActiveItem.GetPtr<FEnvironmentFogProfile>())
-	{
-		ActiveProfile = ResolvedProfile;
-		StartTransition();
-	}
-}
-
-void UEnvironmentFogController::HandleTransitionTick(float CurrentTime)
-{
-	if (!ExponentialHeightFog.IsValid() || !ActiveProfile)
-	{
-		StopTransition();
-		return;
-	}
-
-	float Alpha = TransitionTimer->GetNormalizedAlpha();
-	float ADensity = ExponentialHeightFog->FogDensity;
-	float BDensity = ActiveProfile->FogDensity;
-
-	ExponentialHeightFog->SetFogDensity(FMath::Lerp(ADensity, BDensity, Alpha));
-}
-
-
-
-UEnvironmentFogController2::UEnvironmentFogController2()
-{
-	ProfileType = EEnvironmentProfileType::Fog;
-}
-
-void UEnvironmentFogController2::InitializeController()
+void UEnvironmentFogController::InitializeController()
 {
 	for (TObjectIterator<UExponentialHeightFogComponent> Itr; Itr; ++Itr)
 	{
+		if (!UMiscLibrary::IsInGameWorld(Itr->GetWorld())) continue;
+
 		if (Itr->ComponentHasTag(ComponentName) && IsValid(*Itr))
 		{
 			FogComponent = *Itr;
@@ -68,7 +30,7 @@ void UEnvironmentFogController2::InitializeController()
 	}
 }
 
-void UEnvironmentFogController2::HandleItemChanged(UObject* Item)
+void UEnvironmentFogController::HandleItemChanged(UObject* Item)
 {
 	if (!FogComponent.IsValid())
 	{
@@ -85,3 +47,4 @@ void UEnvironmentFogController2::HandleItemChanged(UObject* Item)
 
 	FogComponent->SetFogDensity(FogProfile->FogDensity);
 }
+

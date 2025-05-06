@@ -22,8 +22,8 @@ public class RenEntity : ModuleRules
             {
                 "RenGlobal",
                 "RenCore",
-				"RenStorage",
-				"RenAsset",
+                "RenAsset",
+                "RenStorage",
             }
         );
 

@@ -41,7 +41,7 @@ public:
 	void SetTickInterval(const float InTickInterval = 1.0f);
 
 	UFUNCTION()
-	const bool bIsActive();
+	const bool IsActive();
 
 	UFUNCTION()
 	const float GetNormalizedAlpha();

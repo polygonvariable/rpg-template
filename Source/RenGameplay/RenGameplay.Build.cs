@@ -29,6 +29,7 @@ public class RenGameplay : ModuleRules
             {
                 "RenGlobal",
                 "RenCore",
+				"RenAsset",
                 "RenStorage",
             }
         );

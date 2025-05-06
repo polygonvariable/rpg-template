@@ -18,53 +18,17 @@
 class UDirectionalLightComponent;
 
 
-/**
- *
- */
-UCLASS()
-class RENENVIRONMENT_API UEnvironmentLightController : public UEnvironmentController
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY()
-	TWeakObjectPtr<UDirectionalLightComponent> Sun;
-
-	UPROPERTY()
-	TWeakObjectPtr<UDirectionalLightComponent> Moon;
-
-protected:
-
-	const FEnvironmentLightProfile* ActiveProfile;
-
-public:
-
-	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
-
-protected:
-
-	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
-	virtual void HandleTransitionTick(float CurrentTime) override;
-
-};
-
 
 /**
  *
  */
 UCLASS()
-class RENENVIRONMENT_API UEnvironmentLightController2 : public UEnvironmentController2
+class UEnvironmentLightController : public UEnvironmentStackedController
 {
 
 	GENERATED_BODY()
 
 public:
-
-	UEnvironmentLightController2();
-
-
 
 	UPROPERTY()
 	FName SunComponentName = TEXT("Environment.Sun");

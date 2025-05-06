@@ -18,49 +18,17 @@
 class USkyAtmosphereComponent;
 
 
-/**
- *
- */
-UCLASS()
-class RENENVIRONMENT_API UEnvironmentAtmosphereController : public UEnvironmentController
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY()
-	TWeakObjectPtr<USkyAtmosphereComponent> Atmosphere;
-
-protected:
-
-	const FEnvironmentAtmosphereProfile* ActiveProfile;
-
-public:
-
-	virtual void SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components) override;
-
-protected:
-
-	virtual void HandleItemChanged(const FInstancedStruct& Item) override;
-	virtual void HandleTransitionTick(float CurrentTime) override;
-
-};
-
 
 /**
  *
  */
 UCLASS()
-class RENENVIRONMENT_API UEnvironmentAtmosphereController2 : public UEnvironmentController2
+class UEnvironmentAtmosphereController : public UEnvironmentStackedController
 {
 
 	GENERATED_BODY()
 
 public:
-
-	UEnvironmentAtmosphereController2();
-
 
 	UPROPERTY()
 	FName ComponentName = TEXT("Environment.Atmosphere");

@@ -8,11 +8,12 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
-#include "RenCore/Public/Asset/GameClockAsset.h"
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenGameplay/Public/GameClockSubsystem.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenAsset/Public/Game/GameClockAsset.h"
+#include "RenGameplay/Public/GameClockSubsystem.h"
 
+#include "RenEnvironment/Public/EnvironmentWorldSettings.h"
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 #include "RenEnvironment/Public/Asset/SeasonAsset.h"
 
@@ -155,9 +156,9 @@ void USeasonSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	if (const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>())
 	{
-		if (GameMetadata->ClockAsset.IsNull() || GameMetadata->EnvironmentAsset.IsNull())
+		if (GameMetadata->ClockAsset.IsNull())
 		{
-			PRINT_ERROR(LogTemp, 5.0f, TEXT("ClockAsset or EnvironmentAsset is not valid"));
+			PRINT_ERROR(LogTemp, 5.0f, TEXT("ClockAsset is not valid"));
 			return;
 		}
 
@@ -167,13 +168,6 @@ void USeasonSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 			PRINT_ERROR(LogTemp, 5.0f, TEXT("ClockAsset cast failed or is not valid"));
 			return;
 		}
-
-		EnvironmentAsset = Cast<UEnvironmentAsset>(GameMetadata->EnvironmentAsset.LoadSynchronous());
-		if (!IsValid(EnvironmentAsset))
-		{
-			PRINT_ERROR(LogTemp, 5.0f, TEXT("Environment cast failed or Season MaterialParameters is not valid"));
-			return;
-		}
 	}
 }
 
@@ -181,6 +175,9 @@ void USeasonSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem begin play"));
+
+
+
 }
 
 void USeasonSubsystem::Deinitialize()
@@ -202,14 +199,25 @@ void USeasonSubsystem::PostInitialize()
 
 	if (UWorld* World = GetWorld())
 	{
-		if (IsValid(EnvironmentAsset) && EnvironmentAsset->SeasonMaterialParameter)
+		AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(World->GetWorldSettings());
+		if (!IsValid(WorldSettings))
 		{
-			SeasonPrameterInstance = World->GetParameterCollectionInstance(EnvironmentAsset->SeasonMaterialParameter);
-			if (!IsValid(SeasonPrameterInstance))
-			{
-				LOG_ERROR(LogTemp, TEXT("Season MaterialPrameterCollectionInstance is invalid"));
-				return;
-			}
+			LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is not valid"));
+			return;
+		}
+
+		EnvironmentAsset = WorldSettings->EnvironmentAsset;
+		if (!IsValid(EnvironmentAsset) || !EnvironmentAsset->SeasonMaterialParameter)
+		{
+			LOG_ERROR(LogTemp, TEXT("EnvironmentAsset or SeasonMaterialParameter is not valid"));
+			return;
+		}
+
+		SeasonPrameterInstance = World->GetParameterCollectionInstance(EnvironmentAsset->SeasonMaterialParameter);
+		if (!IsValid(SeasonPrameterInstance))
+		{
+			LOG_ERROR(LogTemp, TEXT("Season MaterialPrameterCollectionInstance is invalid"));
+			return;
 		}
 
 		if (GameClockSubsystem = World->GetSubsystem<UGameClockSubsystem>())

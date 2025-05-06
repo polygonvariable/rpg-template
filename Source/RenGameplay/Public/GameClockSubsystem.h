@@ -73,12 +73,16 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsNight() const;
 
+
+
+	UFUNCTION(BlueprintPure)
+	bool IsActive() const;
+
 protected:
 
 	FDelegateHandle OnWorldBeginTearDownHandle;
 
-
-
+	
 	UPROPERTY()
 	TObjectPtr<UTimer> ClockTimer;
 

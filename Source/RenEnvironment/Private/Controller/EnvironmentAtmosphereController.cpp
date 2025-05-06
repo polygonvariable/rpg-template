@@ -9,54 +9,19 @@
 // Project Headers
 #include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenGlobal/Public/Library/MiscLibrary.h"
+
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 
 
-void UEnvironmentAtmosphereController::SetComponents(const TMap<uint8, TWeakObjectPtr<USceneComponent>>& Components)
-{
-	if (Components.Num() == 0) return;
-	if (!Components.FindRef(0).IsValid()) return;
-	Atmosphere = Cast<USkyAtmosphereComponent>(Components.FindRef(0).Get());
-}
-
-void UEnvironmentAtmosphereController::HandleItemChanged(const FInstancedStruct& Item)
-{
-	if (!Atmosphere.IsValid() || !ActiveItem.IsValid()) return;
-
-	if (const FEnvironmentAtmosphereProfile* ResolvedProfile = ActiveItem.GetPtr<FEnvironmentAtmosphereProfile>())
-	{
-		ActiveProfile = ResolvedProfile;
-		StartTransition();
-	}
-}
-
-void UEnvironmentAtmosphereController::HandleTransitionTick(float CurrentTime)
-{
-	if (!Atmosphere.IsValid() || !ActiveProfile)
-	{
-		StopTransition();
-		return;
-	}
-
-	float Alpha = TransitionTimer->GetNormalizedAlpha();
-	float AScatter = Atmosphere->MieScatteringScale;
-	float BScatter = ActiveProfile->MieScatteringScale;
-	Atmosphere->SetMieScatteringScale(FMath::Lerp(AScatter, BScatter, Alpha));
-}
-
-
-
-UEnvironmentAtmosphereController2::UEnvironmentAtmosphereController2()
-{
-	ProfileType = EEnvironmentProfileType::Atmosphere;
-}
-
-void UEnvironmentAtmosphereController2::InitializeController()
+void UEnvironmentAtmosphereController::InitializeController()
 {
 	for (TObjectIterator<USkyAtmosphereComponent> Itr; Itr; ++Itr)
 	{
+		if (!UMiscLibrary::IsInGameWorld(Itr->GetWorld())) continue;
+
 		if (Itr->ComponentHasTag(ComponentName) && IsValid(*Itr))
 		{
 			AtmosphereComponent = *Itr;
@@ -65,7 +30,7 @@ void UEnvironmentAtmosphereController2::InitializeController()
 	}
 }
 
-void UEnvironmentAtmosphereController2::HandleItemChanged(UObject* Item)
+void UEnvironmentAtmosphereController::HandleItemChanged(UObject* Item)
 {
 	if (!AtmosphereComponent.IsValid())
 	{

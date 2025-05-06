@@ -49,10 +49,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Assets")
 	TSoftObjectPtr<UDataAsset> ClockAsset;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Assets")
-	TSoftObjectPtr<UDataAsset> EnvironmentAsset;
-
-
 	//UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Weather")
 	//TSoftObjectPtr<UMaterialParameterCollection> WeatherMaterialParameter;
 

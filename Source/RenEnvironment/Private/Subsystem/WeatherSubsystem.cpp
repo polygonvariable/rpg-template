@@ -10,6 +10,7 @@
 #include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
+#include "EnvironmentWorldSettings.h"
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 #include "RenEnvironment/Public/Asset/WeatherAsset.h"
 #include "RenEnvironment/Public/Controller/WeatherController.h"
@@ -99,20 +100,27 @@ void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem initialized"));
+}
+
+void UWeatherSubsystem::PostInitialize()
+{
+	Super::PostInitialize();
+	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem post initialized"));
 
 
-	if (const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>())
+	if (UWorld* World = GetWorld())
 	{
-		if (GameMetadata->EnvironmentAsset.IsNull())
+		AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(World->GetWorldSettings());
+		if (!IsValid(WorldSettings))
 		{
-			PRINT_ERROR(LogTemp, 5.0f, TEXT("EnvironmentAsset is not valid"));
+			LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is not valid"));
 			return;
 		}
 
-		EnvironmentAsset = Cast<UEnvironmentAsset>(GameMetadata->EnvironmentAsset.LoadSynchronous());
+		EnvironmentAsset = WorldSettings->EnvironmentAsset;
 		if (!IsValid(EnvironmentAsset))
 		{
-			PRINT_ERROR(LogTemp, 5.0f, TEXT("Environment cast failed or is not valid"));
+			LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is not valid"));
 			return;
 		}
 	}
@@ -122,6 +130,7 @@ void UWeatherSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem begin play"));
+
 
 	if (CreateWeatherController())
 	{

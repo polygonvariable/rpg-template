@@ -14,10 +14,10 @@
 #include "SeasonSubsystem.generated.h"
 
 // Forward Declarations
-class UTimer;
 class UMaterialParameterCollectionInstance;
-class USeasonAsset;
 class UGameClockSubsystem;
+
+class USeasonAsset;
 class UGameClockAsset;
 class UEnvironmentAsset;
 

@@ -6,11 +6,12 @@
 // Project Headers
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Timer/Timer.h"
-#include "RenCore/Public/Asset/GameClockAsset.h"
 
 #include "RenGlobal/Public/Library/MiscLibrary.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenGlobal/Public/Record/ClockRecord.h"
+
+#include "RenAsset/Public/Game/GameClockAsset.h"
 
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
@@ -140,6 +141,12 @@ bool UGameClockSubsystem::IsDay() const
 bool UGameClockSubsystem::IsNight() const
 {
 	return !IsDay();
+}
+
+bool UGameClockSubsystem::IsActive() const
+{
+	if(!IsValid(ClockTimer)) return false;
+	return ClockTimer->IsActive();
 }
 
 

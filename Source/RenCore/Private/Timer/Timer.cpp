@@ -88,7 +88,7 @@ void UTimer::SetTickInterval(const float InTickInterval)
 }
 
 
-const bool UTimer::bIsActive()
+const bool UTimer::IsActive()
 {
 	if (UWorld* World = GetWorld())
 	{
