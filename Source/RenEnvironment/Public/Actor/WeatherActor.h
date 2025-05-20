@@ -32,8 +32,16 @@ class AWeatherActor : public AActor
 
 protected:
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWeatherAsset> WeatherAsset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int Priority;
+
+
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UWeatherSubsystem> WeatherSubsystem;
+
 
 	/**
 	* TMap of weights to weather profiles
@@ -45,10 +53,10 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
-	void AddWeather(UWeatherAsset* WeatherAsset, int Priority);
+	void AddWeather();
 
 	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
-	void RemoveWeather(int Priority);
+	void RemoveWeather();
 
 
 

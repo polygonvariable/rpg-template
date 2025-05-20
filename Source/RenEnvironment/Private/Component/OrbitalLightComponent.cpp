@@ -26,19 +26,7 @@ void UOrbitalLightComponent::SetTime(float NewTime)
 	int Second = static_cast<int>(((Time - Hour) * 60.0f - Minute) * 60.0f) % 60;
 
 	FSunPositionData SunPositionData;
-	USunPositionFunctionLibrary::GetSunPosition(
-		Latitude,
-		Longitude,
-		TimeZone,
-		true,
-		Year,
-		Month,
-		Day,
-		Hour,
-		Minute,
-		Second,
-		SunPositionData
-	);
+	USunPositionFunctionLibrary::GetSunPosition(Latitude, Longitude, TimeZone, true, Year, Month, Day, Hour, Minute, Second, SunPositionData);
 
 	float RotationOrientation = bInverseRotation ? -1 : 1;
 	float RotationYaw = (SunPositionData.Azimuth + NorthPoleOffset) * RotationOrientation;

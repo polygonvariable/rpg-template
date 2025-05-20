@@ -11,7 +11,9 @@
 #include "RenCore/Public/Timer/Timer.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
+#include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
 #include "RenEnvironment/Public/Asset/WeatherAsset.h"
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Profile/WeatherProfile.h"
 
 
@@ -63,6 +65,15 @@ void UWeatherController::HandleItemChanged(UObject* Item)
 	{
 		if(WeatherAsset->WeatherName == CurrentWeatherName) return;
 
+		if (UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>())
+		{
+			for (TPair<TObjectPtr<UEnvironmentProfileAsset>, int>& Kvp : WeatherAsset->EnvironmentProfiles)
+			{
+				if(!IsValid(Kvp.Key)) continue;
+				EnvironmentSubsystem->AddStackedProfile(Kvp.Key, Kvp.Value);
+			}
+		}
+
 		CurrentWeatherName = WeatherAsset->WeatherName;
 		CurrentWeatherAsset = WeatherAsset;
 
@@ -74,9 +85,27 @@ void UWeatherController::HandleItemChanged(UObject* Item)
 	}
 }
 
+
+//void UWeatherController::HandleItemRemoved(UObject* Item)
+//{
+//	if (UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item))
+//	{
+//		if (UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>())
+//		{
+//			for (TPair<TObjectPtr<UEnvironmentProfileAsset>, int>& Kvp : WeatherAsset->EnvironmentProfiles)
+//			{
+//				if (Kvp.Key == nullptr) continue;
+//				EnvironmentSubsystem->RemoveStackedProfile(Kvp.Key->ProfileType, Kvp.Value);
+//			}
+//		}
+//	}
+//}
+
+
 void UWeatherController::HandleNoItemsLeft()
 {
 	CurrentWeatherName = NAME_None;
 	CurrentWeatherAsset = nullptr;
-}
 
+	LOG_ERROR(LogTemp, TEXT("Weather controller has no items left, which was not supposed to happen"));
+}

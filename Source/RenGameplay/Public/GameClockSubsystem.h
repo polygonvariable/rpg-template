@@ -39,6 +39,11 @@ public:
 
 
 
+	UFUNCTION(BlueprintPure)
+	UGameClockAsset* GetClockAsset() const;
+
+
+
 	UFUNCTION()
 	void StartClock();
 
@@ -82,6 +87,9 @@ protected:
 
 	FDelegateHandle OnWorldBeginTearDownHandle;
 
+
+	UPROPERTY()
+	TObjectPtr<UGameClockAsset> ClockAsset;
 	
 	UPROPERTY()
 	TObjectPtr<UTimer> ClockTimer;
@@ -92,7 +100,7 @@ protected:
 
 
 	UPROPERTY()
-	int CurrentDay = 0;
+	int CurrentDay = 0; // Clamped from 1 and TotalDaysInAYear
 
 	UPROPERTY()
 	float CurrentTime = 0.0f; // Clamped from 0 and TotalSecondsInADay
@@ -103,7 +111,7 @@ protected:
 
 
 	UFUNCTION()
-	void InitializeClock();
+	bool CreateClock();
 
 	UFUNCTION()
 	void CleanupClock();
@@ -127,8 +135,13 @@ protected:
 protected:
 
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
+
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+
+	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
+
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+
 	virtual void Deinitialize() override;
 
 public:

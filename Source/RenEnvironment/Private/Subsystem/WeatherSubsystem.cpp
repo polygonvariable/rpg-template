@@ -19,18 +19,22 @@
 
 void UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
 {
-	if (IsValid(WeatherController) && IsValid(WeatherAsset))
+	if (!IsValid(WeatherController) || !IsValid(WeatherAsset))
 	{
-		WeatherController->AddItem(WeatherAsset, Priority);
+		LOG_ERROR(LogTemp, "WeatherController or WeatherAsset is not valid");
+		return;
 	}
+	WeatherController->AddItem(WeatherAsset, Priority);
 }
 
 void UWeatherSubsystem::RemoveWeather(int Priority)
 {
-	if (IsValid(WeatherController))
+	if (!IsValid(WeatherController))
 	{
-		WeatherController->RemoveItem(Priority);
+		LOG_ERROR(LogTemp, "WeatherController is not valid");
+		return;
 	}
+	WeatherController->RemoveItem(Priority);
 }
 
 
@@ -48,7 +52,7 @@ void UWeatherSubsystem::CreateWeatherTimer()
 		WeatherTimer->OnTick.AddDynamic(this, &UWeatherSubsystem::HandleWeatherTimer);
 	}
 
-	WeatherTimer->StartTimer(10.0f, 0, false);
+	WeatherTimer->StartTimer(WeatherChangeTime, 0, false);
 }
 
 void UWeatherSubsystem::HandleWeatherTimer(float ElapsedTime)
@@ -145,6 +149,7 @@ void UWeatherSubsystem::Deinitialize()
 	{
 		WeatherController->MarkAsGarbage();
 	}
+	WeatherController = nullptr;
 
 	if (IsValid(WeatherTimer))
 	{
@@ -152,6 +157,7 @@ void UWeatherSubsystem::Deinitialize()
 		WeatherTimer->OnTick.RemoveAll(this);
 		WeatherTimer->MarkAsGarbage();
 	}
+	WeatherTimer = nullptr;
 
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem deinitialized"));
 	Super::Deinitialize();

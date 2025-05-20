@@ -3,4 +3,6 @@
 // Parent Header
 #include "Asset/WeatherAsset.h"
 
+// Project Headers
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 

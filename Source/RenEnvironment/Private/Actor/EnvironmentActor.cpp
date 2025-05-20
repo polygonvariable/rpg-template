@@ -2,6 +2,7 @@
 
 // Parent Header
 #include "Actor/EnvironmentActor.h"
+#include "Kismet/GameplayStatics.h"
 
 // Engine Headers
 #include "Components/ExponentialHeightFogComponent.h"
@@ -11,23 +12,12 @@
 #include "Components/StaticMeshComponent.h"
 
 // Project Header
-#include "RenCore/Public/Timer/Timer.h"
-#include "RenGameplay/Public/GameClockSubsystem.h"
-#include "RenGlobal/Public/Library/MiscLibrary.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
-
 #include "Component/OrbitalLightComponent.h"
-#include "Controller/EnvironmentAtmosphereController.h"
-#include "Controller/EnvironmentFogController.h"
-#include "Controller/EnvironmentLightController.h"
-#include "Profile/EnvironmentProfileType.h"
-#include "Subsystem/EnvironmentSubsystem.h"
-
 
 
 AEnvironmentActor::AEnvironmentActor()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	if(IsValid(SceneComponent))
@@ -38,7 +28,7 @@ AEnvironmentActor::AEnvironmentActor()
 		if (IsValid(SkyLight))
 		{
 			SkyLight->SetupAttachment(SceneComponent);
-			SkyLight->bRealTimeCapture = true;
+			SkyLight->SetRealTimeCaptureEnabled(true);
 			SkyLight->CubemapResolution = 32;
 		}
 
@@ -53,171 +43,69 @@ AEnvironmentActor::AEnvironmentActor()
 		if (IsValid(ExponentialHeightFog))
 		{
 			ExponentialHeightFog->SetupAttachment(SceneComponent);
-			ExponentialHeightFog->FogDensity = 0.025f;
+			ExponentialHeightFog->SetFogDensity(0.025f);
 			ExponentialHeightFog->ComponentTags.Push(TEXT("Environment.ExponentialHeightFog"));
 		}
 
-		Sun = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("Sun"));
-		if (IsValid(Sun))
+		SunLight = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("SunLight"));
+		if (IsValid(SunLight))
 		{
-			Sun->SetupAttachment(SceneComponent);
-			Sun->ForwardShadingPriority = 1;
-			Sun->AtmosphereSunLightIndex = 0;
-			Sun->ComponentTags.Push(TEXT("Environment.Sun"));
+			SunLight->SetupAttachment(SceneComponent);
+			SunLight->SetForwardShadingPriority(1);
+			SunLight->SetAtmosphereSunLightIndex(0);
+			SunLight->SetLightColor(FColor::FromHex("#FFFFFF"));
+			SunLight->ComponentTags.Push(TEXT("Environment.Sun"));
 		}
 
-		Moon = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("Moon"));
-		if (IsValid(Moon))
+		MoonLight = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("Moon"));
+		if (IsValid(MoonLight))
 		{
-			Moon->SetupAttachment(SceneComponent);
-			Moon->SpecularScale = 0.05f;
-			Moon->Intensity = 5.0f;
-			Moon->LightSourceAngle = 0.0f;
-			Moon->bInverseRotation = true;
-			Moon->ForwardShadingPriority = 0;
-			Moon->AtmosphereSunLightIndex = 1;
-			Moon->DynamicShadowCascades = 1;
-			Moon->LightColor = FColor::FromHex("#4B6F91");
-			Moon->ComponentTags.Push(TEXT("Environment.Moon"));
+			MoonLight->SetupAttachment(SceneComponent);
+			MoonLight->SetSpecularScale(0.05f);
+			MoonLight->SetIntensity(5.0f);
+			MoonLight->SetLightSourceAngle(0.0f);
+			MoonLight->SetForwardShadingPriority(0);
+			MoonLight->SetAtmosphereSunLightIndex(1);
+			MoonLight->SetDynamicShadowCascades(1);
+			MoonLight->SetLightColor(FColor::FromHex("#4B6F91"));
+			MoonLight->bInverseRotation = true;
+			MoonLight->ComponentTags.Push(TEXT("Environment.Moon"));
 		}
 
 		SkyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SkyMesh"));
 		if (IsValid(SkyMesh))
 		{
 			SkyMesh->SetupAttachment(SceneComponent);
-			SkyMesh->bCastDynamicShadow = false;
-			SkyMesh->bCastStaticShadow = false;
-			SkyMesh->bCastContactShadow = false;
-			SkyMesh->bAffectDistanceFieldLighting = false;
+			SkyMesh->SetCastShadow(false);
+			SkyMesh->SetCastContactShadow(false);
+			SkyMesh->SetAffectDynamicIndirectLighting(false);
+			SkyMesh->SetAffectDistanceFieldLighting(false);
+			SkyMesh->SetCollisionProfileName(TEXT("NoCollision"));
 			SkyMesh->PrimaryComponentTick.bStartWithTickEnabled = false;
+		}
+
+		MoonMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MoonMesh"));
+		if (IsValid(MoonMesh))
+		{
+			MoonMesh->SetupAttachment(SceneComponent);
+			MoonMesh->SetCastShadow(false);
+			MoonMesh->SetCastContactShadow(false);
+			MoonMesh->SetAffectDynamicIndirectLighting(false);
+			MoonMesh->SetAffectDistanceFieldLighting(false);
+			MoonMesh->SetCollisionProfileName(TEXT("NoCollision"));
+			MoonMesh->PrimaryComponentTick.bStartWithTickEnabled = false;
 		}
 	}
 }
 
 
-
-void AEnvironmentActor::InitializeDayCycle()
-{
-	if (IsValid(DayCycleTimer))
-	{
-		LOG_ERROR(LogTemp, "DayCycleTimer is already valid");
-		return;
-	}
-
-	DayCycleTimer = NewObject<UTimer>(this);
-	if (!IsValid(DayCycleTimer))
-	{
-		LOG_ERROR(LogTemp, "Failed to create DayCycleTimer");
-		return;
-	}
-
-	DayCycleTimer->OnTick.AddDynamic(this, &AEnvironmentActor::HandleDayCycleTick);
-
-	LOG_INFO(LogTemp, "DayCycleTimer created");
-}
-
-void AEnvironmentActor::CleanupDayCycle()
-{
-	if (!IsValid(DayCycleTimer))
-	{
-		LOG_ERROR(LogTemp, "DayCycleTimer is not valid");
-		return;
-	}
-
-	DayCycleTimer->StopTimer(true);
-	DayCycleTimer->OnTick.RemoveAll(this);
-	DayCycleTimer->MarkAsGarbage();
-	
-	LOG_INFO(LogTemp, "DayCycleTimer removed");
-}
-
-
-void AEnvironmentActor::StartDayCycle()
-{
-	if (!IsValid(DayCycleTimer) || !IsValid(GameClockSubsystem))
-	{
-		LOG_ERROR(LogTemp, "DayCycleTimer or GameClockSubsystem is not valid");
-		return;
-	}
-	
-	DayCycleTimer->StartTimer(0.1f, 0);
-}
-
-void AEnvironmentActor::StopDayCycle()
-{
-	if (!IsValid(DayCycleTimer))
-	{
-		LOG_ERROR(LogTemp, "DayCycleTimer is not valid");
-		return;
-	}
-
-	DayCycleTimer->StopTimer();
-}
-
-void AEnvironmentActor::HandleDayCycleTick(float CurrentTime)
-{
-	float NormalizedTime = GameClockSubsystem->GetSmoothNormalizedTime();
-	float RealTime = NormalizedTime * 24.0f;
-
-	if (IsValid(Sun)) Sun->SetTime(RealTime);
-	if (IsValid(Moon)) Moon->SetTime(RealTime);
-}
-
-
-
-void AEnvironmentActor::RegisterClock()
-{
-	if(!IsValid(GameClockSubsystem)) return;
-	GameClockSubsystem->OnClockStarted.AddDynamic(this, &AEnvironmentActor::HandleClockStarted);
-	GameClockSubsystem->OnClockStopped.AddDynamic(this, &AEnvironmentActor::HandleClockStopped);
-}
-
-void AEnvironmentActor::UnregisterClock()
-{
-	if (!IsValid(GameClockSubsystem)) return;
-	GameClockSubsystem->OnClockStarted.RemoveAll(this);
-	GameClockSubsystem->OnClockStopped.RemoveAll(this);
-}
-
-void AEnvironmentActor::HandleClockStarted()
-{
-	StartDayCycle();
-}
-
-void AEnvironmentActor::HandleClockStopped()
-{
-	StopDayCycle();
-}
-
-
-
-void AEnvironmentActor::InitializeControllers()
-{
-
-}
-
-void AEnvironmentActor::CleanupControllers()
-{
-
-}
-
-
-
 void AEnvironmentActor::BeginPlay()
 {
-	//InitializeControllers();
-	//InitializeDayCycle();
-	//RegisterClock();
-
 	Super::BeginPlay();
 }
 
 void AEnvironmentActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	//CleanupControllers();
-	//CleanupDayCycle();
-	//UnregisterClock();
-
 	Super::EndPlay(EndPlayReason);
 }
 

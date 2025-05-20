@@ -9,6 +9,8 @@
 // Generated Headers
 #include "WeatherAsset.generated.h"
 
+// Forward Declarations
+class UEnvironmentProfileAsset;
 
 
 /**
@@ -38,7 +40,15 @@ public:
     float MaterialOpacity = 0.0f;
 
     UPROPERTY(EditDefaultsOnly)
-    FColor MaterialColor = FColor::White;
+    FColor MaterialColor = FColor::Transparent;
+
+
+    /*
+        Key: Environment Profile Asset
+		Value: Priority of the profile (make sure to use same priority for multiple profiles)
+    */
+    UPROPERTY(EditDefaultsOnly)
+    TMap<TObjectPtr<UEnvironmentProfileAsset>, int> EnvironmentProfiles;
 
 };
 

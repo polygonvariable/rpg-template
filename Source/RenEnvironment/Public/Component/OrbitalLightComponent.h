@@ -31,10 +31,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "1800", UIMax = "2200", ClampMax = "4000", ClampMin = "0"), Category = "Orbital Light|Date")
 	int Year = 2022;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "1", ClampMin = "1", UIMax = "12", ClampMax = "12"), Category = "Orbital Light|Date")
 	int Month = 9;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "1", ClampMin = "1", UIMax = "31", ClampMax = "31"), Category = "Orbital Light|Date")
 	int Day = 21;
@@ -43,14 +41,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "-89.99", ClampMin = "-89.99", UIMax = "89.99", ClampMax = "89.99"), Category = "Orbital Light|Location")
 	float Latitude = 45.0f;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMax = "180", UIMin = "-180", ClampMin = "-180", ClampMax = "180"), Category = "Orbital Light|Location")
 	float Longitude = -73.0f;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "-12", ClampMin = "-12", UIMax = "14", ClampMax = "14"), Category = "Orbital Light|Location")
 	float TimeZone = -4.0f;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "-360", ClampMin = "-360", UIMax = "360", ClampMax = "360"), Category = "Orbital Light|Location")
 	float NorthPoleOffset = 0.0f;
@@ -58,7 +53,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetTime(float NewTime);
-
 
 	UFUNCTION(BlueprintCallable)
 	float GetTime();

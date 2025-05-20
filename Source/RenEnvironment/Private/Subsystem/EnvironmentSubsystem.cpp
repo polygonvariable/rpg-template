@@ -63,7 +63,7 @@ bool UEnvironmentSubsystem::CreateDiscreteController(TSubclassOf<UEnvironmentDis
 
 void UEnvironmentSubsystem::AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority)
 {
-	if(IsValid(ProfileAsset))
+	if (!IsValid(ProfileAsset))
 	{
 		PRINT_ERROR(LogTemp, 2.0f, TEXT("ProfileAsset is not valid"));
 		return;

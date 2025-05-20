@@ -19,8 +19,21 @@
 
 
 
+USeasonAsset* USeasonSubsystem::GetCurrentSeason()
+{
+	return CurrentSeason;
+}
+
+
 USeasonAsset* USeasonSubsystem::GetSeasonAlpha(int CurrentDay, int TotalDays, float& Alpha, float& CurveAlpha) const
 {
+
+	if (!IsValid(EnvironmentAsset))
+	{
+		PRINT_ERROR(LogTemp, 2.0f, TEXT("EnvironmentAsset or GameClockAsset is not valid"));
+		return nullptr;
+	}
+
 	TArray<USeasonAsset*>& SeasonAssets = EnvironmentAsset->DefaultSeasons;
 
 	int SeasonCount = SeasonAssets.Num();
@@ -78,6 +91,7 @@ bool USeasonSubsystem::IsSeasonsValid() const
 	int SeasonCount = SeasonAssets.Num();
 	if (SeasonCount == 0)
 	{
+		LOG_ERROR(LogTemp, TEXT("Seasons are empty"));
 		return false;
 	}
 
@@ -86,7 +100,8 @@ bool USeasonSubsystem::IsSeasonsValid() const
 		USeasonAsset* Current = SeasonAssets[i];
 		if (!IsValid(Current))
 		{
-			continue;
+			LOG_ERROR(LogTemp, TEXT("Season asset is not valid"));
+			return false;
 		}
 
 		if (Current->SeasonStartDay > Current->SeasonEndDay)
@@ -103,7 +118,6 @@ bool USeasonSubsystem::IsSeasonsValid() const
 				return false;
 			}
 		}
-
 	}
 
 	USeasonAsset* FirstSeason = SeasonAssets[0];
@@ -134,13 +148,18 @@ void USeasonSubsystem::HandleDayChange(int CurrentDay)
 	{
 		PRINT_WARNING(LogTemp, 1.0f, TEXT("Season: %s, Alpha: %f, CurveAlpha: %f"), *Season->SeasonName.ToString(), Alpha, CurveAlpha);
 
-		SeasonPrameterInstance->SetScalarParameterValue("SeasonSpecular", FMath::Lerp(0.0f, Season->MaterialSpecular, CurveAlpha));
-		SeasonPrameterInstance->SetScalarParameterValue("SeasonRoughness", FMath::Lerp(0.0f, Season->MaterialRoughness, CurveAlpha));
-		SeasonPrameterInstance->SetScalarParameterValue("SeasonOpacity", FMath::Lerp(0.0f, Season->MaterialOpacity, CurveAlpha));
-		SeasonPrameterInstance->SetVectorParameterValue("SeasonColor", FMath::CInterpTo(FLinearColor::Transparent, Season->MaterialColor, CurveAlpha, 1.0f));
+		if (!IsValid(CurrentSeason) || CurrentSeason->SeasonName != Season->SeasonName)
+		{
+			CurrentSeason = Season;
+			OnSeasonChanged.Broadcast(CurrentSeason);
+		}
+
+		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonSpecular"), FMath::Lerp(0.0f, Season->MaterialSpecular, CurveAlpha));
+		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonRoughness"), FMath::Lerp(0.0f, Season->MaterialRoughness, CurveAlpha));
+		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonOpacity"), FMath::Lerp(0.0f, Season->MaterialOpacity, CurveAlpha));
+		SeasonPrameterInstance->SetVectorParameterValue(TEXT("SeasonColor"), FMath::CInterpTo(FLinearColor::Transparent, Season->MaterialColor, CurveAlpha, 1.0f));
 	}
 }
-
 
 
 bool USeasonSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
@@ -158,37 +177,17 @@ void USeasonSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		if (GameMetadata->ClockAsset.IsNull())
 		{
-			PRINT_ERROR(LogTemp, 5.0f, TEXT("ClockAsset is not valid"));
+			LOG_ERROR(LogTemp, TEXT("ClockAsset is not valid"));
 			return;
 		}
 
 		GameClockAsset = Cast<UGameClockAsset>(GameMetadata->ClockAsset.LoadSynchronous());
 		if (!IsValid(GameClockAsset))
 		{
-			PRINT_ERROR(LogTemp, 5.0f, TEXT("ClockAsset cast failed or is not valid"));
+			LOG_ERROR(LogTemp, TEXT("ClockAsset cast failed or is not valid"));
 			return;
 		}
 	}
-}
-
-void USeasonSubsystem::OnWorldBeginPlay(UWorld& InWorld)
-{
-	Super::OnWorldBeginPlay(InWorld);
-	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem begin play"));
-
-
-
-}
-
-void USeasonSubsystem::Deinitialize()
-{
-	if (IsValid(GameClockSubsystem))
-	{
-		GameClockSubsystem->OnDayChanged.RemoveAll(this);
-	}
-
-	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem deinitialized"));
-	Super::Deinitialize();
 }
 
 void USeasonSubsystem::PostInitialize()
@@ -225,5 +224,29 @@ void USeasonSubsystem::PostInitialize()
 			GameClockSubsystem->OnDayChanged.AddDynamic(this, &USeasonSubsystem::HandleDayChange);
 		}
 	}
+}
+
+void USeasonSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem begin play"));
+}
+
+void USeasonSubsystem::Deinitialize()
+{
+	if (IsValid(GameClockSubsystem))
+	{
+		GameClockSubsystem->OnDayChanged.RemoveAll(this);
+	}
+
+	GameClockAsset = nullptr;
+	GameClockSubsystem = nullptr;
+
+	CurrentSeason = nullptr;
+	EnvironmentAsset = nullptr;
+
+
+	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem deinitialized"));
+	Super::Deinitialize();
 }
 

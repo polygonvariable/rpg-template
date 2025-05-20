@@ -40,6 +40,10 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float WeatherChangeTime = 10.0f;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UTimer> WeatherTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

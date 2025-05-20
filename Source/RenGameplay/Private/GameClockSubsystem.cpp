@@ -3,6 +3,9 @@
 // Parent Header
 #include "GameClockSubsystem.h"
 
+// Engine Headers
+#include "Kismet/GameplayStatics.h"
+
 // Project Headers
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Timer/Timer.h"
@@ -18,24 +21,26 @@
 
 
 
-void UGameClockSubsystem::InitializeClock()
+bool UGameClockSubsystem::CreateClock()
 {
 	if (IsValid(ClockTimer))
 	{
 		LOG_WARNING(LogClockSubsystem, TEXT("ClockTimer is already valid"));
-		return;
+		return false;
 	}
 
 	ClockTimer = NewObject<UTimer>(this);
 	if (!IsValid(ClockTimer))
 	{
 		LOG_ERROR(LogClockSubsystem, TEXT("Failed to create ClockTimer"));
-		return;
+		return false;
 	}
 
 	ClockTimer->OnTick.AddDynamic(this, &UGameClockSubsystem::HandleClockTick);
 
 	LOG_INFO(LogClockSubsystem, TEXT("ClockTimer created"));
+
+	return true;
 }
 
 void UGameClockSubsystem::CleanupClock()
@@ -54,6 +59,11 @@ void UGameClockSubsystem::CleanupClock()
 }
 
 
+
+UGameClockAsset* UGameClockSubsystem::GetClockAsset() const
+{
+	return ClockAsset;
+}
 
 void UGameClockSubsystem::StartClock()
 {
@@ -145,8 +155,7 @@ bool UGameClockSubsystem::IsNight() const
 
 bool UGameClockSubsystem::IsActive() const
 {
-	if(!IsValid(ClockTimer)) return false;
-	return ClockTimer->IsActive();
+	return IsValid(ClockTimer) && ClockTimer->IsActive();
 }
 
 
@@ -158,8 +167,10 @@ void UGameClockSubsystem::LoadWorldTime()
 		return;
 	}
 
+	FName MapName = FName(GetWorld()->GetMapName());
+
 	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
-	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
+	if (FClockRecord* ClockRecord = Records.Find(MapName))
 	{
 		CurrentTime = FMath::Clamp(ClockRecord->Time, 0.0f, TotalSecondsInADay);
 		CurrentDay = FMath::Clamp(ClockRecord->DayCount, 1, TotalDaysInAYear);
@@ -182,8 +193,10 @@ void UGameClockSubsystem::SaveWorldTime()
 		return;
 	}
 
+	FName MapName = FName(GetWorld()->GetMapName());
+
 	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
-	if (FClockRecord* ClockRecord = Records.Find("DEFAULT"))
+	if (FClockRecord* ClockRecord = Records.Find(MapName))
 	{
 		ClockRecord->Time = GetCurrentTime();
 		ClockRecord->DayCount = GetCurrentDay();
@@ -210,6 +223,7 @@ void UGameClockSubsystem::HandleClockTick(float ElapsedTime)
 		{
 			CurrentDay = 1;
 		}
+
 		OnDayChanged.Broadcast(CurrentDay);
 	}
 
@@ -239,27 +253,27 @@ void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		if (GameMetadata->ClockAsset.IsNull())
 		{
-			PRINT_ERROR(LogClockSubsystem, 5.0f, TEXT("ClockAsset is not valid"));
+			LOG_ERROR(LogClockSubsystem, TEXT("ClockAsset is not valid"));
 			return;
 		}
 
-		UGameClockAsset* ClockAsset = Cast<UGameClockAsset>(GameMetadata->ClockAsset.LoadSynchronous());
+		ClockAsset = Cast<UGameClockAsset>(GameMetadata->ClockAsset.LoadSynchronous());
 		if (!IsValid(ClockAsset))
 		{
-			PRINT_ERROR(LogClockSubsystem, 5.0f, TEXT("ClockAsset cast failed or is not valid"));
+			LOG_ERROR(LogClockSubsystem, TEXT("ClockAsset cast failed or is not valid"));
 			return;
 		}
 
 		TotalSecondsInADay = ClockAsset->TotalSecondsInADay;
 		TotalDaysInAYear = ClockAsset->TotalDaysInAYear;
 	}
+
 }
 
-void UGameClockSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+void UGameClockSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
-	Super::OnWorldBeginPlay(InWorld);
-	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem OnWorldBeginPlay"));
-
+	Super::OnWorldComponentsUpdated(InWorld);
+	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem OnWorldComponentsUpdated"));
 
 	if (!OnWorldBeginTearDownHandle.IsValid())
 	{
@@ -272,11 +286,15 @@ void UGameClockSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 		LoadWorldTime();
 	}
 
-	InitializeClock();
-
-	if (bAutoStart) {
+	if (CreateClock() && bAutoStart) {
 		StartClock();
 	}
+}
+
+void UGameClockSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	LOG_WARNING(LogClockSubsystem, TEXT("ClockSubsystem OnWorldBeginPlay"));
 }
 
 void UGameClockSubsystem::Deinitialize()

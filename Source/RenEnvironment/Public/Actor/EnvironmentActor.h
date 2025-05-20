@@ -17,10 +17,6 @@ class UExponentialHeightFogComponent;
 class UOrbitalLightComponent;
 class UStaticMeshComponent;
 
-class UTimer;
-class UEnvironmentSubsystem;
-class UGameClockSubsystem;
-
 
 /**
  *
@@ -36,15 +32,6 @@ public:
 	AEnvironmentActor();
 
 
-
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
-
-	UPROPERTY()
-	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
-
-
-
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<USceneComponent> SceneComponent;
 
@@ -58,62 +45,20 @@ public:
 	TObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFog;
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
-	TObjectPtr<UOrbitalLightComponent> Sun;
+	TObjectPtr<UOrbitalLightComponent> SunLight;
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
-	TObjectPtr<UOrbitalLightComponent> Moon;
+	TObjectPtr<UOrbitalLightComponent> MoonLight;
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> SkyMesh;
 
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> MoonMesh;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
 	float Time = 0.0f;
-
-protected:
-
-	UPROPERTY()
-	TObjectPtr<UTimer> DayCycleTimer;
-
-
-
-	UFUNCTION()
-	void InitializeDayCycle();
-
-	UFUNCTION()
-	void CleanupDayCycle();
-
-	UFUNCTION()
-	void StartDayCycle();
-
-	UFUNCTION()
-	void StopDayCycle();
-
-	UFUNCTION()
-	void HandleDayCycleTick(float CurrentTime);
-
-
-
-	UFUNCTION()
-	void RegisterClock();
-
-	UFUNCTION()
-	void UnregisterClock();
-
-	UFUNCTION()
-	void HandleClockStarted();
-
-	UFUNCTION()
-	void HandleClockStopped();
-
-
-
-	UFUNCTION(BlueprintCallable)
-	void InitializeControllers();
-
-	UFUNCTION(BlueprintCallable)
-	void CleanupControllers();
 
 protected:
 

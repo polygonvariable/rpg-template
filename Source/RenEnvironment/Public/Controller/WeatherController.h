@@ -15,6 +15,8 @@
 class UMaterialParameterCollectionInstance;
 class UWeatherAsset;
 
+
+
 /**
  * 
  */
@@ -33,7 +35,6 @@ protected:
 	UMaterialParameterCollectionInstance* MaterialCollectionInstance;
 
 
-
 	UPROPERTY(BlueprintReadOnly)
 	FName CurrentWeatherName = NAME_None;
 
@@ -49,6 +50,7 @@ protected:
 protected:
 
 	virtual void HandleItemChanged(UObject* Item) override;
+	//virtual void HandleItemRemoved(UObject* Item) override;
 	virtual void HandleNoItemsLeft() override;
 
 };

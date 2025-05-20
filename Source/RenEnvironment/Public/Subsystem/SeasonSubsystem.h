@@ -33,6 +33,9 @@ class USeasonSubsystem : public UWorldSubsystem
 
 public:
 
+	UFUNCTION(BlueprintCallable)
+	USeasonAsset* GetCurrentSeason();
+
 	UFUNCTION()
 	USeasonAsset* GetSeasonAlpha(int CurrentDay, int TotalDays, float& Alpha, float& CurveAlpha) const;
 
@@ -40,12 +43,11 @@ protected:
 
 	UMaterialParameterCollectionInstance* SeasonPrameterInstance;
 
-
-
 	UPROPERTY()
 	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
 
-
+	UPROPERTY()
+	TObjectPtr<USeasonAsset> CurrentSeason;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UGameClockAsset> GameClockAsset;
@@ -64,10 +66,20 @@ protected:
 protected:
 
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
+
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
-	virtual void Deinitialize() override;
+
 	virtual void PostInitialize() override;
+
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+
+	virtual void Deinitialize() override;
+
+public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSeasonChanged, USeasonAsset*, SeasonAsset);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnSeasonChanged OnSeasonChanged;
 
 };
 

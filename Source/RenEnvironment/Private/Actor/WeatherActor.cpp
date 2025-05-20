@@ -11,28 +11,36 @@
 // Project Header
 #include "RenCore/Public/Priority/PrioritySystem.h"
 #include "RenCore/Public/Timer/Timer.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+
 #include "RenGlobal/Public/Library/MiscLibrary.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
+
+#include "RenEnvironment/Public/Asset/WeatherAsset.h"
 #include "RenEnvironment/Public/Controller/WeatherController.h"
 #include "RenEnvironment/Public/Subsystem/WeatherSubsystem.h"
-#include "RenEnvironment/Public/Asset/WeatherAsset.h"
 
 
 
-void AWeatherActor::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
+void AWeatherActor::AddWeather()
 {
-	if (IsValid(WeatherSubsystem))
+	if (!IsValid(WeatherSubsystem) || !IsValid(WeatherAsset))
 	{
-		WeatherSubsystem->AddWeather(WeatherAsset, Priority);
+        LOG_ERROR(LogTemp, "WeatherSubsystem or WeatherAsset is not valid.");
+		return;
 	}
+
+    WeatherSubsystem->AddWeather(WeatherAsset, Priority);
 }
 
-void AWeatherActor::RemoveWeather(int Priority)
+void AWeatherActor::RemoveWeather()
 {
-	if (IsValid(WeatherSubsystem))
+	if (!IsValid(WeatherSubsystem))
 	{
-		WeatherSubsystem->RemoveWeather(Priority);
+		LOG_ERROR(LogTemp, "WeatherSubsystem is not valid.");
+		return;
 	}
+
+    WeatherSubsystem->RemoveWeather(Priority);
 }
 
 
@@ -91,6 +99,8 @@ void AWeatherActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		WeatherSubsystem->OnWeatherCanChange.RemoveAll(this);
 	}
+    WeatherSubsystem = nullptr;
+
 	Super::EndPlay(EndPlayReason);
 }
 
