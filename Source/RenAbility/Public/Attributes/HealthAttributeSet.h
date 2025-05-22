@@ -8,7 +8,6 @@
 #include "AbilitySystemComponent.h"
 
 // Project Headers
-// #include "AbilityAttributeSet.h"
 #include "AbilityMacro.h"
 
 // Generated Headers
@@ -30,9 +29,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Health)
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData HealthMax;
 	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, HealthMax)
-	
+
 };
