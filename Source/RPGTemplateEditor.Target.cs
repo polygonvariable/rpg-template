@@ -19,10 +19,13 @@ public class RPGTemplateEditorTarget : TargetRules
                 "RenCore",
                 "RenAsset",
                 "RenStorage",
+                "RenDialogue",
+                "RenGameplay",
+                "RenAbility",
                 "RenInventory",
                 "RenEntity",
                 "RenEnvironment",
-                "RenInteract"
+                "RenInteract",
             }
         );
 

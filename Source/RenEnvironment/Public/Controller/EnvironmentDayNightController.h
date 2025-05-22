@@ -31,6 +31,9 @@ class UEnvironmentDayNightController : public UEnvironmentDiscreteController
 public:
 
 	UPROPERTY()
+	FName ActorTag = TEXT("Actor.Environment");
+
+	UPROPERTY()
 	FName SunComponentName = TEXT("Environment.Sun");
 
 	UPROPERTY()

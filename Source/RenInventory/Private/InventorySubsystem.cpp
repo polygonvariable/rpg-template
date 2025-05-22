@@ -5,17 +5,19 @@
 
 // Project Headers
 #include "RenAsset/Public/Inventory/InventoryAsset.h"
+
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
+
+#include "RenGlobal/Public/Inventory/InventoryItemType.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenGlobal/Public/Record/InventoryRecord.h"
-#include "RenGlobal/Public/Inventory/InventoryItemType.h"
+
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
 
 
 
-bool UInventorySubsystem::AddRecord_Implementation(UInventoryAsset* InventoryAsset, const int Quantity)
+bool UInventorySubsystem::AddRecord(UInventoryAsset* InventoryAsset, const int Quantity)
 {
 	if (!Storage || !InventoryAsset || Quantity <= 0)
 	{
@@ -65,7 +67,7 @@ bool UInventorySubsystem::AddRecord_Implementation(UInventoryAsset* InventoryAss
 	return true;
 }
 
-bool UInventorySubsystem::AddRecords_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets, const bool bAllowRollback)
+bool UInventorySubsystem::AddRecords(const TMap<UInventoryAsset*, int32>& InventoryAssets, const bool bAllowRollback)
 {
 	if (!IsValid(Storage))
 	{
@@ -88,7 +90,7 @@ bool UInventorySubsystem::AddRecords_Implementation(const TMap<UInventoryAsset*,
 	return true;
 }
 
-bool UInventorySubsystem::RemoveRecord_Implementation(const FName InventoryRecordId, const int Quantity)
+bool UInventorySubsystem::RemoveRecord(const FName InventoryRecordId, const int Quantity)
 {
 	if (!Storage || Quantity <= 0)
 	{
@@ -119,7 +121,7 @@ bool UInventorySubsystem::RemoveRecord_Implementation(const FName InventoryRecor
 	return true;
 }
 
-bool UInventorySubsystem::RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds, const bool bAllowRollback)
+bool UInventorySubsystem::RemoveRecords(const TMap<FName, int32>& InventoryRecordIds, const bool bAllowRollback)
 {
 	if (!IsValid(Storage))
 	{
@@ -142,7 +144,7 @@ bool UInventorySubsystem::RemoveRecords_Implementation(const TMap<FName, int32>&
 	return true;
 }
 
-bool UInventorySubsystem::UpdateRecord_Implementation(const FName InventoryRecordId, FInventoryRecord InventoryRecord)
+bool UInventorySubsystem::UpdateRecord(const FName InventoryRecordId, FInventoryRecord InventoryRecord)
 {
 	if (!IsValid(Storage))
 	{
@@ -162,7 +164,7 @@ bool UInventorySubsystem::UpdateRecord_Implementation(const FName InventoryRecor
 	return true;
 }
 
-bool UInventorySubsystem::HasRecord_Implementation(const FName InventoryRecordId)
+bool UInventorySubsystem::HasRecord(const FName InventoryRecordId)
 {
 	if (!IsValid(Storage))
 	{
@@ -171,7 +173,7 @@ bool UInventorySubsystem::HasRecord_Implementation(const FName InventoryRecordId
 	return Storage->InventoryRecords.Contains(InventoryRecordId);
 }
 
-FInventoryRecord UInventorySubsystem::GetRecord_Implementation(const FName InventoryRecordId)
+FInventoryRecord UInventorySubsystem::GetRecord(const FName InventoryRecordId)
 {
 	if (!IsValid(Storage))
 	{
@@ -187,12 +189,12 @@ FInventoryRecord UInventorySubsystem::GetRecord_Implementation(const FName Inven
 	return *Record;
 }
 
-TMap<FName, FInventoryRecord> UInventorySubsystem::GetRecords_Implementation()
+TMap<FName, FInventoryRecord> UInventorySubsystem::GetRecords()
 {
 	return IsValid(Storage) ? Storage->InventoryRecords : TMap<FName, FInventoryRecord>();
 }
 
-UInventoryAsset* UInventorySubsystem::GetRecordAsset_Implementation(const FName InventoryAssetId)
+UInventoryAsset* UInventorySubsystem::GetRecordAsset(const FName InventoryAssetId)
 {
 	if (!InventoryTable)
 	{
@@ -210,7 +212,7 @@ UInventoryAsset* UInventorySubsystem::GetRecordAsset_Implementation(const FName 
 	return Cast<UInventoryAsset>(RecordTable->InventoryAsset);
 }
 
-FInventoryRecord UInventorySubsystem::GetRecordWithAsset_Implementation(const FName InventoryRecordId, UInventoryAsset*& OutInventoryAsset, bool& bOutFound)
+FInventoryRecord UInventorySubsystem::GetRecordWithAsset(const FName InventoryRecordId, UInventoryAsset*& OutInventoryAsset, bool& bOutFound)
 {
 	bOutFound = false;
 
@@ -230,7 +232,7 @@ FInventoryRecord UInventorySubsystem::GetRecordWithAsset_Implementation(const FN
 	return Record;
 }
 
-void UInventorySubsystem::OverwriteRecords_Implementation(const TMap<FName, FInventoryRecord>& InventoryRecords)
+void UInventorySubsystem::OverwriteRecords(const TMap<FName, FInventoryRecord>& InventoryRecords)
 {
 	if (!IsValid(Storage))
 	{
@@ -244,31 +246,31 @@ void UInventorySubsystem::OverwriteRecords_Implementation(const TMap<FName, FInv
 
 void UInventorySubsystem::PostInitialize_Implementation()
 {
-	Super::PostInitialize_Implementation();
+	Super::PostInitialize();
 
-	UStorageSubsystem* StorageSubsystem = nullptr;
-	GET_GAMEINSTANCESUBSYSTEM_FROM_GAMEINSTANCE(UStorageSubsystem, StorageSubsystem);
-
-	Storage = StorageSubsystem->GetLocalStorage();
-	if (!IsValid(Storage))
+	if (UStorageSubsystem* StorageSubsystem = GetGameInstance()->GetSubsystem<UStorageSubsystem>())
 	{
-		LOG_ERROR(LogInventorySubsystem, "LocalStorage not found");
-		return;
-	}
+		Storage = StorageSubsystem->GetLocalStorage();
+		if (!IsValid(Storage))
+		{
+			LOG_ERROR(LogInventorySubsystem, "LocalStorage not found");
+			return;
+		}
 
-	const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>();
-	if (!IsValid(GameMetadata) || GameMetadata->InventoryTable.IsNull())
-	{
-		LOG_ERROR(LogInventorySubsystem, "GameMetadata or InventoryTable is null");
-		return;
-	}
+		const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>();
+		if (!IsValid(GameMetadata) || GameMetadata->InventoryTable.IsNull())
+		{
+			LOG_ERROR(LogInventorySubsystem, "GameMetadata or InventoryTable is null");
+			return;
+		}
 
-	InventoryTable = Cast<UDataTable>(GameMetadata->InventoryTable.LoadSynchronous());
-	if (!IsValid(InventoryTable))
-	{
-		LOG_ERROR(LogInventorySubsystem, "InventoryTable cast failed");
-	}
+		InventoryTable = Cast<UDataTable>(GameMetadata->InventoryTable.LoadSynchronous());
+		if (!IsValid(InventoryTable))
+		{
+			LOG_ERROR(LogInventorySubsystem, "InventoryTable cast failed");
+		}
 
-	LOG_INFO(LogInventorySubsystem, "Inventory Table & Local Storage loaded");
+		LOG_INFO(LogInventorySubsystem, "Inventory Table & Local Storage loaded");
+	}
 }
 

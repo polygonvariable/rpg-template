@@ -31,7 +31,7 @@ class UEnvironmentAtmosphereController : public UEnvironmentStackedController
 public:
 
 	UPROPERTY()
-	FName ComponentName = TEXT("Environment.Atmosphere");
+	FName ActorTag = TEXT("Actor.Environment");
 
 protected:
 

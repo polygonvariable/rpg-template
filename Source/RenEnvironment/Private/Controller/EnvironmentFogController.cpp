@@ -5,11 +5,12 @@
 
 // Engine Headers
 #include "Components/ExponentialHeightFogComponent.h"
+#include "EngineUtils.h"
 
 // Project Headers
 #include "RenCore/Public/Timer/Timer.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenGlobal/Public/Library/MiscLibrary.h"
+#include "RenGlobal/Public/Macro/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
@@ -18,13 +19,11 @@
 
 void UEnvironmentFogController::InitializeController()
 {
-	for (TObjectIterator<UExponentialHeightFogComponent> Itr; Itr; ++Itr)
+	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
-		if (!UMiscLibrary::IsInGameWorld(Itr->GetWorld())) continue;
-
-		if (Itr->ComponentHasTag(ComponentName) && IsValid(*Itr))
+		if (IsValid(*ActorItr) && ActorItr->ActorHasTag(ActorTag))
 		{
-			FogComponent = *Itr;
+			FogComponent = Cast<UExponentialHeightFogComponent>(ActorItr->GetComponentByClass(UExponentialHeightFogComponent::StaticClass()));
 			break;
 		}
 	}

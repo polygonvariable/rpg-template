@@ -18,6 +18,7 @@
 AEnvironmentActor::AEnvironmentActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	Tags.Add(TEXT("Actor.Environment"));
 
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	if(IsValid(SceneComponent))
@@ -29,14 +30,13 @@ AEnvironmentActor::AEnvironmentActor()
 		{
 			SkyLight->SetupAttachment(SceneComponent);
 			SkyLight->SetRealTimeCaptureEnabled(true);
-			SkyLight->CubemapResolution = 32;
+			SkyLight->CubemapResolution = 16;
 		}
 
 		SkyAtmosphere = CreateDefaultSubobject<USkyAtmosphereComponent>(TEXT("SkyAtmosphere"));
 		if (IsValid(SkyAtmosphere))
 		{
 			SkyAtmosphere->SetupAttachment(SceneComponent);
-			SkyAtmosphere->ComponentTags.Push(TEXT("Environment.Atmosphere"));
 		}
 
 		ExponentialHeightFog = CreateDefaultSubobject<UExponentialHeightFogComponent>(TEXT("ExponentialHeightFog"));
@@ -44,7 +44,6 @@ AEnvironmentActor::AEnvironmentActor()
 		{
 			ExponentialHeightFog->SetupAttachment(SceneComponent);
 			ExponentialHeightFog->SetFogDensity(0.025f);
-			ExponentialHeightFog->ComponentTags.Push(TEXT("Environment.ExponentialHeightFog"));
 		}
 
 		SunLight = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("SunLight"));

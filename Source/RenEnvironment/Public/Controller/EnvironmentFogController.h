@@ -31,7 +31,7 @@ class UEnvironmentFogController : public UEnvironmentStackedController
 public:
 
 	UPROPERTY()
-	FName ComponentName = TEXT("Environment.ExponentialHeightFog");
+	FName ActorTag = TEXT("Actor.Environment");
 
 protected:
 

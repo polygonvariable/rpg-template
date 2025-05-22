@@ -31,6 +31,9 @@ class UEnvironmentLightController : public UEnvironmentStackedController
 public:
 
 	UPROPERTY()
+	FName ActorTag = TEXT("Actor.Environment");
+
+	UPROPERTY()
 	FName SunComponentName = TEXT("Environment.Sun");
 
 	UPROPERTY()

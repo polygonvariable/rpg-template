@@ -44,7 +44,17 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RenDialogue",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RenGameplay",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RenAbility",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
@@ -86,6 +96,10 @@
 		},
 		{
 			"Name": "StructUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayAbilities",
 			"Enabled": true
 		}
 	]

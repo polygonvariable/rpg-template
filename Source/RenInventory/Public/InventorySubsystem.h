@@ -20,7 +20,7 @@ class UGameMetadataSettings;
 /**
  *
  */
-UCLASS(DisplayName = "Inventory Subsystem")
+UCLASS()
 class RENINVENTORY_API UInventorySubsystem : public URenGameInstanceSubsystem
 {
 
@@ -28,69 +28,59 @@ class RENINVENTORY_API UInventorySubsystem : public URenGameInstanceSubsystem
 
 public:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
+	UFUNCTION(BlueprintCallable)
 	bool AddRecord(UInventoryAsset* InventoryAsset, const int Quantity = 1);
-	virtual bool AddRecord_Implementation(UInventoryAsset* InventoryAsset, const int Quantity = 1);
 
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
+	UFUNCTION(BlueprintCallable)
 	bool AddRecords(const TMap<UInventoryAsset*, int32>& InventoryAssets, const bool bAllowRollback = false);
-	virtual bool AddRecords_Implementation(const TMap<UInventoryAsset*, int32>& InventoryAssets, const bool bAllowRollback = false);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
+
+	UFUNCTION(BlueprintCallable)
 	bool RemoveRecord(const FName InventoryRecordId, const int Quantity = 1);
-	virtual bool RemoveRecord_Implementation(const FName InventoryRecordId, const int Quantity = 1);
 
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
+	UFUNCTION(BlueprintCallable)
 	bool RemoveRecords(const TMap<FName, int32>& InventoryRecordIds, const bool bAllowRollback = false);
-	virtual bool RemoveRecords_Implementation(const TMap<FName, int32>& InventoryRecordIds, const bool bAllowRollback = false);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
+
+	UFUNCTION(BlueprintCallable)
 	bool UpdateRecord(const FName InventoryRecordId, FInventoryRecord InventoryRecord);
-	virtual bool UpdateRecord_Implementation(const FName InventoryRecordId, FInventoryRecord InventoryRecord);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintPure), Category = "Inventory Subsystem|Record")
+
+	UFUNCTION(BlueprintCallable)
 	bool HasRecord(const FName InventoryRecordId);
-	virtual bool HasRecord_Implementation(const FName InventoryRecordId);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Record")
+
+	UFUNCTION(BlueprintCallable)
 	FInventoryRecord GetRecord(const FName InventoryRecordId);
-	virtual FInventoryRecord GetRecord_Implementation(const FName InventoryRecordId);
 
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Records")
+	UFUNCTION(BlueprintCallable)
 	TMap<FName, FInventoryRecord> GetRecords();
-	virtual TMap<FName, FInventoryRecord> GetRecords_Implementation();
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Asset")
+
+	UFUNCTION(BlueprintCallable)
 	UInventoryAsset* GetRecordAsset(const FName InventoryAssetId);
-	virtual UInventoryAsset* GetRecordAsset_Implementation(const FName InventoryAssetId);
 
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Asset")
+	UFUNCTION(BlueprintCallable)
 	FInventoryRecord GetRecordWithAsset(const FName InventoryRecordId, UInventoryAsset*& OutInventoryAsset, bool& bOutFound);
-	virtual FInventoryRecord GetRecordWithAsset_Implementation(const FName InventoryRecordId, UInventoryAsset*& OutInventoryAsset, bool& bOutFound);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Subsystem|Dirty")
+
+	UFUNCTION(BlueprintCallable)
 	void OverwriteRecords(const TMap<FName, FInventoryRecord>& InventoryRecords);
-	virtual void OverwriteRecords_Implementation(const TMap<FName, FInventoryRecord>& InventoryRecords);
 
 protected:
 
 	// TMap<FName, UInventoryAsset*> CachedAssetMap;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory Subsystem|Properties")
+	UPROPERTY(BlueprintReadOnly)
 	UDataTable* InventoryTable;
 
-
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory Subsystem|Runtime")
+	UPROPERTY(BlueprintReadOnly)
 	UStorage* Storage;
 
 public:

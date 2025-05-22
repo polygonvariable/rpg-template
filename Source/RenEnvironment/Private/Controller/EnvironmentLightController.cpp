@@ -5,6 +5,7 @@
 
 // Engine Headers
 #include "Components/DirectionalLightComponent.h"
+#include "EngineUtils.h"
 
 // Project Headers
 #include "RenCore/Public/Timer/Timer.h"
@@ -21,21 +22,26 @@ void UEnvironmentLightController::InitializeController()
 	bool bSunFound = false;
 	bool bMoonFound = false;
 
-	for (TObjectIterator<UDirectionalLightComponent> Itr; Itr; ++Itr)
+	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	{
-		if (!UMiscLibrary::IsInGameWorld(Itr->GetWorld())) continue;
+		if (IsValid(*ActorItr) && ActorItr->ActorHasTag(ActorTag))
+		{
+			TArray<UActorComponent*> SunComponents = ActorItr->GetComponentsByTag(UDirectionalLightComponent::StaticClass(), SunComponentName);
+			if (SunComponents.IsValidIndex(0) && IsValid(SunComponents[0]))
+			{
+				SunComponent = Cast<UDirectionalLightComponent>(SunComponents[0]);
+				bSunFound = true;
+			}
 
-		if (Itr->ComponentHasTag(SunComponentName) && IsValid(*Itr))
-		{
-			SunComponent = *Itr;
-			bSunFound = true;
+			TArray<UActorComponent*> MoonComponents = ActorItr->GetComponentsByTag(UDirectionalLightComponent::StaticClass(), MoonComponentName);
+			if (MoonComponents.IsValidIndex(0) && IsValid(MoonComponents[0]))
+			{
+				MoonComponent = Cast<UDirectionalLightComponent>(MoonComponents[0]);
+				bMoonFound = true;
+			}
+
+			break;
 		}
-		if (Itr->ComponentHasTag(MoonComponentName) && IsValid(*Itr))
-		{
-			MoonComponent = *Itr;
-			bMoonFound = true;
-		}
-		if(bSunFound && bMoonFound) break;
 	}
 
 	if (!bSunFound) LOG_ERROR(LogTemp, TEXT("Sun not found"));
