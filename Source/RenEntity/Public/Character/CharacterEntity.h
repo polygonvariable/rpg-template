@@ -14,6 +14,7 @@
 // Forward Declarations
 class USpringArmComponent;
 class UCameraComponent;
+class UAbilitySystemComponent;
 
 
 /**
@@ -54,9 +55,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<USpringArmComponent> SpringArm;
 
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<UCameraComponent> Camera;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+
 
 protected:
 
@@ -75,7 +79,6 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Character Entity|Input", Meta = (ForceAsFunction, BlueprintProtected))
 	void SimpleMove(FVector Direction);
 	virtual void SimpleMove_Implementation(FVector Direction);
-
 
 	//virtual void Tick(float DeltaTime) override;
 

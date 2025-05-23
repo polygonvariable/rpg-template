@@ -1,0 +1,73 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+// Parent Header
+#include "DamageExecution.h"
+
+// Engine Headers
+#include "GameplayEffectExtension.h"
+#include "GameplayEffect.h"
+
+// Project Headers
+#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Tag/GameTags.h"
+
+#include "Attributes/DefenceAttributeSet.h"
+#include "Attributes/DamageAttributeSet.h"
+
+
+
+float UDamageMagnitudeCalculation::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
+{
+	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
+	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
+
+	FAggregatorEvaluateParameters EvaluateParameters;
+	EvaluateParameters.SourceTags = SourceTags;
+	EvaluateParameters.TargetTags = TargetTags;
+
+	float Defense = 0;
+	GetCapturedAttributeMagnitude(DefenseCaptureDef, Spec, EvaluateParameters, Defense);
+
+	float Damage = 0;
+	GetCapturedAttributeMagnitude(DamageCaptureDef, Spec, EvaluateParameters, Damage);
+
+	return -1 * FMath::Max(0.0f, Damage - Defense);
+}
+
+void UDamageMagnitudeCalculation::InitializeAttributes(FGameplayAttribute DamageAttribute, FGameplayAttribute DefenseAttribute)
+{
+	if (!DamageAttribute.IsValid() || !DefenseAttribute.IsValid())
+	{
+		PRINT_ERROR(LogTemp, 5.0f, TEXT("DamageAttribute or DefenseAttribute is not valid"));
+		return;
+	}
+
+	DefenseCaptureDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	DefenseCaptureDef.AttributeToCapture = DefenseAttribute;
+	DefenseCaptureDef.bSnapshot = false;
+
+	DamageCaptureDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Source;
+	DamageCaptureDef.AttributeToCapture = DamageAttribute;
+	DamageCaptureDef.bSnapshot = false;
+
+	RelevantAttributesToCapture.Add(DefenseCaptureDef);
+	RelevantAttributesToCapture.Add(DamageCaptureDef);
+}
+
+
+
+UPhysicalDamageMagnitudeCalculation::UPhysicalDamageMagnitudeCalculation()
+{
+	InitializeAttributes(
+		UDamageAttributeSet::GetPhysicalDamageAttribute(),
+		UDefenceAttributeSet::GetPhysicalDefenceAttribute()
+	);
+}
+
+UMagicalDamageMagnitudeCalculation::UMagicalDamageMagnitudeCalculation()
+{
+	InitializeAttributes(
+		UDamageAttributeSet::GetMagicalDamageAttribute(),
+		UDefenceAttributeSet::GetMagicalDefenceAttribute()
+	);
+}

@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AbilitySystemComponent.h"
 
 
 ACharacterEntity::ACharacterEntity() : Super()
@@ -30,6 +31,8 @@ ACharacterEntity::ACharacterEntity() : Super()
 	{
 		Camera->SetupAttachment(SpringArm);
 	}
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
 	{
@@ -61,6 +64,11 @@ void ACharacterEntity::CameraPan(const FVector2D Axis)
 
 void ACharacterEntity::CameraZoom(const float Delta, const float Multiplier)
 {
+	if(!IsValid(SpringArm))
+	{
+		return;
+	}
+
 	float CurrentLength = SpringArm->TargetArmLength;
 	SpringArm->TargetArmLength = FMath::Clamp(CurrentLength + (Delta * Multiplier), CameraMinZoom, CameraMaxZoom);
 }

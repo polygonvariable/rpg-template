@@ -12,14 +12,14 @@
 #include "AbilityMacro.h"
 
 // Generated Headers
-#include "HealthAttributeSet.generated.h"
+#include "DamageAttributeSet.generated.h"
 
 
 /**
  * 
  */
 UCLASS()
-class UHealthAttributeSet : public UAttributeSet
+class UDamageAttributeSet : public UAttributeSet
 {
 
 	GENERATED_BODY()
@@ -27,20 +27,20 @@ class UHealthAttributeSet : public UAttributeSet
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayAttributeData Health;
+	FGameplayAttributeData PhysicalDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayAttributeData HealthMax;
+	FGameplayAttributeData MagicalDamage;
 
-	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
+	
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 public:
 
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Health)
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, HealthMax)
+	ATTRIBUTE_ACCESSORS(UDamageAttributeSet, PhysicalDamage)
+	ATTRIBUTE_ACCESSORS(UDamageAttributeSet, MagicalDamage)
 
 };
 
