@@ -116,3 +116,85 @@ void UAttributeClampedWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
+
+
+
+
+
+void UAttributeScalarWidget::HandleValueChanged_Implementation()
+{
+	if (IsValid(ValueTextBlock))
+	{
+		ValueTextBlock->SetText(FText::AsNumber(CurrentBase));
+	}
+}
+
+void UAttributeScalarWidget::OnNewPawn(APawn* NewPawn)
+{
+	if (!IsValid(NewPawn))
+	{
+		LOG_ERROR(LogTemp, TEXT("Pawn is not valid"));
+		return;
+	}
+
+	AbilityComponent = NewPawn->GetComponentByClass<UAbilitySystemComponent>();
+	if (!IsValid(AbilityComponent))
+	{
+		LOG_ERROR(LogTemp, TEXT("AbilityComponent is not valid"));
+		return;
+	}
+
+	CurrentBase = AbilityComponent->GetNumericAttribute(BaseAttribute);
+	HandleValueChanged();
+
+	AbilityComponent->GetGameplayAttributeValueChangeDelegate(BaseAttribute).AddUObject(this, &UAttributeScalarWidget::OnBaseAttributeChanged);
+}
+
+
+
+void UAttributeScalarWidget::OnBaseAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	CurrentBase = Data.NewValue;
+	HandleValueChanged();
+}
+
+
+void UAttributeScalarWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (IsValid(TitleTextBlock))
+	{
+		TitleTextBlock->SetText(FText::Format(FText::FromString("{0}:"), Title));
+	}
+
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		PlayerController->GetOnNewPawnNotifier().AddUObject(this, &UAttributeScalarWidget::OnNewPawn);
+
+		if (APawn* ExistingPawn = PlayerController->GetPawn())
+		{
+			OnNewPawn(ExistingPawn);
+		}
+	}
+	else
+	{
+		LOG_ERROR(LogTemp, TEXT("PlayerController is not valid"));
+	}
+}
+
+void UAttributeScalarWidget::NativeDestruct()
+{
+	if (IsValid(AbilityComponent))
+	{
+		AbilityComponent->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
+	}
+	AbilityComponent = nullptr;
+
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		PlayerController->GetOnNewPawnNotifier().RemoveAll(this);
+	}
+
+	Super::NativeDestruct();
+}

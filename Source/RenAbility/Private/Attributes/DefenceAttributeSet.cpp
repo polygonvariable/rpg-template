@@ -8,23 +8,13 @@
 #include "GameplayEffect.h"
 
 // Project Headers
-#include "RenGlobal/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Tag/GameTags.h"
 
 
 
 void UDefenceAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-
-	if (Attribute == GetPhysicalDefenceAttribute())
-	{
-		NewValue = FMath::Max(NewValue, 0.0f);
-	}
-}
-
-void UDefenceAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
+	
+	NewValue = FMath::Clamp(NewValue, 0.0f, FLT_MAX);
 }
 

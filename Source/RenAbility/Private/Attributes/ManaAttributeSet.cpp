@@ -6,6 +6,7 @@
 // Engine Headers
 #include "GameplayEffectExtension.h"
 #include "GameplayEffect.h"
+#include "NativeGameplayTags.h"
 
 // Project Headers
 #include "RenGlobal/Public/Macro/LogMacro.h"
@@ -23,7 +24,7 @@ void UManaAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 	}
 	else if (Attribute == GetManaMaxAttribute())
 	{
-		NewValue = FMath::Max(NewValue, 0.0f);
+		NewValue = FMath::Clamp(NewValue, 0.0f, FLT_MAX);
 	}
 }
 

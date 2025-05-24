@@ -20,6 +20,7 @@ public class RenAbility : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+				"StructUtils",
                 "UMG",
             }
 		);
@@ -39,8 +40,8 @@ public class RenAbility : ModuleRules
 			{
 				"GameplayAbilities",
 				"GameplayTags",
-				"GameplayTasks",
-			}
+				"GameplayTasks"
+            }
 		);
 
 		// Uncomment if you are using Slate UI

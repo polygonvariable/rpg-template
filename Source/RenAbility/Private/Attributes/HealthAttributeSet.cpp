@@ -6,16 +6,17 @@
 // Engine Headers
 #include "GameplayEffectExtension.h"
 #include "GameplayEffect.h"
+#include "NativeGameplayTags.h"
+#include "Kismet/GameplayStatics.h"
+#include "InstancedStruct.h"
 
 // Project Headers
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Tag/GameTags.h"
 
+#include "EffectSubsystem.h"
 
-//FGameplayEffectAttributeCaptureDefinition UHealthAttributeSet::GetPhysicalDefenseAttributeCaptureDefinition()
-//{
-//	return FGameplayEffectAttributeCaptureDefinition();
-//}
+
 
 bool UHealthAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
@@ -45,9 +46,10 @@ void UHealthAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 	}
 	else if (Attribute == GetHealthMaxAttribute())
 	{
-		NewValue = FMath::Max(NewValue, 0.0f);
+		NewValue = FMath::Clamp(NewValue, 0.0f, FLT_MAX);
 	}
 }
+
 
 void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
@@ -55,22 +57,27 @@ void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		FGameplayEffectSpec Spec = Data.EffectSpec;
+		float Magnitude = Data.EvaluatedData.Magnitude;
+		bool bEffectIsDamage = Magnitude < 0.0f;
+
 		FGameplayTagContainer AssetTags;
 		Data.EffectSpec.GetAllAssetTags(AssetTags);
 
-		if (AssetTags.HasTag(TAG_Effect_Damage_Magical))
-		{
-			PRINT_WARNING(LogTemp, 5.0f, TEXT("Magical Damage"));
-		}
-		else if(AssetTags.HasTag(TAG_Effect_Damage_Physical))
-		{
-			PRINT_WARNING(LogTemp, 5.0f, TEXT("Physical Damage"));
-		}
-		else
-		{
-			PRINT_WARNING(LogTemp, 5.0f, TEXT("Unknown Damage"));
-		}
+		AActor* Source = Data.EffectSpec.GetContext().GetOriginalInstigator();
+		AActor* Target = Data.Target.AbilityActorInfo->AvatarActor.Get();
+
+		//if (AssetTags.HasTag(TAG_Effect_Damage_Magical))
+		//{
+		//	PRINT_WARNING(LogTemp, 5.0f, TEXT("Magical Damage"));
+		//}
+		//else if(AssetTags.HasTag(TAG_Effect_Damage_Physical))
+		//{
+		//	PRINT_WARNING(LogTemp, 5.0f, TEXT("Physical Damage"));
+		//}
+		//else
+		//{
+		//	PRINT_WARNING(LogTemp, 5.0f, TEXT("Unknown Damage"));
+		//}
 
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetHealthMax()));
 
@@ -80,6 +87,18 @@ void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 			AliveTags.AddTag(TAG_Attribute_State_Life_Alive);
 			FGameplayTagContainer DeathTags;
 			DeathTags.AddTag(TAG_Attribute_State_Life_Death);*/
+
+			
+			if (UGameplayEventSubsystem* EffectSubsystem = UWorld::GetSubsystem<UGameplayEventSubsystem>(GetWorld()))
+			{
+				EffectSubsystem->SendScalarEvent(TAG_Event_Damage, Magnitude);
+			}
+			if (UGameplayEventHandlerSubsystem* EffectHandlerSubsystem = UWorld::GetSubsystem<UGameplayEventHandlerSubsystem>(GetWorld()))
+			{
+				PRINT_INFO(LogTemp, 5.0f, TEXT("Send Damage Event"));
+				EffectHandlerSubsystem->SendScalarEvent(TAG_Event_Damage, Magnitude, Source, Target);
+			}
+
 
 			if (GetHealth() <= 0.0f)
 			{

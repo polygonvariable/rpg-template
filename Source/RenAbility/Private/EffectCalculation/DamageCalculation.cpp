@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "DamageExecution.h"
+#include "EffectCalculation/DamageCalculation.h"
 
 // Engine Headers
 #include "GameplayEffectExtension.h"
@@ -31,7 +31,9 @@ float UDamageMagnitudeCalculation::CalculateBaseMagnitude_Implementation(const F
 	float Damage = 0;
 	GetCapturedAttributeMagnitude(DamageCaptureDef, Spec, EvaluateParameters, Damage);
 
-	return -1 * FMath::Max(0.0f, Damage - Defense);
+	return FMath::RoundToInt(
+		FMath::Max(0.0f, Damage - Defense)
+	);
 }
 
 void UDamageMagnitudeCalculation::InitializeAttributes(FGameplayAttribute DamageAttribute, FGameplayAttribute DefenseAttribute)
@@ -71,3 +73,4 @@ UMagicalDamageMagnitudeCalculation::UMagicalDamageMagnitudeCalculation()
 		UDefenceAttributeSet::GetMagicalDefenceAttribute()
 	);
 }
+

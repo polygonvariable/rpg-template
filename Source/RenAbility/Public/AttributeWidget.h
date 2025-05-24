@@ -83,3 +83,56 @@ protected:
 
 };
 
+
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class UAttributeScalarWidget : public UUserWidget
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FText Title;
+
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentBase = 0.0f;
+
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayAttribute BaseAttribute;
+
+
+
+	UPROPERTY(Meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> TitleTextBlock;
+
+	UPROPERTY(Meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> ValueTextBlock;
+
+
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UAbilitySystemComponent> AbilityComponent;
+
+
+	UFUNCTION(BlueprintNativeEvent)
+	void HandleValueChanged();
+	virtual void HandleValueChanged_Implementation();
+
+
+	void OnNewPawn(APawn* NewPawn);
+	void OnBaseAttributeChanged(const FOnAttributeChangeData& Data);
+
+protected:
+
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+
+};
+

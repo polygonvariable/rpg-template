@@ -8,18 +8,13 @@
 #include "GameplayEffect.h"
 
 // Project Headers
-#include "RenGlobal/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Tag/GameTags.h"
 
 
 
 void UDamageAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-}
 
-void UDamageAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
+	NewValue = FMath::Clamp(NewValue, 0.0f, FLT_MAX);
 }
 

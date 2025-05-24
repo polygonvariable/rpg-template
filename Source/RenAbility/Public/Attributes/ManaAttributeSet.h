@@ -6,7 +6,6 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "NativeGameplayTags.h"
 
 // Project Headers
 #include "AbilityMacro.h"

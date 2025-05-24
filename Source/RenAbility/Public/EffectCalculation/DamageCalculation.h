@@ -13,7 +13,7 @@
 // Project Headers
 
 // Generated Headers
-#include "DamageExecution.generated.h"
+#include "DamageCalculation.generated.h"
 
 
 /**
@@ -70,4 +70,15 @@ public:
 
 };
 
+
+/**
+ *
+ */
+UCLASS()
+class UCounterDamageCalculation : public UGameplayEffectExecutionCalculation
+{
+
+	GENERATED_BODY()
+
+};
 
