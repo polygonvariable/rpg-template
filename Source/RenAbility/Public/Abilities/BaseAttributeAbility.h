@@ -9,6 +9,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "AttributeSet.h"
 #include "Components/ActorComponent.h"
+#include "AbilitySystemComponent.h"
 
 // Project Headers
 #include "RenGlobal/Public/Macro/LogMacro.h"
@@ -57,37 +58,79 @@ public:
 };
 
 
+USTRUCT(BlueprintType)
+struct FAttributeEffects
+{
+
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSet<TSubclassOf<UGameplayEffect>> Effects;
+
+};
+
+
 /**
  *
  */
-//UCLASS(ClassGroup = (Custom), Meta = (BlueprintSpawnableComponent))
-//class UAbilityObserverComponent : public UActorComponent
-//{
-//
-//	GENERATED_BODY()
-//
-//public:
-//
-//	UAbilityObserverComponent();
-//
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	TObjectPtr<UAbilitySystemComponent> AbilityComponent;
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-//	FGameplayAttribute LevelAttribute;
-//
-//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-//	TSubclassOf<UGameplayEffect> TargetEffectClass;
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	FActiveGameplayEffectHandle ActiveEffectHandle;
-//
-//	UFUNCTION(BlueprintCallable)
-//	void RegisterObserver();
-//
-//	virtual void OnLevelAttributeChanged(const FOnAttributeChangeData& Data);
-//
-//};
+UCLASS(Blueprintable, ClassGroup = (Custom), Meta = (BlueprintSpawnableComponent))
+class UAttributeObserverComponent : public UActorComponent
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UAttributeObserverComponent();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayAttribute ObserveAttribute;
+
+
+	UFUNCTION(BlueprintCallable)
+	void RegisterObserver();
+
+	UFUNCTION(BlueprintCallable)
+	void UnregisterObserver();
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	TWeakObjectPtr<UAbilitySystemComponent> AbilityComponent;
+
+
+	virtual void OnAttributeChanged(const FOnAttributeChangeData& Data);
+
+public:
+
+	virtual void Activate(bool bReset) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnValueChanged, int, NewValue);
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnValueChanged OnValueChanged;
+
+};
+
+
+/**
+ *
+ */
+UCLASS(Blueprintable, ClassGroup = (Custom), Meta = (BlueprintSpawnableComponent))
+class UAttributeLevelObserversComponent : public UAttributeObserverComponent
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> TargetEffectClass;
+
+	virtual void OnAttributeChanged(const FOnAttributeChangeData& Data) override;
+
+};
 
 

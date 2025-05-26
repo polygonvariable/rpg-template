@@ -106,17 +106,75 @@ void UBaseAttributeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 
 
 
-//UAbilityObserverComponent::UAbilityObserverComponent()
-//{
-//	PrimaryComponentTick.bCanEverTick = false;
-//	AbilityComponent = GetOwner()->GetComponentByClass<UAbilitySystemComponent>();
-//}
-//void UAbilityObserverComponent::RegisterObserver()
-//{
-//	AbilityComponent->GetGameplayAttributeValueChangeDelegate(LevelAttribute).AddUObject(this, &UAbilityObserverComponent::OnLevelAttributeChanged);
-//	AbilityComponent->AddLooseGameplayTag(TAG_Attribute_Base);
-//}
-//void UAbilityObserverComponent::OnLevelAttributeChanged(const FOnAttributeChangeData& Data)
-//{
-//}
+UAttributeObserverComponent::UAttributeObserverComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UAttributeObserverComponent::RegisterObserver()
+{
+	if (!AbilityComponent.IsValid())
+	{
+		AbilityComponent = GetOwner()->FindComponentByClass<UAbilitySystemComponent>();
+		if (!AbilityComponent.IsValid())
+		{
+			PRINT_ERROR(LogTemp, 5.0f, TEXT("AbilitySystemComponent not found"));
+			return;
+		}
+	}
+
+	PRINT_WARNING(LogTemp, 1.0f, TEXT("Observer registered"));
+	AbilityComponent->GetGameplayAttributeValueChangeDelegate(ObserveAttribute).AddUObject(this, &UAttributeObserverComponent::OnAttributeChanged);
+}
+
+void UAttributeObserverComponent::UnregisterObserver()
+{
+	if (AbilityComponent.IsValid())
+	{
+		AbilityComponent->GetGameplayAttributeValueChangeDelegate(ObserveAttribute).RemoveAll(this);
+	}
+}
+
+void UAttributeObserverComponent::OnAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	OnValueChanged.Broadcast(Data.NewValue);
+}
+
+void UAttributeObserverComponent::Activate(bool bReset)
+{
+	Super::Activate(bReset);
+	RegisterObserver();
+}
+
+void UAttributeObserverComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UnregisterObserver();
+	Super::EndPlay(EndPlayReason);
+}
+
+
+
+void UAttributeLevelObserversComponent::OnAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	if (AbilityComponent.IsValid())
+	{
+		if (!IsValid(TargetEffectClass))
+		{
+			PRINT_ERROR(LogTemp, 5.0f, TEXT("TargetEffectClass is not valid"));
+			return;
+		}
+
+		FGameplayEffectContextHandle EffectContext = AbilityComponent->MakeEffectContext();
+		UGameplayEffect* GameplayEffect = TargetEffectClass->GetDefaultObject<UGameplayEffect>();
+
+		if (!IsValid(GameplayEffect) || GameplayEffect->DurationPolicy != EGameplayEffectDurationType::Instant)
+		{
+			PRINT_ERROR(LogTemp, 5.0f, TEXT("TargetEffectClass instance is not valid or duration policy is not instant"));
+			return;
+		}
+
+		AbilityComponent->ApplyGameplayEffectToSelf(GameplayEffect, Data.NewValue, EffectContext);
+	}
+}
+
 

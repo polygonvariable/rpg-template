@@ -78,6 +78,7 @@ protected:
 
 protected:
 
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
@@ -131,6 +132,7 @@ protected:
 
 protected:
 
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 

@@ -18,6 +18,9 @@
 
 
 /**
+ * TODO:
+ * Remove this class as its no longer needed.
+ * 
  * Use override in GameplayEffect to set the new value based on the level attribute.
  * This calculation will return the level attribute value.
  */

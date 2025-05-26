@@ -73,16 +73,21 @@ void UAttributeClampedWidget::OnMaxAttributeChanged(const FOnAttributeChangeData
 	HandleValueChanged();
 }
 
-
-
-void UAttributeClampedWidget::NativeConstruct()
+void UAttributeClampedWidget::NativePreConstruct()
 {
-	Super::NativeConstruct();
+	Super::NativePreConstruct();
 
 	if (IsValid(TitleTextBlock))
 	{
 		TitleTextBlock->SetText(FText::Format(FText::FromString("{0}:"), Title));
 	}
+}
+
+
+
+void UAttributeClampedWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
 
 	if (APlayerController* PlayerController = GetOwningPlayer())
 	{
@@ -129,6 +134,7 @@ void UAttributeScalarWidget::HandleValueChanged_Implementation()
 	}
 }
 
+
 void UAttributeScalarWidget::OnNewPawn(APawn* NewPawn)
 {
 	if (!IsValid(NewPawn))
@@ -158,15 +164,19 @@ void UAttributeScalarWidget::OnBaseAttributeChanged(const FOnAttributeChangeData
 	HandleValueChanged();
 }
 
-
-void UAttributeScalarWidget::NativeConstruct()
+void UAttributeScalarWidget::NativePreConstruct()
 {
-	Super::NativeConstruct();
+	Super::NativePreConstruct();
 
 	if (IsValid(TitleTextBlock))
 	{
 		TitleTextBlock->SetText(FText::Format(FText::FromString("{0}:"), Title));
 	}
+}
+
+void UAttributeScalarWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
 
 	if (APlayerController* PlayerController = GetOwningPlayer())
 	{
@@ -198,3 +208,4 @@ void UAttributeScalarWidget::NativeDestruct()
 
 	Super::NativeDestruct();
 }
+
