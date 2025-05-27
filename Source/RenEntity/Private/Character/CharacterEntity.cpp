@@ -3,14 +3,18 @@
 // Parent Header
 #include "Character/CharacterEntity.h"
 
-#include "RenGlobal/Public/Macro/LogMacro.h"
-
 // Engine Headers
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "GameplayEffectExtension.h"
+#include "GameplayEffect.h"
+
+// Project Headers
+#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "WeaponTest.h"
 
 
 ACharacterEntity::ACharacterEntity() : Super()
@@ -82,6 +86,51 @@ void ACharacterEntity::SimpleMove_Implementation(FVector direction)
 
 	AddMovementInput(RightVector, direction.X, false);
 	AddMovementInput(ForwardVector, direction.Y, false);
+}
+
+void ACharacterEntity::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser)
+{
+	UAbilitySystemComponent* TargetASC = Target->GetComponentByClass<UAbilitySystemComponent>();
+
+	if (IsValid(AbilitySystemComponent) && IsValid(TargetASC))
+	{
+		TArray<TWeakObjectPtr<AActor>> ContextActors;
+		for (AActor* Actor : OwnedActors)
+		{
+			ContextActors.Add(TWeakObjectPtr<AActor>(Actor));
+		}
+
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		EffectContext.AddActors(ContextActors);
+		EffectContext.AddOrigin(GetActorLocation());
+		EffectContext.AddInstigator(this, EffectCauser);
+
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, 1, EffectContext);
+
+		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	}
+}
+
+void ACharacterEntity::SpawnWeapon()
+{
+	if (IsValid(Weapon) || !GetWorld())
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Weapon is already spawned or World is not valid"));
+		return;
+	}
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Owner = this;
+
+	Weapon = GetWorld()->SpawnActor<AWeaponTest>(WeaponClass, GetActorLocation(), GetActorRotation(), SpawnParams);
+	if (IsValid(Weapon))
+	{
+		OwnedActors.Add(Weapon);
+	}
+
+	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weapon spawned"));
 }
 
 

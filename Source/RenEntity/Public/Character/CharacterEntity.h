@@ -15,7 +15,8 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UAbilitySystemComponent;
-
+class AWeaponTest;
+class UGameplayEffect;
 
 /**
  *
@@ -79,6 +80,26 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Character Entity|Input", Meta = (ForceAsFunction, BlueprintProtected))
 	void SimpleMove(FVector Direction);
 	virtual void SimpleMove_Implementation(FVector Direction);
+
+
+	UFUNCTION(BlueprintCallable)
+	void DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser);
+
+
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<TObjectPtr<AActor>> OwnedActors;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<AWeaponTest> WeaponClass;
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AWeaponTest> Weapon;
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnWeapon();
+
 
 	//virtual void Tick(float DeltaTime) override;
 

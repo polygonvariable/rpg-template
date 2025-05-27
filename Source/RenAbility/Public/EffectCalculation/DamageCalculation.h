@@ -19,6 +19,33 @@
 /**
  *
  */
+UCLASS()
+class UAggregateDamageMMC : public UGameplayModMagnitudeCalculation
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UAggregateDamageMMC();
+
+	FGameplayEffectAttributeCaptureDefinition DamageCaptureDef;
+
+protected:
+
+	float GetAggregateValue(const FGameplayEffectSpec& Spec, const FGameplayAttribute& Attribute) const;
+
+public:
+
+	virtual float CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const override;
+
+};
+
+
+
+/**
+ *
+ */
 UCLASS(Abstract)
 class UDamageMagnitudeCalculation : public UGameplayModMagnitudeCalculation
 {

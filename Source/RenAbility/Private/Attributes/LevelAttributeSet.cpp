@@ -116,11 +116,12 @@ bool ULevelAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData
 {
 	if (!Super::PreGameplayEffectExecute(Data))
 	{
-		PRINT_ERROR(LogTemp, 5.0f, TEXT("Super::PreGameplayEffectExecute failed"));
+		PRINT_ERROR(LogTemp, 5.0f, TEXT("Level PreGameplayEffectExecute failed"));
 		return false;
 	}
 
 	const FGameplayAttribute& Attribute = Data.EvaluatedData.Attribute;
+
 
 	if (Attribute == GetExperienceAttribute())
 	{
