@@ -7,73 +7,88 @@
 #include "Kismet/GameplayStatics.h"
 
 // Project Headers
-#include "Storage.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Developer/GameMetadataSettings.h"
+#include "Storage.h"
 
 
-void UStorageSubsystem::ReadStorage_Implementation(const FName SlotId)
+
+void UStorageSubsystem::ReadStorage(FName SlotId)
 {
-	const UGameMetadataSettings* Settings = GetDefault<UGameMetadataSettings>();
-
-	/*const TSubclassOf<USaveGame> StorageClass = Settings->StorageClass;
-	const TSubclassOf<UStorage> StorageClasss = Settings->StorageClasses.TryLoadClass<UStorage>();
-	if (Storage || !StorageClass || !StorageClass->IsChildOf(UStorage::StaticClass()))
-	{
-		LOG_ERROR(LogTemp, "Storage is already set or StorageClass is null or not a child of ESaveGame");
-		return;
-	}*/
-
 	if (DoesStorageExist(SlotId))
 	{
 		Storage = Cast<UStorage>(UGameplayStatics::LoadGameFromSlot(SlotId.ToString(), 0));
-		LOG_INFO(LogTemp, "Storage loaded from slot");
+		LOG_INFO(LogTemp, TEXT("Storage loaded from slot"));
 	}
 	else
 	{
-		USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(UStorage::StaticClass());
-		if (!IsValid(NewSaveGame))
+		USaveGame* NewStorage = UGameplayStatics::CreateSaveGameObject(UStorage::StaticClass());
+		if (!IsValid(NewStorage))
 		{
-			LOG_ERROR(LogTemp, "Failed to create save game object");
+			LOG_ERROR(LogTemp, TEXT("Failed to create save game object"));
 			return;
 		}
 
-		UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotId.ToString(), 0);
-		Storage = Cast<UStorage>(NewSaveGame);
+		if (!UGameplayStatics::SaveGameToSlot(NewStorage, SlotId.ToString(), 0))
+		{
+			LOG_ERROR(LogTemp, TEXT("Failed to save storage to slot"));
+			return;
+		}
+		Storage = Cast<UStorage>(NewStorage);
 
-		LOG_INFO(LogTemp, "Storage created and saved to slot");
+		LOG_INFO(LogTemp, TEXT("Storage created and saved to slot"));
 	}
 }
 
-void UStorageSubsystem::UpdateStorage_Implementation(const FName SlotId)
+void UStorageSubsystem::UpdateStorage(FName SlotId)
 {
 	if (!IsValid(Storage))
 	{
-		LOG_ERROR(LogTemp, "Storage is null");
+		LOG_ERROR(LogTemp, TEXT("Storage is not valid"));
 		return;
 	}
-	UGameplayStatics::SaveGameToSlot(Storage, SlotId.ToString(), 0);
+
+	if (!UGameplayStatics::SaveGameToSlot(Storage, SlotId.ToString(), 0))
+	{
+		LOG_ERROR(LogTemp, TEXT("Failed to save storage to slot"));
+		return;
+	}
+
+	LOG_INFO(LogTemp, TEXT("Storage updated and saved to slot"));
 }
 
-bool UStorageSubsystem::DoesStorageExist_Implementation(const FName SlotId)
+bool UStorageSubsystem::DoesStorageExist(FName SlotId)
 {
 	return UGameplayStatics::DoesSaveGameExist(SlotId.ToString(), 0);
 }
 
-UStorage* UStorageSubsystem::GetLocalStorage_Implementation()
+UStorage* UStorageSubsystem::GetLocalStorage()
 {
 	return IsValid(Storage) ? Storage : nullptr;
 }
 
 
-void UStorageSubsystem::OnInitialized_Implementation()
+
+USaveGame* UStorageSubsystem::IGetLocalStorage()
 {
-	Super::OnInitialized_Implementation();
+	return Storage;
+}
+
+
+
+bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
+{
+	return true;
+}
+
+void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
 	ReadStorage();
 }
 
-void UStorageSubsystem::OnDeinitialized_Implementation()
+void UStorageSubsystem::Deinitialize()
 {
 	UpdateStorage();
-	Super::OnDeinitialized_Implementation();
+	Super::Deinitialize();
 }
+

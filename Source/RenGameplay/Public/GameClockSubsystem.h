@@ -11,8 +11,8 @@
 
 // Forward Declarations
 class UTimer;
-class UStorage;
 class UGameClockAsset;
+class IGameClockInterface;
 
 
 /**
@@ -25,11 +25,6 @@ class RENGAMEPLAY_API UGameClockSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 public:
-
-	UPROPERTY()
-	bool bAutoStart = true;
-
-
 
 	UPROPERTY()
 	float TotalSecondsInADay = 60.0f; // Total time of a day in game
@@ -87,6 +82,9 @@ protected:
 
 	FDelegateHandle OnWorldBeginTearDownHandle;
 
+	TWeakInterfacePtr<IGameClockInterface> GameClockInterface;
+
+
 
 	UPROPERTY()
 	TObjectPtr<UGameClockAsset> ClockAsset;
@@ -94,13 +92,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UTimer> ClockTimer;
 
-	UPROPERTY()
-	TWeakObjectPtr<UStorage> Storage;
-
-
+	// UPROPERTY()
+	// TWeakObjectPtr<UStorage> Storage;
 
 	UPROPERTY()
-	int CurrentDay = 0; // Clamped from 1 and TotalDaysInAYear
+	int CurrentDay = 1; // Clamped from 1 and TotalDaysInAYear
 
 	UPROPERTY()
 	float CurrentTime = 0.0f; // Clamped from 0 and TotalSecondsInADay
@@ -111,7 +107,7 @@ protected:
 
 
 	UFUNCTION()
-	bool CreateClock();
+	void CreateClock();
 
 	UFUNCTION()
 	void CleanupClock();

@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "Entity.h"
+#include "RenAbility/Public/AbilityComponent.h"
 
 // Generated Headers
 #include "CharacterEntity.generated.h"
@@ -60,8 +61,7 @@ public:
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
+	TObjectPtr<UAbilityComponent> AbilityComponent;
 
 protected:
 

@@ -15,6 +15,7 @@
 // Project Headers
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "WeaponTest.h"
+#include "RenAbility/Public/Attributes/DamageAttributeSet.h"
 
 
 ACharacterEntity::ACharacterEntity() : Super()
@@ -36,7 +37,7 @@ ACharacterEntity::ACharacterEntity() : Super()
 		Camera->SetupAttachment(SpringArm);
 	}
 
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilityComponent = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilitySystemComponent"));
 
 	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
 	{
@@ -59,6 +60,7 @@ ACharacterEntity::ACharacterEntity() : Super()
 
 
 }
+
 
 void ACharacterEntity::CameraPan(const FVector2D Axis)
 {
@@ -90,9 +92,12 @@ void ACharacterEntity::SimpleMove_Implementation(FVector direction)
 
 void ACharacterEntity::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AActor* Target, AActor* EffectCauser)
 {
+	// If the target has lazy loading of ASC, try to call the function
+	// to load the ASC and then apply the effect here
+
 	UAbilitySystemComponent* TargetASC = Target->GetComponentByClass<UAbilitySystemComponent>();
 
-	if (IsValid(AbilitySystemComponent) && IsValid(TargetASC))
+	if (IsValid(AbilityComponent) && IsValid(TargetASC))
 	{
 		TArray<TWeakObjectPtr<AActor>> ContextActors;
 		for (AActor* Actor : OwnedActors)
@@ -100,15 +105,26 @@ void ACharacterEntity::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AAct
 			ContextActors.Add(TWeakObjectPtr<AActor>(Actor));
 		}
 
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		FGameplayEffectContextHandle EffectContext = AbilityComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
 		EffectContext.AddActors(ContextActors);
 		EffectContext.AddOrigin(GetActorLocation());
 		EffectContext.AddInstigator(this, EffectCauser);
 
-		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, 1, EffectContext);
+		if (!EffectContext.IsValid())
+		{
+			PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to create effect context"));
+			return;
+		}
 
-		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+		FGameplayEffectSpecHandle SpecHandle = AbilityComponent->MakeOutgoingSpec(EffectClass, 1.0f, EffectContext);
+		if (!SpecHandle.IsValid())
+		{
+			PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to create effect spec handle"));
+			return;
+		}
+
+		AbilityComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 	}
 }
 
@@ -127,10 +143,14 @@ void ACharacterEntity::SpawnWeapon()
 	Weapon = GetWorld()->SpawnActor<AWeaponTest>(WeaponClass, GetActorLocation(), GetActorRotation(), SpawnParams);
 	if (IsValid(Weapon))
 	{
+		FGameplayAttribute PhysicalDamageAttribute = UDamageAttributeSet::GetPhysicalDamageAttribute();
 		OwnedActors.Add(Weapon);
+		AbilityComponent->AddAggregatedActor(PhysicalDamageAttribute, Weapon);
 	}
 
 	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weapon spawned"));
+
+
 }
 
 

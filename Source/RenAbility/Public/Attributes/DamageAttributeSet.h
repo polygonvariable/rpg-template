@@ -18,7 +18,7 @@
  * 
  */
 UCLASS()
-class UDamageAttributeSet : public UAttributeSet
+class RENABILITY_API UDamageAttributeSet : public UAttributeSet
 {
 
 	GENERATED_BODY()

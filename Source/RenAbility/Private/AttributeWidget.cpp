@@ -11,6 +11,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
+#include "RenAbility/Public/AbilityComponent.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 
@@ -20,14 +21,14 @@ void UAttributeClampedWidget::HandleValueChanged_Implementation()
 {
 	if (IsValid(ValueProgressBar))
 	{
-		ValueProgressBar->SetPercent(CurrentMax > 0.0f ? (CurrentBase / CurrentMax) : 0.0f);
+		ValueProgressBar->SetPercent(CurrentMax > 0.0f ? (CurrentValue / CurrentMax) : 0.0f);
 	}
 
 	if (IsValid(ValueTextBlock))
 	{
 		FText FormattedText = FText::Format(
 			FText::FromString("{0} / {1}"),
-			FText::AsNumber(CurrentBase),
+			FText::AsNumber(CurrentValue),
 			FText::AsNumber(CurrentMax)
 		);
 
@@ -36,42 +37,54 @@ void UAttributeClampedWidget::HandleValueChanged_Implementation()
 }
 
 
-void UAttributeClampedWidget::OnNewPawn(APawn* NewPawn)
+
+void UAttributeClampedWidget::RegisterActor(AActor* Actor)
 {
-	if (!IsValid(NewPawn))
+	if (BaseASC.IsValid())
 	{
-		LOG_ERROR(LogTemp, TEXT("Pawn is not valid"));
+		BaseASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
+		BaseASC->GetGameplayAttributeValueChangeDelegate(MaxAttribute).RemoveAll(this);
+		BaseASC->OnAggregatedRefresh.RemoveAll(this);
+		BaseASC.Reset();
+	}
+
+	if (!IsValid(Actor))
+	{
+		LOG_ERROR(LogTemp, TEXT("Actor is not valid"));
 		return;
 	}
 
-	AbilityComponent = NewPawn->GetComponentByClass<UAbilitySystemComponent>();
-	if (!IsValid(AbilityComponent))
+	BaseASC = Actor->GetComponentByClass<UAbilityComponent>();
+	if (!BaseASC.IsValid())
 	{
-		LOG_ERROR(LogTemp, TEXT("AbilityComponent is not valid"));
+		LOG_ERROR(LogTemp, TEXT("AbilitySystemComponent is not valid"));
 		return;
 	}
 
-	CurrentBase = AbilityComponent->GetNumericAttribute(BaseAttribute);
-	CurrentMax = AbilityComponent->GetNumericAttribute(MaxAttribute);
+	CurrentValue = BaseASC->GetAggregatedNumericAttribute(BaseAttribute);
+	CurrentMax = BaseASC->GetAggregatedNumericAttribute(MaxAttribute);
 	HandleValueChanged();
 
-	AbilityComponent->GetGameplayAttributeValueChangeDelegate(BaseAttribute).AddUObject(this, &UAttributeClampedWidget::OnBaseAttributeChanged);
-	AbilityComponent->GetGameplayAttributeValueChangeDelegate(MaxAttribute).AddUObject(this, &UAttributeClampedWidget::OnMaxAttributeChanged);
+	BaseASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).AddWeakLambda(this, [&](const FOnAttributeChangeData& Data) { OnAggregatedRefresh(); });
+	BaseASC->GetGameplayAttributeValueChangeDelegate(MaxAttribute).AddWeakLambda(this, [&](const FOnAttributeChangeData& Data) { OnAggregatedRefresh(); });
+	BaseASC->OnAggregatedRefresh.AddDynamic(this, &UAttributeClampedWidget::OnAggregatedRefresh);
 }
 
 
 
-void UAttributeClampedWidget::OnBaseAttributeChanged(const FOnAttributeChangeData& Data)
+void UAttributeClampedWidget::OnAggregatedRefresh()
 {
-	CurrentBase = Data.NewValue;
+	if (!BaseASC.IsValid())
+	{
+		LOG_ERROR(LogTemp, TEXT("AbilitySystemComponent is not valid"));
+		return;
+	}
+
+	CurrentValue = BaseASC->GetAggregatedNumericAttribute(BaseAttribute);
+	CurrentMax = BaseASC->GetAggregatedNumericAttribute(MaxAttribute);
 	HandleValueChanged();
 }
 
-void UAttributeClampedWidget::OnMaxAttributeChanged(const FOnAttributeChangeData& Data)
-{
-	CurrentMax = Data.NewValue;
-	HandleValueChanged();
-}
 
 void UAttributeClampedWidget::NativePreConstruct()
 {
@@ -83,19 +96,17 @@ void UAttributeClampedWidget::NativePreConstruct()
 	}
 }
 
-
-
 void UAttributeClampedWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	if (APlayerController* PlayerController = GetOwningPlayer())
 	{
-		PlayerController->GetOnNewPawnNotifier().AddUObject(this, &UAttributeClampedWidget::OnNewPawn);
+		PlayerController->GetOnNewPawnNotifier().AddWeakLambda(this, [&](APawn* NewPawn) { RegisterActor(NewPawn); });
 
 		if (APawn* ExistingPawn = PlayerController->GetPawn())
 		{
-			OnNewPawn(ExistingPawn);
+			RegisterActor(ExistingPawn);
 		}
 	}
 	else
@@ -106,12 +117,12 @@ void UAttributeClampedWidget::NativeConstruct()
 
 void UAttributeClampedWidget::NativeDestruct()
 {
-	if (IsValid(AbilityComponent))
+	if (BaseASC.IsValid())
 	{
-		AbilityComponent->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
-		AbilityComponent->GetGameplayAttributeValueChangeDelegate(MaxAttribute).RemoveAll(this);
+		BaseASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
+		BaseASC->GetGameplayAttributeValueChangeDelegate(MaxAttribute).RemoveAll(this);
+		BaseASC.Reset();
 	}
-	AbilityComponent = nullptr;
 
 	if (APlayerController* PlayerController = GetOwningPlayer())
 	{
@@ -130,39 +141,54 @@ void UAttributeScalarWidget::HandleValueChanged_Implementation()
 {
 	if (IsValid(ValueTextBlock))
 	{
-		ValueTextBlock->SetText(FText::AsNumber(CurrentBase));
+		ValueTextBlock->SetText(FText::AsNumber(CurrentValue));
 	}
 }
 
 
-void UAttributeScalarWidget::OnNewPawn(APawn* NewPawn)
+
+void UAttributeScalarWidget::RegisterActor(AActor* Actor)
 {
-	if (!IsValid(NewPawn))
+	if (BaseASC.IsValid())
 	{
-		LOG_ERROR(LogTemp, TEXT("Pawn is not valid"));
+		BaseASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
+		BaseASC->OnAggregatedRefresh.RemoveAll(this);
+		BaseASC.Reset();
+	}
+
+	if (!IsValid(Actor))
+	{
+		LOG_ERROR(LogTemp, TEXT("Actor is not valid"));
 		return;
 	}
 
-	AbilityComponent = NewPawn->GetComponentByClass<UAbilitySystemComponent>();
-	if (!IsValid(AbilityComponent))
+	BaseASC = Actor->GetComponentByClass<UAbilityComponent>();
+	if (!BaseASC.IsValid())
 	{
-		LOG_ERROR(LogTemp, TEXT("AbilityComponent is not valid"));
+		LOG_ERROR(LogTemp, TEXT("AbilitySystemComponent is not valid"));
 		return;
 	}
 
-	CurrentBase = AbilityComponent->GetNumericAttribute(BaseAttribute);
+	CurrentValue = BaseASC->GetAggregatedNumericAttribute(BaseAttribute);
 	HandleValueChanged();
 
-	AbilityComponent->GetGameplayAttributeValueChangeDelegate(BaseAttribute).AddUObject(this, &UAttributeScalarWidget::OnBaseAttributeChanged);
+	BaseASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).AddWeakLambda(this, [&](const FOnAttributeChangeData& Data) { OnAggregatedRefresh(); });
+	BaseASC->OnAggregatedRefresh.AddDynamic(this, &UAttributeScalarWidget::OnAggregatedRefresh);
 }
 
-
-
-void UAttributeScalarWidget::OnBaseAttributeChanged(const FOnAttributeChangeData& Data)
+void UAttributeScalarWidget::OnAggregatedRefresh()
 {
-	CurrentBase = Data.NewValue;
+	if (!BaseASC.IsValid())
+	{
+		LOG_ERROR(LogTemp, TEXT("AbilitySystemComponent is not valid"));
+		return;
+	}
+
+	CurrentValue = BaseASC->GetAggregatedNumericAttribute(BaseAttribute);
 	HandleValueChanged();
 }
+
+
 
 void UAttributeScalarWidget::NativePreConstruct()
 {
@@ -180,11 +206,11 @@ void UAttributeScalarWidget::NativeConstruct()
 
 	if (APlayerController* PlayerController = GetOwningPlayer())
 	{
-		PlayerController->GetOnNewPawnNotifier().AddUObject(this, &UAttributeScalarWidget::OnNewPawn);
+		PlayerController->GetOnNewPawnNotifier().AddWeakLambda(this, [&](APawn* NewPawn) { RegisterActor(NewPawn); });
 
 		if (APawn* ExistingPawn = PlayerController->GetPawn())
 		{
-			OnNewPawn(ExistingPawn);
+			RegisterActor(ExistingPawn);
 		}
 	}
 	else
@@ -195,11 +221,12 @@ void UAttributeScalarWidget::NativeConstruct()
 
 void UAttributeScalarWidget::NativeDestruct()
 {
-	if (IsValid(AbilityComponent))
+	if (BaseASC.IsValid())
 	{
-		AbilityComponent->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
+		BaseASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
+		BaseASC->OnAggregatedRefresh.RemoveAll(this);
+		BaseASC.Reset();
 	}
-	AbilityComponent = nullptr;
 
 	if (APlayerController* PlayerController = GetOwningPlayer())
 	{

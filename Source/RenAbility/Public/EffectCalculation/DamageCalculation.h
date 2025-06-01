@@ -9,6 +9,7 @@
 #include "NativeGameplayTags.h"
 #include "GameplayEffectExecutionCalculation.h"
 #include "GameplayModMagnitudeCalculation.h"
+#include "GameplayEffectUIData.h"
 
 // Project Headers
 

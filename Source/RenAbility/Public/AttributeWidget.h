@@ -18,6 +18,7 @@
 class UTextBlock;
 class UProgressBar;
 class UAbilitySystemComponent;
+class UAbilityComponent;
 
 
 /**
@@ -35,7 +36,7 @@ protected:
 	FText Title;
 
 	UPROPERTY(BlueprintReadOnly)
-	float CurrentBase = 0.0f;
+	float CurrentValue = 0.0f;
 
 	UPROPERTY(BlueprintReadOnly)
 	float CurrentMax = 0.0f;
@@ -60,21 +61,23 @@ protected:
 	TObjectPtr<UProgressBar> ValueProgressBar;
 
 
-
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UAbilitySystemComponent> AbilityComponent;
+	TWeakObjectPtr<UAbilityComponent> BaseASC;
 
+	TArray<TWeakObjectPtr<UAbilityComponent>> AggregatedASC;
 
 
 	UFUNCTION(BlueprintNativeEvent)
 	void HandleValueChanged();
 	virtual void HandleValueChanged_Implementation();
 
+protected:
 
+	UFUNCTION()
+	void RegisterActor(AActor* Actor);
 
-	void OnNewPawn(APawn* NewPawn);
-	void OnBaseAttributeChanged(const FOnAttributeChangeData& Data);
-	void OnMaxAttributeChanged(const FOnAttributeChangeData& Data);
+	UFUNCTION()
+	void OnAggregatedRefresh();
 
 protected:
 
@@ -101,7 +104,7 @@ protected:
 	FText Title;
 
 	UPROPERTY(BlueprintReadOnly)
-	float CurrentBase = 0.0f;
+	float CurrentValue = 0.0f;
 
 
 
@@ -119,16 +122,21 @@ protected:
 
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UAbilitySystemComponent> AbilityComponent;
+	TWeakObjectPtr<UAbilityComponent> BaseASC;
+
 
 
 	UFUNCTION(BlueprintNativeEvent)
 	void HandleValueChanged();
 	virtual void HandleValueChanged_Implementation();
 
+protected:
 
-	void OnNewPawn(APawn* NewPawn);
-	void OnBaseAttributeChanged(const FOnAttributeChangeData& Data);
+	UFUNCTION()
+	void RegisterActor(AActor* Actor);
+
+	UFUNCTION()
+	void OnAggregatedRefresh();
 
 protected:
 

@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "RenCore/Public/Subsystem/RenGameInstanceSubsystem.h"
+#include "RenGlobal/Public/Storage/StorageInterface.h"
 
 // Generated Headers
 #include "StorageSubsystem.generated.h"
@@ -18,8 +19,8 @@ class UStorage;
 /**
  * 
  */
-UCLASS(DisplayName = "Storage Subsystem")
-class RENSTORAGE_API UStorageSubsystem : public URenGameInstanceSubsystem
+UCLASS()
+class RENSTORAGE_API UStorageSubsystem : public UGameInstanceSubsystem, public IStorageSubsystemInterface
 {
 
 	GENERATED_BODY()
@@ -29,28 +30,27 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Runtime")
 	TObjectPtr<UStorage> Storage;
 
-	//UPROPERTY(BlueprintReadOnly, Category = "Runtime")
-	//TMap<FName, TObjectPtr<UStorage>> Storages;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
-	void ReadStorage(const FName SlotId = "Default");
-	virtual void ReadStorage_Implementation(const FName SlotId = "Default");
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
-	void UpdateStorage(const FName SlotId = "Default");
-	virtual void UpdateStorage_Implementation(const FName SlotId = "Default");
+	UFUNCTION(BlueprintCallable)
+	void ReadStorage(FName SlotId = "Default");
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintPure))
-	bool DoesStorageExist(const FName SlotId = "Default");
-	virtual bool DoesStorageExist_Implementation(const FName SlotId = "Default");
+	UFUNCTION(BlueprintCallable)
+	void UpdateStorage(FName SlotId = "Default");
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
+	UFUNCTION(BlueprintCallable, Meta = (BlueprintPure))
+	bool DoesStorageExist(FName SlotId = "Default");
+
+	UFUNCTION(BlueprintCallable)
 	UStorage* GetLocalStorage();
-	virtual UStorage* GetLocalStorage_Implementation();
+
+
+	virtual USaveGame* IGetLocalStorage() override;
 
 protected:
 
-	virtual void OnInitialized_Implementation() override;
-	virtual void OnDeinitialized_Implementation() override;
+	virtual bool ShouldCreateSubsystem(UObject* Object) const override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
 
 };

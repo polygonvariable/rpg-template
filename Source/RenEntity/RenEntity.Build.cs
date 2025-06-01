@@ -24,6 +24,7 @@ public class RenEntity : ModuleRules
                 "RenCore",
                 "RenAsset",
                 "RenStorage",
+                "RenAbility",
             }
         );
 

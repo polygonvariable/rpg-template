@@ -14,22 +14,6 @@
 // Generated Headers
 #include "LevelAttributeSet.generated.h"
 
-/**
- *
- */
-//UCLASS()
-//class UWeaponLevelAttributeSet : public UAttributeSet
-//{
-//
-//	GENERATED_BODY()
-//
-//public:
-//
-//	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-//	FGameplayAttributeData WeaponDMG;
-//	ATTRIBUTE_ACCESSORS(UWeaponLevelAttributeSet, WeaponDMG)
-//
-//};
 
 
 /**

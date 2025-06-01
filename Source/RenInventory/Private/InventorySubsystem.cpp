@@ -248,6 +248,7 @@ void UInventorySubsystem::PostInitialize_Implementation()
 {
 	Super::PostInitialize();
 
+
 	if (UStorageSubsystem* StorageSubsystem = GetGameInstance()->GetSubsystem<UStorageSubsystem>())
 	{
 		Storage = StorageSubsystem->GetLocalStorage();

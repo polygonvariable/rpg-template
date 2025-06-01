@@ -13,34 +13,31 @@
 #include "RenGlobal/Public/Library/MiscLibrary.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenGlobal/Public/Record/ClockRecord.h"
+#include "RenGlobal/Public/Interface/GameClockInterface.h"
+#include "RenGlobal/Public/Storage/StorageInterface.h"
 
 #include "RenAsset/Public/Game/GameClockAsset.h"
 
-#include "RenStorage/Public/Storage.h"
-#include "RenStorage/Public/StorageSubsystem.h"
 
 
-
-bool UGameClockSubsystem::CreateClock()
+void UGameClockSubsystem::CreateClock()
 {
 	if (IsValid(ClockTimer))
 	{
 		LOG_WARNING(LogClockSubsystem, TEXT("ClockTimer is already valid"));
-		return false;
+		return;
 	}
 
 	ClockTimer = NewObject<UTimer>(this);
 	if (!IsValid(ClockTimer))
 	{
 		LOG_ERROR(LogClockSubsystem, TEXT("Failed to create ClockTimer"));
-		return false;
+		return;
 	}
 
 	ClockTimer->OnTick.AddDynamic(this, &UGameClockSubsystem::HandleClockTick);
 
 	LOG_INFO(LogClockSubsystem, TEXT("ClockTimer created"));
-
-	return true;
 }
 
 void UGameClockSubsystem::CleanupClock()
@@ -161,19 +158,20 @@ bool UGameClockSubsystem::IsActive() const
 
 void UGameClockSubsystem::LoadWorldTime()
 {
-	if (!Storage.IsValid())
+	if (!GameClockInterface.IsValid())
 	{
 		LOG_ERROR(LogClockSubsystem, TEXT("Storage is not valid"));
 		return;
 	}
 
 	FName MapName = FName(GetWorld()->GetMapName());
+	TMap<FName, FClockRecord>& Records = GameClockInterface->GetClockRecords();
+	// TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
 
-	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
 	if (FClockRecord* ClockRecord = Records.Find(MapName))
 	{
 		CurrentTime = FMath::Clamp(ClockRecord->Time, 0.0f, TotalSecondsInADay);
-		CurrentDay = FMath::Clamp(ClockRecord->DayCount, 1, TotalDaysInAYear);
+		CurrentDay = FMath::Clamp(ClockRecord->DayCount, 1.0f, TotalDaysInAYear);
 
 		OnDayChanged.Broadcast(CurrentDay);
 		OnTimeChanged.Broadcast(CurrentTime);
@@ -187,15 +185,16 @@ void UGameClockSubsystem::LoadWorldTime()
 
 void UGameClockSubsystem::SaveWorldTime()
 {
-	if (!Storage.IsValid())
+	if (!GameClockInterface.IsValid())
 	{
 		LOG_ERROR(LogClockSubsystem, TEXT("Storage is not valid"));
 		return;
 	}
 
 	FName MapName = FName(GetWorld()->GetMapName());
+	TMap<FName, FClockRecord>& Records = GameClockInterface->GetClockRecords();
+	// TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
 
-	TMap<FName, FClockRecord>& Records = Storage->ClockRecords;
 	if (FClockRecord* ClockRecord = Records.Find(MapName))
 	{
 		ClockRecord->Time = GetCurrentTime();
@@ -204,7 +203,7 @@ void UGameClockSubsystem::SaveWorldTime()
 		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time updated"));
 	}
 	else {
-		Records.Add("DEFAULT", FClockRecord(GetCurrentTime(), GetCurrentDay()));
+		Records.Add(MapName, FClockRecord(GetCurrentTime(), GetCurrentDay()));
 
 		LOG_INFO(LogClockSubsystem, TEXT("Clock day & time added"));
 	}
@@ -280,15 +279,43 @@ void UGameClockSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 		FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UGameClockSubsystem::HandleWorldBeginTearDown);
 	}
 
-	if (UStorageSubsystem* StorageSubsystem = GetGameInstanceSubsystem<UStorageSubsystem>(GetWorld()))
+	const TArray<UGameInstanceSubsystem*>& Subsystems = GetWorld()->GetGameInstance()->GetSubsystemArray<UGameInstanceSubsystem>();
+	for (UGameInstanceSubsystem* Subsystem : Subsystems)
 	{
-		Storage = StorageSubsystem->GetLocalStorage();
+		if (!IsValid(Subsystem) || !Subsystem->Implements<UStorageSubsystemInterface>())
+		{
+			LOG_WARNING(LogClockSubsystem, TEXT("Subsystem is not valid or does not implement StorageSubsystemInterface"));
+			continue;
+		}
+
+		IStorageSubsystemInterface* StorageInterface = Cast<IStorageSubsystemInterface>(Subsystem);
+		if (!StorageInterface)
+		{
+			LOG_WARNING(LogClockSubsystem, TEXT("Subsystem cast failed or is not valid"));
+			break;
+		}
+
+		USaveGame* SaveGame = StorageInterface->IGetLocalStorage();
+		if (!IsValid(SaveGame) || !SaveGame->Implements<UGameClockInterface>())
+		{
+			LOG_WARNING(LogClockSubsystem, TEXT("SaveGame is not valid or does not implement GameClockInterface"));
+			break;
+		}
+
+		GameClockInterface = TWeakInterfacePtr<IGameClockInterface>(SaveGame);
 		LoadWorldTime();
+
+		break;
 	}
 
-	if (CreateClock() && bAutoStart) {
-		StartClock();
-	}
+	//if (UStorageSubsystem* StorageSubsystem = GetGameInstanceSubsystem<UStorageSubsystem>(GetWorld()))
+	//{
+	//	Storage = StorageSubsystem->GetLocalStorage();
+	//	LoadWorldTime();
+	//}
+
+	CreateClock();
+	StartClock();
 }
 
 void UGameClockSubsystem::OnWorldBeginPlay(UWorld& InWorld)
