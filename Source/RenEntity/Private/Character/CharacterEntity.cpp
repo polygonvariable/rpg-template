@@ -117,6 +117,7 @@ void ACharacterEntity::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AAct
 			return;
 		}
 
+
 		FGameplayEffectSpecHandle SpecHandle = AbilityComponent->MakeOutgoingSpec(EffectClass, 1.0f, EffectContext);
 		if (!SpecHandle.IsValid())
 		{

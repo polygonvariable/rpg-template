@@ -4,12 +4,13 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+
+#include "ActiveGameplayEffectHandle.h"
 #include "AttributeSet.h"
-#include "AbilitySystemComponent.h"
+#include "Blueprint/UserWidget.h"
+#include "GameplayTagContainer.h"
 
 // Project Headers
-
 
 // Generated Headers
 #include "AttributeWidget.generated.h"
@@ -17,8 +18,9 @@
 // Forward Declarations
 class UTextBlock;
 class UProgressBar;
-class UAbilitySystemComponent;
+class UPanelWidget;
 class UAbilityComponent;
+
 
 
 /**
@@ -61,17 +63,17 @@ protected:
 	TObjectPtr<UProgressBar> ValueProgressBar;
 
 
+
 	UPROPERTY(BlueprintReadOnly)
 	TWeakObjectPtr<UAbilityComponent> BaseASC;
 
 	TArray<TWeakObjectPtr<UAbilityComponent>> AggregatedASC;
 
 
+
 	UFUNCTION(BlueprintNativeEvent)
 	void HandleValueChanged();
 	virtual void HandleValueChanged_Implementation();
-
-protected:
 
 	UFUNCTION()
 	void RegisterActor(AActor* Actor);
@@ -130,8 +132,6 @@ protected:
 	void HandleValueChanged();
 	virtual void HandleValueChanged_Implementation();
 
-protected:
-
 	UFUNCTION()
 	void RegisterActor(AActor* Actor);
 
@@ -145,4 +145,5 @@ protected:
 	virtual void NativeDestruct() override;
 
 };
+
 
