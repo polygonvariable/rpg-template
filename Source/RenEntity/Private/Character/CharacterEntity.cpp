@@ -57,8 +57,6 @@ ACharacterEntity::ACharacterEntity() : Super()
 	}
 
 	bUseControllerRotationYaw = false;
-
-
 }
 
 
@@ -116,7 +114,6 @@ void ACharacterEntity::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AAct
 			PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to create effect context"));
 			return;
 		}
-
 
 		FGameplayEffectSpecHandle SpecHandle = AbilityComponent->MakeOutgoingSpec(EffectClass, 1.0f, EffectContext);
 		if (!SpecHandle.IsValid())

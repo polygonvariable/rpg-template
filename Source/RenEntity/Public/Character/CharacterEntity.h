@@ -65,19 +65,19 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Entity|Input")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float CameraMinZoom = 100.0f;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Entity|Input")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float CameraMaxZoom = 2000.0f;
 
-	UFUNCTION(BlueprintCallable, Category = "Character Entity|Input", Meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
 	void CameraPan(const FVector2D Axis);
 
-	UFUNCTION(BlueprintCallable, Category = "Character Entity|Input", Meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
 	void CameraZoom(const float Delta, const float Multiplier = 5.0f);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Character Entity|Input", Meta = (ForceAsFunction, BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
 	void SimpleMove(FVector Direction);
 	virtual void SimpleMove_Implementation(FVector Direction);
 

@@ -4,25 +4,6 @@
 #include "AbilityComponent.h"
 
 
-//const TArray<TWeakObjectPtr<AActor>>& UAbilityComponent::GetAggregateActors()
-//{
-//	return AggregateActors;
-//}
-//
-//void UAbilityComponent::AddAggregateActor(AActor* Actor)
-//{
-//	if (!IsValid(Actor)) return;
-//	AggregateActors.Add(Actor);
-//	OnAggregateActorAdded.Broadcast(Actor);
-//}
-//
-//void UAbilityComponent::RemoveAggregateActor(AActor* Actor)
-//{
-//	if (!IsValid(Actor)) return;
-//	AggregateActors.Remove(Actor);
-//	OnAggregateActorRemoved.Broadcast(Actor);
-//}
-
 
 void UAbilityComponent::AddAggregatedActor(const FGameplayAttribute& Attribute, AActor* Actor)
 {

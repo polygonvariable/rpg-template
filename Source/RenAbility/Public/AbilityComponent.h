@@ -25,13 +25,6 @@ class RENABILITY_API UAbilityComponent : public UAbilitySystemComponent
 
 public:
 
-	//const TArray<TWeakObjectPtr<AActor>>& GetAggregateActors();
-	// 
-	//void AddAggregateActor(AActor* Actor);
-	// 
-	//void RemoveAggregateActor(AActor* Actor);
-
-
 	UFUNCTION()
 	void AddAggregatedActor(const FGameplayAttribute& Attribute, AActor* Actor);
 
@@ -43,19 +36,9 @@ public:
 
 protected:
 
-    //TArray<TWeakObjectPtr<AActor>> AggregateActors;
-
 	TMap<FGameplayAttribute, TSet<TWeakObjectPtr<AActor>>> AggregatedActors;
 
 public:
-
-	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAggregateActorAdded, AActor*, Actor);
-	//UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	//FOnAggregateActorAdded OnAggregateActorAdded;
-	// 
-	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAggregateActorRemoved, AActor*, Actor);
-	//UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	//FOnAggregateActorRemoved OnAggregateActorRemoved;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAggregatedActorAdded, AActor*, Actor);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)

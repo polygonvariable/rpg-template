@@ -13,7 +13,7 @@
 // Project Headers
 
 // Generated Headers
-#include "AttributeWidget.generated.h"
+#include "AttributeClampedWidget.generated.h"
 
 // Forward Declarations
 class UTextBlock;
@@ -32,24 +32,29 @@ class UAttributeClampedWidget : public UUserWidget
 
 	GENERATED_BODY()
 
-protected:
+public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText Title;
-
-	UPROPERTY(BlueprintReadOnly)
-	float CurrentValue = 0.0f;
-
-	UPROPERTY(BlueprintReadOnly)
-	float CurrentMax = 0.0f;
-
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttribute BaseAttribute;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttribute MaxAttribute;
+
+
+
+	UFUNCTION()
+	void RegisterASC(UAbilityComponent* TargetASC);
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentValue = 0.0f;
+
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentMax = 0.0f;
 
 
 
@@ -65,29 +70,30 @@ protected:
 
 
 	UPROPERTY(BlueprintReadOnly)
-	TWeakObjectPtr<UAbilityComponent> BaseASC;
-
-	TArray<TWeakObjectPtr<UAbilityComponent>> AggregatedASC;
+	TWeakObjectPtr<UAbilityComponent> ASC;
 
 
+
+	UFUNCTION()
+	void OnAggregatedRefresh();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void HandleValueChanged();
 	virtual void HandleValueChanged_Implementation();
 
-	UFUNCTION()
-	void RegisterActor(AActor* Actor);
+
 
 	UFUNCTION()
-	void OnAggregatedRefresh();
+	void CleanUpASC();
 
 protected:
 
 	virtual void NativePreConstruct() override;
-	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
 };
+
+
 
 
 
@@ -95,55 +101,26 @@ protected:
  *
  */
 UCLASS(Abstract)
-class UAttributeScalarWidget : public UUserWidget
+class UPlayerAttributeClampedWidget : public UAttributeClampedWidget
 {
 
 	GENERATED_BODY()
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText Title;
-
-	UPROPERTY(BlueprintReadOnly)
-	float CurrentValue = 0.0f;
-
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayAttribute BaseAttribute;
-
-
-
-	UPROPERTY(Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> TitleTextBlock;
-
-	UPROPERTY(Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> ValueTextBlock;
-
-
-
-	UPROPERTY(BlueprintReadOnly)
-	TWeakObjectPtr<UAbilityComponent> BaseASC;
-
-
-
-	UFUNCTION(BlueprintNativeEvent)
-	void HandleValueChanged();
-	virtual void HandleValueChanged_Implementation();
+	UFUNCTION()
+	UAbilityComponent* GetASCFromPlayer(AActor* Player);
 
 	UFUNCTION()
-	void RegisterActor(AActor* Actor);
+	void RegisterPlayer();
 
 	UFUNCTION()
-	void OnAggregatedRefresh();
+	void CleanUpPlayer();
 
 protected:
 
-	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
 };
-
 
