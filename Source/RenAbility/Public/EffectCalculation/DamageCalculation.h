@@ -34,7 +34,10 @@ public:
 
 protected:
 
-	float GetAggregateValue(const FGameplayEffectSpec& Spec, const FGameplayAttribute& Attribute) const;
+	UAbilitySystemComponent* GetSourceASC(const FGameplayEffectContext* Context) const;
+	UAbilitySystemComponent* GetTargetASC(const FGameplayEffectContext* Context) const;
+
+	float GetAggregateValue(UAbilitySystemComponent*, const FGameplayAttribute& Attribute) const;
 
 public:
 

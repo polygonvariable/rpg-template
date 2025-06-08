@@ -14,6 +14,8 @@
 #include "Attributes/DefenceAttributeSet.h"
 #include "Attributes/DamageAttributeSet.h"
 #include "Attributes/LevelAttributeSet.h"
+#include "Component/RAbilitySystemComponent.h"
+#include "Library/AttributeLibrary.h"
 
 
 
@@ -86,49 +88,58 @@ UAggregateDamageMMC::UAggregateDamageMMC()
 	RelevantAttributesToCapture.Add(DamageCaptureDef);
 }
 
-float UAggregateDamageMMC::GetAggregateValue(const FGameplayEffectSpec& Spec, const FGameplayAttribute& Attribute) const
-{
-	// Calculate aggregate damage from extra actors
-	// such as equipped weapons, etc
 
+
+
+UAbilitySystemComponent* UAggregateDamageMMC::GetSourceASC(const FGameplayEffectContext* Context) const
+{
+	return Context->GetOriginalInstigatorAbilitySystemComponent();
+}
+
+UAbilitySystemComponent* UAggregateDamageMMC::GetTargetASC(const FGameplayEffectContext* Context) const
+{
+	TArray<TWeakObjectPtr<AActor>> TargetActors = Context->GetActors();
+	if (TargetActors.IsValidIndex(0))
+	{
+		return TargetActors[0]->GetComponentByClass<UAbilitySystemComponent>();
+	}
+	return nullptr;
+}
+
+
+float UAggregateDamageMMC::GetAggregateValue(UAbilitySystemComponent* ASC, const FGameplayAttribute& Attribute) const
+{
+	float AggregateValue = 0.0f;
+	
+	if (URAbilitySystemComponent* CastedASC = Cast<URAbilitySystemComponent>(ASC))
+	{
+		AggregateValue = CastedASC->GetAggregatedNumericAttribute(Attribute);
+	}
+	else
+	{
+		AggregateValue = CastedASC->GetNumericAttribute(Attribute);
+	}
+
+	return AggregateValue;
+
+}
+
+float UAggregateDamageMMC::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
+{
 	const FGameplayEffectContextHandle& ContextHandle = Spec.GetEffectContext();
 	if (!ContextHandle.IsValid()) return 0.0f;
 
 	const FGameplayEffectContext* Context = ContextHandle.Get();
 	if (!Context) return 0.0f;
 
-	float AggregateValue = 0.0f;
+	float SourceDamage = GetAggregateValue(GetSourceASC(Context), UDamageAttributeSet::GetPhysicalDamageAttribute());
+	float TargetDefence = GetAggregateValue(GetTargetASC(Context), UDefenceAttributeSet::GetPhysicalDefenceAttribute());
 
-	const TArray<TWeakObjectPtr<AActor>>& ContextActors = Context->GetActors();
-	for (TWeakObjectPtr<AActor> ContextActor : ContextActors)
-	{
-		if (UAbilitySystemComponent* ContextASC = ContextActor->GetComponentByClass<UAbilitySystemComponent>())
-		{
-			bool bFound = false;
-			AggregateValue += ContextASC->GetGameplayAttributeValue(Attribute, bFound);
-		}
-	}
-
-	return AggregateValue;
+	return FMath::RoundToInt(
+		FMath::Max(0.0f, SourceDamage - TargetDefence)
+	);
 }
 
-float UAggregateDamageMMC::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
-{
-	PRINT_WARNING(LogTemp, 5.0f, TEXT("UAggregateDamageMMC::CalculateBaseMagnitude_Implementation"));
 
-	float AggregateDamage = GetAggregateValue(Spec, UDamageAttributeSet::GetPhysicalDamageAttribute());
-
-	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
-	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
-
-	FAggregatorEvaluateParameters EvaluateParameters;
-	EvaluateParameters.SourceTags = SourceTags;
-	EvaluateParameters.TargetTags = TargetTags;
-
-	float Damage = 0;
-	GetCapturedAttributeMagnitude(DamageCaptureDef, Spec, EvaluateParameters, Damage);
-
-	return FMath::RoundToInt(Damage + AggregateDamage);
-}
 
 

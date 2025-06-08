@@ -19,7 +19,7 @@
 class UTextBlock;
 class UProgressBar;
 class UPanelWidget;
-class UAbilityComponent;
+class URAbilitySystemComponent;
 
 
 
@@ -46,7 +46,7 @@ public:
 
 
 	UFUNCTION()
-	void RegisterASC(UAbilityComponent* TargetASC);
+	void RegisterASC(URAbilitySystemComponent* TargetASC);
 
 protected:
 
@@ -70,7 +70,7 @@ protected:
 
 
 	UPROPERTY(BlueprintReadOnly)
-	TWeakObjectPtr<UAbilityComponent> ASC;
+	TWeakObjectPtr<URAbilitySystemComponent> ASC;
 
 
 
@@ -109,7 +109,7 @@ class UPlayerAttributeClampedWidget : public UAttributeClampedWidget
 protected:
 
 	UFUNCTION()
-	UAbilityComponent* GetASCFromPlayer(AActor* Player);
+	URAbilitySystemComponent* GetASCFromPlayer(AActor* Player);
 
 	UFUNCTION()
 	void RegisterPlayer();

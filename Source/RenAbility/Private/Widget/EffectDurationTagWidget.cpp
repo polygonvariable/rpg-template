@@ -11,7 +11,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "RenAbility/Public/AbilityComponent.h"
+#include "RenAbility/Public/Component/RAbilitySystemComponent.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 
@@ -73,7 +73,7 @@ void UEffectDurationTagWidget::HandleEffectTimeChanged_Implementation()
 
 	if (IsValid(DurationProgressBar))
 	{
-		DurationProgressBar->SetPercent(RemainingTime / Duration);
+		DurationProgressBar->SetPercent(RemainingTime > 0.0f ? (RemainingTime / Duration) : 0.0f);
 	}
 
 	if (IsValid(DurationTextBlock))

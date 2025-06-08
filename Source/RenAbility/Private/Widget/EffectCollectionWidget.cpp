@@ -11,7 +11,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "RenAbility/Public/AbilityComponent.h"
+#include "RenAbility/Public/Component/RAbilitySystemComponent.h"
 #include "RenAbility/Public/Widget/EffectCollectionEntryWidget.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 

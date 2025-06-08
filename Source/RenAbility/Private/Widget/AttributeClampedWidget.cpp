@@ -12,12 +12,12 @@
 #include "Components/PanelWidget.h"
 
 // Project Headers
-#include "RenAbility/Public/AbilityComponent.h"
+#include "RenAbility/Public/Component/RAbilitySystemComponent.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 
-void UAttributeClampedWidget::RegisterASC(UAbilityComponent* TargetASC)
+void UAttributeClampedWidget::RegisterASC(URAbilitySystemComponent* TargetASC)
 {
 	CleanUpASC();
 
@@ -102,11 +102,11 @@ void UAttributeClampedWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-UAbilityComponent* UPlayerAttributeClampedWidget::GetASCFromPlayer(AActor* Player)
+URAbilitySystemComponent* UPlayerAttributeClampedWidget::GetASCFromPlayer(AActor* Player)
 {
 	if (!IsValid(Player)) return nullptr;
 
-	UAbilityComponent* PlayerASC = Player->FindComponentByClass<UAbilityComponent>();
+	URAbilitySystemComponent* PlayerASC = Player->FindComponentByClass<URAbilitySystemComponent>();
 	if (!IsValid(PlayerASC)) return nullptr;
 
 	return PlayerASC;

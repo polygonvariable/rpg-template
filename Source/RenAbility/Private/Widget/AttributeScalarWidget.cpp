@@ -12,12 +12,12 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "RenAbility/Public/AbilityComponent.h"
+#include "RenAbility/Public/Component/RAbilitySystemComponent.h"
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
 
 
-void UAttributeScalarWidget::RegisterASC(UAbilityComponent* TargetASC)
+void UAttributeScalarWidget::RegisterASC(URAbilitySystemComponent* TargetASC)
 {
 	CleanUpASC();
 
@@ -87,11 +87,11 @@ void UAttributeScalarWidget::NativeDestruct()
 
 
 
-UAbilityComponent* UPlayerAttributeScalarWidget::GetASCFromPlayer(AActor* Player)
+URAbilitySystemComponent* UPlayerAttributeScalarWidget::GetASCFromPlayer(AActor* Player)
 {
 	if (!IsValid(Player)) return nullptr;
 
-	UAbilityComponent* PlayerASC = Player->FindComponentByClass<UAbilityComponent>();
+	URAbilitySystemComponent* PlayerASC = Player->FindComponentByClass<URAbilitySystemComponent>();
 	if (!IsValid(PlayerASC)) return nullptr;
 
 	return PlayerASC;

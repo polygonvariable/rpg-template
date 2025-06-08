@@ -81,7 +81,7 @@ void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetHealthMax()));
 
-		if (UAbilitySystemComponent* AbilityComponent = GetOwningAbilitySystemComponent())
+		if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
 		{
 			/*FGameplayTagContainer AliveTags;
 			AliveTags.AddTag(TAG_Attribute_State_Life_Alive);
@@ -89,39 +89,36 @@ void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 			DeathTags.AddTag(TAG_Attribute_State_Life_Death);*/
 
 			
-			if (UGameplayEventSubsystem* EffectSubsystem = UWorld::GetSubsystem<UGameplayEventSubsystem>(GetWorld()))
+			/*if (UGameplayEventSubsystem* EffectSubsystem = UWorld::GetSubsystem<UGameplayEventSubsystem>(GetWorld()))
 			{
 				EffectSubsystem->SendScalarEvent(TAG_Event_Damage, Magnitude);
-			}
-			if (UGameplayEventHandlerSubsystem* EffectHandlerSubsystem = UWorld::GetSubsystem<UGameplayEventHandlerSubsystem>(GetWorld()))
+			}*/
+
+			/*if (UGameplayEventHandlerSubsystem* EffectHandlerSubsystem = UWorld::GetSubsystem<UGameplayEventHandlerSubsystem>(GetWorld()))
 			{
 				PRINT_INFO(LogTemp, 5.0f, TEXT("Send Damage Event"));
 				EffectHandlerSubsystem->SendScalarEvent(TAG_Event_Damage, Magnitude, Source, Target);
-			}
-
+			}*/
 
 			if (GetHealth() <= 0.0f)
 			{
-				AbilityComponent->AddLooseGameplayTag(TAG_Attribute_State_Life_Death);
-				AbilityComponent->RemoveLooseGameplayTag(TAG_Attribute_State_Life_Alive);
-				PRINT_INFO(LogTemp, 5.0f, TEXT("Actor Died"));
+				if(ASC->HasMatchingGameplayTag(TAG_Attribute_State_Life_Alive))
+				{
+					ASC->AddLooseGameplayTag(TAG_Attribute_State_Life_Death);
+					ASC->RemoveLooseGameplayTag(TAG_Attribute_State_Life_Alive);
+					PRINT_INFO(LogTemp, 1.0f, TEXT("Actor Died"));
+				}
+			}
+			else
+			{
+				if (ASC->HasMatchingGameplayTag(TAG_Attribute_State_Life_Death))
+				{
+					ASC->AddLooseGameplayTag(TAG_Attribute_State_Life_Alive);
+					ASC->RemoveLooseGameplayTag(TAG_Attribute_State_Life_Death);
+					PRINT_INFO(LogTemp, 1.0f, TEXT("Actor Revived"));
+				}
 			}
 
-			/*else if (GetHealth() > 0.0f && AbilityComponent->HasAnyMatchingGameplayTags(DeathTags))
-			{
-				AbilityComponent->AddLooseGameplayTag(TAG_Attribute_State_Life_Alive);
-				AbilityComponent->RemoveLooseGameplayTag(TAG_Attribute_State_Life_Death);
-			}
-			if (GetHealth() <= 0.0f && AbilityComponent->HasAnyMatchingGameplayTags(AliveTags))
-			{
-				AbilityComponent->AddLooseGameplayTag(TAG_Attribute_State_Life_Death);
-				AbilityComponent->RemoveLooseGameplayTag(TAG_Attribute_State_Life_Alive);
-			}
-			else if(GetHealth() > 0.0f && AbilityComponent->HasAnyMatchingGameplayTags(DeathTags))
-			{
-				AbilityComponent->AddLooseGameplayTag(TAG_Attribute_State_Life_Alive);
-				AbilityComponent->RemoveLooseGameplayTag(TAG_Attribute_State_Life_Death);
-			}*/
 		}
 	}
 }

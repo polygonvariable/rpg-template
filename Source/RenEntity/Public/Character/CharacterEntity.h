@@ -7,7 +7,6 @@
 
 // Project Headers
 #include "Entity.h"
-#include "RenAbility/Public/AbilityComponent.h"
 
 // Generated Headers
 #include "CharacterEntity.generated.h"
@@ -15,7 +14,7 @@
 // Forward Declarations
 class USpringArmComponent;
 class UCameraComponent;
-class UAbilitySystemComponent;
+class URAbilitySystemComponent;
 class AWeaponTest;
 class UGameplayEffect;
 
@@ -61,7 +60,7 @@ public:
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	TObjectPtr<UAbilityComponent> AbilityComponent;
+	TObjectPtr<URAbilitySystemComponent> RAbilitySystemComponent;
 
 protected:
 

@@ -27,19 +27,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData Health;
+	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Health)
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData HealthMax;
-
-	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
-
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, HealthMax)
 
 public:
 
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Health)
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, HealthMax)
+	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 };
 
